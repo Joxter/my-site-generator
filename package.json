@@ -1,0 +1,23 @@
+{
+  "name": "browser-jam",
+  "version": "1.0.0",
+  "description": "template engine for static sites",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joxter/browser-jam.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Joxter/browser-jam/issues"
+  },
+  "homepage": "https://github.com/Joxter/browser-jam#readme",
+  "dependencies": {
+    "effector": "^20.13.1",
+    "effector-dom": "0.0.15"
+  }
+}
