@@ -1,38 +1,74 @@
 import { createStore, createEvent } from "effector";
 import { using, spec, list, h } from "effector-dom";
+import { validateFx } from "./validateHtml";
+
+function htmpWrap(text = "EMPTY") {
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <title>empty</title>
+    </head>
+    <body>${text}</body>
+  </html>
+  `;
+}
 
 using(document.querySelector("#root"), () => {
-  const addLine = createEvent();
-  const code = createStore(["let foo = 0"]).on(addLine, list => [
-    ...list,
-    `foo += ${Math.random()}`
-  ]);
-  const color = createStore("cornsilk").on(addLine, color => {
-    switch (color) {
-      case "cornsilk":
-        return "aliceblue";
-      case "aliceblue":
-        return "cornsilk";
-    }
-  });
+  const codeChanged = createEvent();
+  const $input = createStore("");
+  const $validationOutput = createStore("-");
 
-  h("section", () => {
+  $input.on(codeChanged, (_, e) => e.target.value);
+
+  $validationOutput
+    .on(validateFx.finally, (_, { result }) => JSON.stringify(result, null, 2))
+    .reset(validateFx);
+
+  h("div", () => {
     spec({
-      style: {
-        backgroundColor: color,
-        padding: "1em"
-      }
+      attr: { class: "main-layout" }
     });
-    list(code, ({ store }) => {
-      h("div", { text: store });
+
+    h("p", {
+      text: "Intut"
     });
-  });
-  h("section", () => {
-    spec({ data: { section: "controls" } });
-    h("button", {
-      handler: { click: addLine },
-      text: "Add line",
-      style: { padding: "1em" }
+    h("p", {
+      text: "Output"
+    });
+
+    h("div", () => {
+      h("textarea", () => {
+        spec({
+          handler: { input: codeChanged },
+          attr: { class: "user-input" },
+          text: $input
+        });
+      });
+    });
+
+    h("div", () => {
+      spec({
+        attr: {
+          style: "overflow:auto"
+        }
+      });
+      h("pre", { text: $validationOutput });
+    });
+
+    h("div", () => {
+      h("button", {
+        handler: { click: () => validateFx(htmpWrap($input.getState())) },
+        text: "Verify"
+      });
+      h("button", {
+        text: "Save"
+      });
+    });
+
+    h("div", () => {
+      h("span", { text: "none" });
     });
   });
 });
