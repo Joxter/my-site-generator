@@ -51,13 +51,18 @@ using(document.querySelector("#root"), () => {
     h("div", () => {
       spec({
         attr: {
-          style: "overflow:auto"
+          class: "output-container"
         }
       });
       h("pre", { text: $validationOutput });
     });
 
     h("div", () => {
+      spec({
+        attr: {
+          class: "left-actions"
+        }
+      });
       h("button", {
         handler: { click: () => validateFx(htmpWrap($input.getState())) },
         text: "Verify"
