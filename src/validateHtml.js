@@ -8,15 +8,15 @@ const validateFx = createEffect({
     return fetch("https://validator.w3.org/nu/?out=json", {
       method: "POST",
       headers: {
-        "Content-Type": "text/html; charset=utf-8"
+        "Content-Type": "text/html; charset=utf-8",
       },
-      body: code
+      body: code,
     }).then(response => {
       return response.json().catch(() => {
         throw response;
       });
     });
-  }
+  },
 });
 
 validateFx.fail.watch(({ error }) => {

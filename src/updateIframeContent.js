@@ -1,5 +1,5 @@
 import { createStore, createEvent, guard, sample } from "effector";
-import { $input, codeChanged, codeLoaded } from "./model";
+import { $input, codeChanged, codeLoaded, renderPage } from "./model";
 
 export const $iframeBody = createStore(null);
 export const $iframeContent = createStore("empty");
@@ -12,10 +12,10 @@ $iframeBody.on(iframeLoaded, (_, bodyEl) => bodyEl);
 sample({
   source: [$iframeBody, $input],
   clock: guard($input, {
-    filter: $iframeBody.map(el => !!el)
-  })
+    filter: $iframeBody.map(el => !!el),
+  }),
 }).watch(([bodyEl, content]) => {
-  bodyEl.innerHTML = content;
+  bodyEl.innerHTML = renderPage(content);
 });
 
 sample($input, codeChanged).watch(input => {

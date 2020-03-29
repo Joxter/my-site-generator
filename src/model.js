@@ -1,22 +1,46 @@
 import { createStore, createEvent, sample } from "effector";
+import { initComponent, getComponent, render } from "./jem";
 
 export const codeChanged = createEvent();
 export const codeLoaded = createEvent();
 export const $input = createStore("");
 export const $validationOutput = createStore("-");
 
-$input
-  .on(codeChanged, (_, e) => e.target.value)
-  .on(codeLoaded, (_, code) => code);
+$input.on(codeChanged, (_, e) => e.target.value).on(codeLoaded, (_, code) => code);
+
+$input.watch(html => {
+  if (!html) {
+    return;
+  }
+
+  renderPage(html);
+});
+
+export function renderPage(html) {
+  const el = nodeFromHtml(html);
+
+  el.content.querySelectorAll("template").forEach(el => {
+    initComponent(el);
+    el.remove();
+  });
+
+  render(el.content);
+  return el.innerHTML;
+}
 
 /*
-`<h1>my news</h1>
-  <div>
+<template data-j-component="news-item" data-j-props="header text">
+  <h2>{header}</h2>
+  <p>{text}</p>
+</template>
+<h1>my news</h1>
+<div>
   <p>my awesome news</p>
-  
-  <news-item header="first text"></news-item>
-  <news-item header="second text"></news-item>
-  </div>`;
+  <news-item header="first text" text="bla bla"></news-item>
+  <div style="border:1px solid red; padding: 10px">
+    <news-item header="second text" text="bla bla bla"></news-item>
+  </div>
+</div>
 */
 
 function getTemplate() {
@@ -42,4 +66,12 @@ function getTemplate() {
     </style>
   </template>
   `.trim();
+}
+
+function nodeFromHtml(html) {
+  const el = window.document.createElement("template");
+
+  el.innerHTML = html;
+
+  return el;
 }
