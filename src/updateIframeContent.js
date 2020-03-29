@@ -1,5 +1,5 @@
 import { createStore, createEvent, guard, sample } from "effector";
-import { $input } from "./model";
+import { $input, codeChanged, codeLoaded } from "./model";
 
 export const $iframeBody = createStore(null);
 export const $iframeContent = createStore("empty");
@@ -11,9 +11,21 @@ $iframeBody.on(iframeLoaded, (_, bodyEl) => bodyEl);
 
 sample({
   source: [$iframeBody, $input],
-  clock: guard(updateIframeContent, {
+  clock: guard($input, {
     filter: $iframeBody.map(el => !!el)
   })
 }).watch(([bodyEl, content]) => {
   bodyEl.innerHTML = content;
+});
+
+sample($input, codeChanged).watch(input => {
+  localStorage.setItem("user-input", input);
+});
+
+iframeLoaded.watch(() => {
+  const result = localStorage.getItem("user-input");
+
+  if (result != null) {
+    codeLoaded(result);
+  }
 });
