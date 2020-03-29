@@ -27,6 +27,8 @@ $validationOutput
   .on(validateFx.finally, (_, { result }) => JSON.stringify(result, null, 2))
   .reset(validateFx);
 
+validateFx.doneData.watch(data => console.log("validation", data));
+
 validateButtonClicked.watch(() => {
   validateFx(htmpWrap($input.getState()));
 });

@@ -1,6 +1,7 @@
 import { using, spec, h } from "effector-dom";
 import { validateButtonClicked } from "./validateHtml";
 import { $input, codeChanged } from "./model";
+import { iframeLoaded, updateIframeContent } from "./updateIframeContent";
 
 export function render(target) {
   using(target, () => {
@@ -54,7 +55,8 @@ export function render(target) {
           text: "Verify"
         });
         h("button", {
-          text: "Save"
+          handler: { click: updateIframeContent },
+          text: "Run"
         });
       });
 
@@ -68,6 +70,7 @@ export function render(target) {
     const frame = document.querySelector("#out-frame");
 
     frame.contentDocument.body.style.margin = "0";
-    frame.contentDocument.body.innerHTML = "test";
+
+    iframeLoaded(frame.contentDocument.body);
   }, 100);
 }
