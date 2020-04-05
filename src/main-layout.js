@@ -7,14 +7,14 @@ export function render(target) {
   using(target, () => {
     h("div", () => {
       spec({
-        attr: { class: "main-layout" }
+        attr: { class: "main-layout" },
       });
 
       h("p", {
-        text: "Intut"
+        text: "Intut",
       });
       h("p", {
-        text: "Output"
+        text: "Output",
       });
 
       h("div", () => {
@@ -22,7 +22,7 @@ export function render(target) {
           spec({
             handler: { input: codeChanged },
             attr: { class: "user-input" },
-            text: $input
+            text: $input,
           });
         });
       });
@@ -30,16 +30,16 @@ export function render(target) {
       h("div", () => {
         spec({
           attr: {
-            class: "output-container"
-          }
+            class: "output-container",
+          },
         });
 
         h("iframe", () => {
           spec({
             attr: {
               id: "out-frame",
-              style: "width:100%; height: 100%; border: 0"
-            }
+              style: "width:100%; height: 100%; border: 0",
+            },
           });
         });
       });
@@ -47,16 +47,16 @@ export function render(target) {
       h("div", () => {
         spec({
           attr: {
-            class: "left-actions"
-          }
+            class: "left-actions",
+          },
         });
         h("button", {
           handler: { click: validateButtonClicked },
-          text: "Verify"
+          text: "Verify",
         });
         h("button", {
           handler: { click: updateIframeContent },
-          text: "Run"
+          text: "Run",
         });
       });
 
@@ -72,5 +72,5 @@ export function render(target) {
     frame.contentDocument.body.style.margin = "0";
 
     iframeLoaded(frame.contentDocument.body);
-  }, 100);
+  }, 10);
 }

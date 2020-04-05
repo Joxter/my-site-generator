@@ -10,19 +10,22 @@ $input
   .on(codeChanged, (_, e) => e.target.value)
   .on(codeLoaded, (_, code) => code);
 
-$input.watch(html => {
+$input.watch((html) => {
   if (!html) {
     return;
   }
 
   const el = nodeFromHtml(html);
 
-  el.content.querySelectorAll("template").forEach(el => {
+  el.content.querySelectorAll("template").forEach((el) => {
     initComponent(el);
     el.remove();
   });
 
-  render(el);
+  // debugger;
+  console.log(el.innerHTML);
+  render(el.content);
+  console.log(el.innerHTML);
 });
 
 /*
@@ -34,7 +37,9 @@ $input.watch(html => {
 <div>
   <p>my awesome news</p>
   <news-item header="first text" text="bla bla"></news-item>
-  <news-item header="second text" text="bla bla bla"></news-item>
+  <div>
+    <news-item header="second text" text="bla bla bla"></news-item>
+  </div>
 </div>
 */
 

@@ -12,12 +12,17 @@ export function initComponent(node) {
   return Components[name];
 }
 
-export function render(templateEl) {
-  console.log("render", templateEl);
+export function render(elem, data = {}) {
+  const cNodes = elem.childNodes;
 
-  templateEl.content.childNodes.forEach(node => {
-    console.dir(node);
-  });
+  if (Components[elem.localName]) {
+    elem.after(Components[elem.localName].childNodes.cloneNode(true));
+    elem.remove();
+  }
+
+  for (let node of cNodes) {
+    node.childNodes && node.childNodes.forEach((el) => render(el));
+  }
 }
 
 export function getComponent(name) {
@@ -36,13 +41,13 @@ function getServiceNodes(templateEl) {
 
   const props = (templateEl.dataset.jProps || "").trim().split(/\s+/g);
 
-  const childNodes = templateEl.content.cloneNode(true);
+  const childNodes = templateEl.content;
   let styles = [];
 
   return {
     name,
     props,
     childNodes,
-    styles
+    styles,
   };
 }
