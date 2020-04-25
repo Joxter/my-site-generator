@@ -8,21 +8,44 @@ export function initComponent(node) {
   }
   Components[component.name] = component;
 
-  console.log({ Components });
+  // console.log({ Components });
   return Components[name];
 }
 
 export function render(elem, data = {}) {
-  const childNodes = elem.childNodes;
-
   if (Components[elem.localName]) {
-    elem.after(Components[elem.localName].childNodes.cloneNode(true));
+    const myComp = Components[elem.localName];
+    const data = getComponentPropsData(myComp, elem);
+
+    elem.after(render(myComp.childNodes.cloneNode(true), data));
     elem.remove();
   }
 
-  for (let node of childNodes) {
-    render(node, data)
+  elem = inserdData(elem, data);
+
+  for (let node of elem.childNodes) {
+    render(node, data);
   }
+
+  return elem;
+}
+
+function getComponentPropsData(component, node) {
+  const data = {};
+  component.props.forEach(propName => {
+    data[propName] = node.getAttribute(propName);
+  });
+
+  return data;
+}
+
+function inserdData(node, data) {
+  if (node.nodeType === 3) {
+    node.textContent = node.textContent.replace(/(\{(.+?)\})/g, (match, first, second) => {
+      return data[second] || "[NONE]";
+    });
+  }
+  return node;
 }
 
 export function getComponent(name) {
