@@ -8,27 +8,11 @@ export function initComponent(node) {
   }
   Components[component.name] = component;
 
-<<<<<<< HEAD
-  console.log({ Components });
-=======
   // console.log({ Components });
->>>>>>> d86350f0e21a91cc96e46e001dd72737cda58b47
   return Components[name];
 }
 
 export function render(elem, data = {}) {
-<<<<<<< HEAD
-  const cNodes = elem.childNodes;
-
-  if (Components[elem.localName]) {
-    elem.after(Components[elem.localName].childNodes.cloneNode(true));
-    elem.remove();
-  }
-
-  for (let node of cNodes) {
-    node.childNodes && node.childNodes.forEach((el) => render(el));
-  }
-=======
   if (Components[elem.localName]) {
     const myComp = Components[elem.localName];
     const data = getComponentPropsData(myComp, elem);
@@ -62,7 +46,6 @@ function inserdData(node, data) {
     });
   }
   return node;
->>>>>>> d86350f0e21a91cc96e46e001dd72737cda58b47
 }
 
 export function getComponent(name) {

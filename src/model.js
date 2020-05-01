@@ -28,24 +28,6 @@ export function renderPage(html) {
   return el.innerHTML;
 }
 
-$input.watch((html) => {
-  if (!html) {
-    return;
-  }
-
-  const el = nodeFromHtml(html);
-
-  el.content.querySelectorAll("template").forEach((el) => {
-    initComponent(el);
-    el.remove();
-  });
-
-  // debugger;
-  console.log(el.innerHTML);
-  render(el.content);
-  console.log(el.innerHTML);
-});
-
 /*
 <template data-j-component="news-item" data-j-props="header text">
   <h2>{header}</h2>
@@ -55,11 +37,7 @@ $input.watch((html) => {
 <div>
   <p>my awesome news</p>
   <news-item header="first text" text="bla bla"></news-item>
-<<<<<<< HEAD
-  <div>
-=======
   <div style="border:1px solid red; padding: 10px">
->>>>>>> d86350f0e21a91cc96e46e001dd72737cda58b47
     <news-item header="second text" text="bla bla bla"></news-item>
   </div>
 </div>

@@ -1,7 +1,12 @@
 import { using, spec, h } from "effector-dom";
 import { validateButtonClicked } from "./validateHtml";
 import { $input, codeChanged } from "./model";
-import { iframeLoaded, updateIframeContent } from "./updateIframeContent";
+import {
+  iframeLoaded,
+  updateIframeContent,
+  $isSourceCode,
+  toggleSourceCode,
+} from "./updateIframeContent";
 
 export function render(target) {
   using(target, () => {
@@ -13,8 +18,16 @@ export function render(target) {
       h("p", {
         text: "Intut",
       });
-      h("p", {
-        text: "Output",
+      h("div", () => {
+        h("label", () => {
+          h("input", {
+            attr: { type: "checkbox", checked: $isSourceCode },
+            handler: { change: e => toggleSourceCode(e.target.checked) },
+          });
+          spec({
+            text: "view source",
+          });
+        });
       });
 
       h("div", () => {
