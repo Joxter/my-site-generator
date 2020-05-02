@@ -24,16 +24,39 @@ export function renderPage(html) {
     el.remove();
   });
 
-  render(el.content);
-  return el.innerHTML;
+  let styles = new Set();
+  render(el.content, {}, styles);
+  return `${el.innerHTML} ${renderStyles(styles)}`;
+}
+
+function renderStyles(styles) {
+  return `<style>
+    ${[...styles].map(styleNode => styleNode.innerText).join("")}
+    </style>`;
 }
 
 /*
-<template data-j-component="news-item" data-j-props="header text">
-  <h2>{header}</h2>
-  <p>{text}</p>
+<template data-j-component="new-cut" data-j-props="label">
+  <button class="cut">{label}</button>
+  <style>
+    .cut {
+      border: none;
+      font: inherit;
+      color: blue;
+    }
+  </style>
 </template>
-<h1>my news</h1>
+<template data-j-component="news-item" data-j-props="header text">
+  <h2 class="header">{header}</h2>
+  <p>{text}</p>
+  <new-cut label="see more"></new-cut>
+  <style>
+    .header {
+      color: green;
+    }
+  </style>
+</template>
+<h1>my news </h1>
 <div>
   <p>my awesome news</p>
   <news-item header="first text" text="bla bla"></news-item>

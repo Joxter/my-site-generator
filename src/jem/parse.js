@@ -4,7 +4,7 @@ export function initComponent(node) {
   const component = getServiceNodes(node);
 
   if (Components[component.name]) {
-    console.warn(`Component "${component.name}" has already inited`);
+    // console.warn(`Component "${component.name}" has already inited`);
   }
   Components[component.name] = component;
 
@@ -12,19 +12,20 @@ export function initComponent(node) {
   return Components[name];
 }
 
-export function render(elem, data = {}) {
+export function render(elem, data, styles) {
   if (Components[elem.localName]) {
     const myComp = Components[elem.localName];
+    styles.add(myComp.styles);
     const data = getComponentPropsData(myComp, elem);
 
-    elem.after(render(myComp.childNodes.cloneNode(true), data));
+    elem.after(render(myComp.childNodes.cloneNode(true), data, styles));
     elem.remove();
   }
 
   elem = inserdData(elem, data);
 
   for (let node of elem.childNodes) {
-    render(node, data);
+    render(node, data, styles);
   }
 
   return elem;
@@ -42,7 +43,7 @@ function getComponentPropsData(component, node) {
 function inserdData(node, data) {
   if (node.nodeType === 3) {
     node.textContent = node.textContent.replace(/(\{(.+?)\})/g, (match, first, second) => {
-      return data[second] || "[NONE]";
+      return data[second] || `[no data for ${second}]`;
     });
   }
   return node;
@@ -59,13 +60,17 @@ function getServiceNodes(templateEl) {
   const name = templateEl.dataset.jComponent;
 
   if (!name) {
-    throw new Error("Component name shuld has a name");
+    throw new Error("Component name should have a name");
   }
 
   const props = (templateEl.dataset.jProps || "").trim().split(/\s+/g);
 
   const childNodes = templateEl.content;
-  let styles = [];
+  let styles = templateEl.content.querySelector("style") || null;
+
+  if (styles) {
+    styles.remove();
+  }
 
   return {
     name,
