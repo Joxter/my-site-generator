@@ -9,7 +9,7 @@ export function initComponent(node) {
   Components[component.name] = component;
 
   // console.log({ Components });
-  return Components[name];
+  return Components[component.name];
 }
 
 export function render(elem, data, styles) {

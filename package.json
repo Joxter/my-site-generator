@@ -19,7 +19,8 @@
   "homepage": "https://github.com/Joxter/my-site-generator#readme",
   "dependencies": {
     "effector": "^21.7.5",
-    "forest": "^0.19.6"
+    "forest": "^0.19.6",
+    "jsdom": "^16.4.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
