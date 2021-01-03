@@ -1,4 +1,4 @@
-import { using, spec, h } from "effector-dom";
+import { using, spec, h } from "forest";
 import { validateButtonClicked } from "./validateHtml";
 import { $input, codeChanged } from "./model";
 import {
@@ -22,7 +22,7 @@ export function render(target) {
         h("label", () => {
           h("input", {
             attr: { type: "checkbox", checked: $isSourceCode },
-            handler: { change: e => toggleSourceCode(e.target.checked) },
+            handler: { change: toggleSourceCode.prepend(e => e.target.checked) },
           });
           spec({
             text: "view source",
@@ -85,5 +85,5 @@ export function render(target) {
     frame.contentDocument.body.style.margin = "0";
 
     iframeLoaded(frame.contentDocument.body);
-  }, 10);
+  }, 100);
 }

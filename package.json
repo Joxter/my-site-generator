@@ -1,5 +1,5 @@
 {
-  "name": "browser-jam",
+  "name": "my-site-generator",
   "version": "1.0.0",
   "description": "template engine for static sites",
   "main": "index.js",
@@ -9,17 +9,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Joxter/browser-jam.git"
+    "url": "git+https://github.com/Joxter/my-site-generator.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Joxter/browser-jam/issues"
+    "url": "https://github.com/Joxter/my-site-generator/issues"
   },
-  "homepage": "https://github.com/Joxter/browser-jam#readme",
+  "homepage": "https://github.com/Joxter/my-site-generator#readme",
   "dependencies": {
-    "effector": "^20.13.1",
-    "effector-dom": "0.0.15"
+    "effector": "^21.7.5",
+    "forest": "^0.19.6"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
