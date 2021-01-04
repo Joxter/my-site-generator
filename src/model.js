@@ -1,5 +1,5 @@
 import { createStore, createEvent, sample } from "effector";
-import { initComponent, getComponent, render } from "./jem";
+import { initComponent, getComponent, render } from "./msg";
 
 export const codeChanged = createEvent();
 export const codeLoaded = createEvent();
