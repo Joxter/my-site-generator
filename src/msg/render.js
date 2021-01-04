@@ -1,7 +1,9 @@
 export function render(Components, elem, data, styles) {
   if (Components[elem.localName]) {
     const myComp = Components[elem.localName];
-    styles.add(myComp.styles);
+    if (myComp.styles) {
+      styles.add(myComp.styles);
+    }
     const data = getComponentPropsData(myComp, elem);
 
     elem.after(render(Components, myComp.childNodes.cloneNode(true), data, styles));
@@ -15,12 +17,6 @@ export function render(Components, elem, data, styles) {
   }
 
   return elem;
-}
-
-export function renderStyles(styles) {
-  return `<style>
-    ${[...styles].map(styleNode => styleNode.innerHTML).join("")}
-    </style>`;
 }
 
 function getComponentPropsData(component, node) {

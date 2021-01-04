@@ -31,43 +31,27 @@ describe("test renderPage", () => {
     <news-item header="second text" text="bla bla bla"></news-item>
   </div>
 </div>`)
-    ).toEqual(`
-
-<h1>my news </h1>
+    ).toEqual([
+      `<h1>my news</h1>
 <div>
   <p>my awesome news</p>
-  
   <h2 class="header">first text</h2>
   <p>bla bla</p>
-  
   <button class="cut">see more</button>
-  
-
-  
-
   <div style="border:1px solid red; padding: 10px">
-    
-  <h2 class="header">second text</h2>
-  <p>bla bla bla</p>
-  
-  <button class="cut">see more</button>
-  
-
-  
-
+    <h2 class="header">second text</h2>
+    <p>bla bla bla</p>
+    <button class="cut">see more</button>
   </div>
-</div> <style>
-    
-    .header {
-      color: green;
-    }
-  
-    .cut {
-      border: none;
-      font: inherit;
-      color: blue;
-    }
-  
-    </style>`);
+</div>`,
+      `.header {
+  color: green;
+}
+.cut {
+  border: none;
+  font: inherit;
+  color: blue;
+}`,
+    ]);
   });
 });

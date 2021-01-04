@@ -22,11 +22,13 @@ sample({
     toggleSourceCode,
   ]),
 }).watch(([bodyEl, content, isSourceCode]) => {
+  const [html, css] = msg(content);
+
   if (isSourceCode) {
     bodyEl.innerHTML = `<pre></pre>`;
-    bodyEl.firstElementChild.innerText = msg(content);
+    bodyEl.firstElementChild.innerText = `${html}\n<style>\n${css}\n</style>`;
   } else {
-    bodyEl.innerHTML = msg(content);
+    bodyEl.innerHTML = `${html}\n<style>\n${css}\n</style>`;
   }
 });
 
