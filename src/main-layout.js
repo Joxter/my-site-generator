@@ -1,4 +1,4 @@
-import { using, spec, h } from "forest";
+import { using, spec, h, node } from "forest";
 import { validateButtonClicked } from "./validateHtml";
 import { $input, codeChanged } from "./model";
 import {
@@ -50,9 +50,13 @@ export function render(target) {
         h("iframe", () => {
           spec({
             attr: {
-              id: "out-frame",
               style: "width:100%; height: 100%; border: 0",
             },
+          });
+
+          node(frame => {
+            frame.contentDocument.body.style.margin = "0";
+            iframeLoaded(frame.contentDocument.body);
           });
         });
       });
@@ -78,12 +82,4 @@ export function render(target) {
       });
     });
   });
-
-  setTimeout(() => {
-    const frame = document.querySelector("#out-frame");
-
-    frame.contentDocument.body.style.margin = "0";
-
-    iframeLoaded(frame.contentDocument.body);
-  }, 100);
 }
