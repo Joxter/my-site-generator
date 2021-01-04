@@ -1,59 +1,22 @@
-const Components = {};
 
 export function initComponent(node) {
   const component = getServiceNodes(node);
 
-  if (Components[component.name]) {
-    // console.warn(`Component "${component.name}" has already inited`);
-  }
-  Components[component.name] = component;
-
-  // console.log({ Components });
-  return Components[component.name];
+  return [component.name, component];
 }
 
-export function render(elem, data, styles) {
-  if (Components[elem.localName]) {
-    const myComp = Components[elem.localName];
-    styles.add(myComp.styles);
-    const data = getComponentPropsData(myComp, elem);
+export function initComponents(html) {
+  const el = nodeFromHtml(html);
+  const Components = {};
 
-    elem.after(render(myComp.childNodes.cloneNode(true), data, styles));
-    elem.remove();
-  }
+  el.content.querySelectorAll("template").forEach(el => {
+    const [name, component] = initComponent(el);
+    Components[name] = component;
 
-  elem = inserdData(elem, data);
-
-  for (let node of elem.childNodes) {
-    render(node, data, styles);
-  }
-
-  return elem;
-}
-
-function getComponentPropsData(component, node) {
-  const data = {};
-  component.props.forEach(propName => {
-    data[propName] = node.getAttribute(propName);
+    el.remove();
   });
 
-  return data;
-}
-
-function inserdData(node, data) {
-  if (node.nodeType === 3) {
-    node.textContent = node.textContent.replace(/(\{(.+?)\})/g, (match, first, second) => {
-      return data[second] || `[no data for ${second}]`;
-    });
-  }
-  return node;
-}
-
-export function getComponent(name) {
-  if (!Components[name]) {
-    throw new Error(`Component "${name}" is not found`);
-  }
-  return Components[name];
+  return [el, Components];
 }
 
 function getServiceNodes(templateEl) {
@@ -78,4 +41,12 @@ function getServiceNodes(templateEl) {
     childNodes,
     styles,
   };
+}
+
+function nodeFromHtml(html) {
+  const el = window.document.createElement("template");
+
+  el.innerHTML = html;
+
+  return el;
 }

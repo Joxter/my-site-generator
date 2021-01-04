@@ -1,5 +1,6 @@
 import { createStore, createEvent, guard, sample, merge } from "effector";
-import { $input, codeChanged, codeLoaded, renderPage } from "./model";
+import { $input, codeChanged, codeLoaded } from "./model";
+import { msg } from "./msg";
 
 export const $iframeBody = createStore(null);
 export const $iframeContent = createStore("empty");
@@ -23,9 +24,9 @@ sample({
 }).watch(([bodyEl, content, isSourceCode]) => {
   if (isSourceCode) {
     bodyEl.innerHTML = `<pre></pre>`;
-    bodyEl.firstElementChild.innerText = renderPage(content);
+    bodyEl.firstElementChild.innerText = msg(content);
   } else {
-    bodyEl.innerHTML = renderPage(content);
+    bodyEl.innerHTML = msg(content);
   }
 });
 

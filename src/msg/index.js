@@ -1,1 +1,1 @@
-export { initComponent, getComponent, render } from "./parse";
+export { msg } from "./msg";
