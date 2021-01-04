@@ -1,1 +1,1 @@
-export { msg } from "./msg";
+export { msg, msgNode } from "./msg";

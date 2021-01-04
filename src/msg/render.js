@@ -19,7 +19,7 @@ export function render(Components, elem, data, styles) {
 
 export function renderStyles(styles) {
   return `<style>
-    ${[...styles].map(styleNode => styleNode.innerText).join("")}
+    ${[...styles].map(styleNode => styleNode.innerHTML).join("")}
     </style>`;
 }
 

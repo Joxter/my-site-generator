@@ -1,9 +1,9 @@
-import { renderPage } from "./try.jsdom";
+import { msgNode } from "./msg";
 
 describe("test renderPage", () => {
   it("smoke", () => {
     expect(
-      renderPage(`<template data-j-component="new-cut" data-j-props="label">
+      msgNode(`<template data-j-component="new-cut" data-j-props="label">
   <button class="cut">{label}</button>
   <style>
     .cut {

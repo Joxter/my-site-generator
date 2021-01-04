@@ -5,8 +5,7 @@ export function initComponent(node) {
   return [component.name, component];
 }
 
-export function initComponents(html) {
-  const el = nodeFromHtml(html);
+export function initComponents(el) {
   const Components = {};
 
   el.content.querySelectorAll("template").forEach(el => {
@@ -16,7 +15,7 @@ export function initComponents(html) {
     el.remove();
   });
 
-  return [el, Components];
+  return Components;
 }
 
 function getServiceNodes(templateEl) {
