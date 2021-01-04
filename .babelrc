@@ -5,5 +5,10 @@
         "browsers": ["last 1 Chrome version"]
       }
     }]
-  ]
+  ],
+  "env": {
+    "test": {
+      "plugins": ["@babel/plugin-transform-modules-commonjs"]
+    }
+  }
 }
