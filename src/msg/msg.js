@@ -4,6 +4,7 @@ import prettierHtml from "prettier/parser-html";
 import prettierCss from "prettier/parser-postcss";
 import { render } from "./render";
 import { initComponents } from "./parse";
+import { uniqStyles } from "./uniq-styles";
 
 export function msg(html, nodeFromHtml = nodeFromHtmlBrowser) {
   const el = nodeFromHtml(html.replace(/\n+/g, " "));
@@ -11,6 +12,7 @@ export function msg(html, nodeFromHtml = nodeFromHtmlBrowser) {
 
   let styles = new Set();
 
+  uniqStyles(Components);
   render(Components, el.content, {}, styles);
   const st = styles.size > 0 ? [...styles].map(styleNode => styleNode.innerHTML).join("") : "";
 
@@ -39,6 +41,11 @@ function nodeFromHtmlBrowser(html) {
 function nodeFromHtmlJSDOM(html) {
   const { JSDOM } = jsdom;
   const dom = new JSDOM(`<!DOCTYPE html>`);
+
+// https://github.com/jsdom/jsdom/blob/master/lib/jsdom/browser/parser/html.js
+// parse5
+
+// https://developer.aliyun.com/mirror/npm/package/cssom
 
   const el = dom.window.document.createElement("template");
 
