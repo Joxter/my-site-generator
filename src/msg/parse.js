@@ -1,16 +1,16 @@
-
 export function initComponent(node) {
   const component = getServiceNodes(node);
 
-  return [component.name, component];
+  return component;
 }
 
 export function initComponents(el) {
   const Components = {};
 
-  el.content.querySelectorAll("template").forEach(el => {
-    const [name, component] = initComponent(el);
-    Components[name] = component;
+  el.content.querySelectorAll("template").forEach((el, i) => {
+    const component = initComponent(el);
+    component.uid = i;
+    Components[component.name] = component;
 
     el.remove();
   });

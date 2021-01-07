@@ -44,13 +44,65 @@ describe("test renderPage", () => {
     <button class="cut">see more</button>
   </div>
 </div>`,
-      `.header {
+      `.-c-1.header {
   color: green;
 }
-.cut {
+.-c-0.cut {
   border: none;
   font: inherit;
   color: blue;
+}`,
+    ]);
+  });
+
+  it("uniq styles", () => {
+    expect(
+      msgNode(`<template data-j-component="news-item">
+  <h2 class="header">header</h2>
+  <p>text</p>
+  <div id="some-id">text2</div>
+  <style>
+    .header {
+      color: green;
+    }
+    p {
+      border: 1px solid red;
+    }
+  </style>
+</template><template data-j-component="user-item">
+  <h2 class="header">header</h2>
+  <p>text</p>
+  <div id="some-id">text2</div>
+  <style>
+    h2 + p {
+      display: block;
+    }
+    #some-id {
+      display: block;
+    }
+  </style>
+</template>
+<news-item></news-item>
+<user-item></user-item>
+`)
+    ).toEqual([
+      `<h2 class="header">header</h2>
+<p>text</p>
+<div id="some-id">text2</div>
+<h2 class="header">header</h2>
+<p>text</p>
+<div id="some-id">text2</div>`,
+      `.-c-0.header {
+  color: green;
+}
+p.-c-0 {
+  border: 1px solid red;
+}
+h2.-c-1 + p.-c-1 {
+  display: block;
+}
+#some-id {
+  display: block;
 }`,
     ]);
   });

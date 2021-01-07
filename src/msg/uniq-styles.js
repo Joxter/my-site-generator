@@ -1,15 +1,41 @@
 import jsdom from "jsdom";
 
 export function uniqStyles(Components) {
-  // window.__Components = Components;
   Object.values(Components).forEach(comp => {
     return makeUniq(comp);
   });
 }
 
 function makeUniq(component) {
-  // console.log(component);
-  console.log(myAddStylesheetRules(component.styles.innerHTML).sheet.cssRules[0]);
+  const styles = myAddStylesheetRules(component.styles.innerHTML);
+  const { cssRules } = styles.sheet;
+
+  const newStyleEl = window.document.createElement("style");
+
+  cssRules.forEach(rule => {
+    newStyleEl.innerHTML += rule.cssText.replace(
+      rule.selectorText,
+      __unic(rule.selectorText, ".-c-" + component.uid)
+    );
+  });
+
+  component.styles = newStyleEl;
+}
+
+const htmlTags = ["p", "div", "span", "h2"]; // todo add more tags
+
+function __unic(selector, salt) {
+  let newSelector = selector.replace(/(\.-?[_a-zA-Z]+[_a-zA-Z0-9-]*)/g, (_, cssClass) => {
+    return salt + cssClass;
+  });
+
+  const regexp = new RegExp(`(${htmlTags.join("|")})`, "g"); // fix cases like class ".some-button"
+
+  newSelector = newSelector.replace(regexp, (_, cssClass) => {
+    return cssClass + salt;
+  });
+
+  return newSelector;
 }
 
 const { JSDOM } = jsdom;
@@ -18,21 +44,10 @@ const dom = new JSDOM(`<!DOCTYPE html>`);
 const window = dom.window;
 
 function myAddStylesheetRules(rules) {
-  const el = window.document.createElement("template");
-
   const styleEl = window.document.createElement("style");
   window.document.head.appendChild(styleEl);
 
   styleEl.innerHTML = rules;
 
   return styleEl;
-
-}
-
-function nodeFromHtmlJSDOM(html) {
-
-
-  el.innerHTML = html;
-
-  return el;
 }
