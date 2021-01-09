@@ -1,21 +1,27 @@
-export function initComponent(node) {
-  const component = getServiceNodes(node);
+import jsdom from "jsdom";
 
-  return component;
-}
-
-export function initComponents(el) {
+function initComponents(componentsArr) {
   const Components = {};
 
-  el.content.querySelectorAll("template").forEach((el, i) => {
-    const component = initComponent(el);
+  componentsArr.forEach((el, i) => {
+    const component = getServiceNodes(el);
     component.uid = i;
     Components[component.name] = component;
-
-    el.remove();
   });
 
   return Components;
+}
+
+export function parse(components, page) {
+  const pageElement = nodeFromHtmlJSDOM(page.replace(/\n+/g, " "));
+  const Components = initComponents(
+    components.map(template => {
+      // todo remove this mess
+      return nodeFromHtmlJSDOM(template.replace(/\n+/g, " ")).content.querySelector("template");
+    })
+  );
+
+  return [Components, pageElement];
 }
 
 function getServiceNodes(templateEl) {
@@ -42,8 +48,11 @@ function getServiceNodes(templateEl) {
   };
 }
 
-function nodeFromHtml(html) {
-  const el = window.document.createElement("template");
+function nodeFromHtmlJSDOM(html) {
+  const { JSDOM } = jsdom;
+  const dom = new JSDOM(`<!DOCTYPE html>`);
+
+  const el = dom.window.document.createElement("template");
 
   el.innerHTML = html;
 

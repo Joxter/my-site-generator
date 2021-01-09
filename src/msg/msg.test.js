@@ -1,9 +1,11 @@
 import { msgNode } from "./msg";
 
-describe("test renderPage", () => {
+describe("test msgNode", () => {
   it("smoke", () => {
     expect(
-      msgNode(`<template data-j-component="new-cut" data-j-props="label">
+      msgNode(
+        [
+          `<template data-j-component="new-cut" data-j-props="label">
   <button class="cut">{label}</button>
   <style>
     .cut {
@@ -12,8 +14,8 @@ describe("test renderPage", () => {
       color: blue;
     }
   </style>
-</template>
-<template data-j-component="news-item" data-j-props="header text">
+</template>`,
+          `<template data-j-component="news-item" data-j-props="header text">
   <h2 class="header">{header}</h2>
   <p>{text}</p>
   <new-cut label="see more"></new-cut>
@@ -22,17 +24,19 @@ describe("test renderPage", () => {
       color: green;
     }
   </style>
-</template>
-<h1>my news </h1>
+</template>`,
+        ],
+        `<h1>my news </h1>
 <div>
   <p>my awesome news</p>
   <news-item header="first text" text="bla bla"></news-item>
   <div style="border:1px solid red; padding: 10px">
     <news-item header="second text" text="bla bla bla"></news-item>
   </div>
-</div>`)
-    ).toEqual([
-      `<h1>my news</h1>
+</div>`
+      )
+    ).toEqual({
+      html: `<h1>my news</h1>
 <div>
   <p>my awesome news</p>
   <h2 class="header -c-1">first text</h2>
@@ -44,7 +48,7 @@ describe("test renderPage", () => {
     <button class="cut -c-0">see more</button>
   </div>
 </div>`,
-      `.-c-1.header {
+      css: `.-c-1.header {
   color: green;
 }
 .-c-0.cut {
@@ -52,12 +56,14 @@ describe("test renderPage", () => {
   font: inherit;
   color: blue;
 }`,
-    ]);
+    });
   });
 
   it("uniq styles", () => {
     expect(
-      msgNode(`<template data-j-component="news-item">
+      msgNode(
+        [
+          `<template data-j-component="news-item">
   <h2 class="header">header1</h2>
   <p>text1</p>
   <div id="some-id">text1</div>
@@ -69,7 +75,8 @@ describe("test renderPage", () => {
       border: 1px solid red;
     }
   </style>
-</template><template data-j-component="user-item">
+</template>`,
+          `<template data-j-component="user-item">
   <h2 class="header">header2</h2>
   <p>text2</p>
   <div id="some-id">text2</div>
@@ -81,18 +88,20 @@ describe("test renderPage", () => {
       display: block;
     }
   </style>
-</template>
-<news-item></news-item>
+</template>`,
+        ],
+        `<news-item></news-item>
 <user-item></user-item>
-`)
-    ).toEqual([
-      `<h2 class="header -c-0">header1</h2>
+`
+      )
+    ).toEqual({
+      html: `<h2 class="header -c-0">header1</h2>
 <p class="-c-0">text1</p>
 <div id="some-id">text1</div>
 <h2 class="header">header2</h2>
 <p class="-c-1">text2</p>
 <div id="some-id">text2</div>`,
-      `.-c-0.header {
+      css: `.-c-0.header {
   color: green;
 }
 p.-c-0 {
@@ -104,12 +113,14 @@ h2.-c-1 + p.-c-1 {
 #some-id {
   display: block;
 }`,
-    ]);
+    });
   });
 
   it("uniq styles inside media query", () => {
     expect(
-      msgNode(`<template data-j-component="news-item">
+      msgNode(
+        [
+          `<template data-j-component="news-item">
   <h2 class="header">header1</h2>
   <style>
     .header {
@@ -121,9 +132,10 @@ h2.-c-1 + p.-c-1 {
       }
     }
   </style>
-</template>
-<news-item></news-item>
-`)[1]
+</template>`,
+        ],
+        `<news-item></news-item>`
+      ).css
     ).toEqual(`.-c-0.header {
   color: green;
 }
