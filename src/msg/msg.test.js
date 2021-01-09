@@ -106,4 +106,31 @@ h2.-c-1 + p.-c-1 {
 }`,
     ]);
   });
+
+  it("uniq styles inside media query", () => {
+    expect(
+      msgNode(`<template data-j-component="news-item">
+  <h2 class="header">header1</h2>
+  <style>
+    .header {
+      color: green;
+    }
+    @media (min-height: 680px), screen and (orientation: portrait) {
+      .header {
+        color: red;
+      }
+    }
+  </style>
+</template>
+<news-item></news-item>
+`)[1]
+    ).toEqual(`.-c-0.header {
+  color: green;
+}
+@media (min-height: 680px), screen and (orientation: portrait) {
+  .-c-0.header {
+    color: red;
+  }
+}`);
+  });
 });

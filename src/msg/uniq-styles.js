@@ -13,21 +13,31 @@ function makeUniq(component) {
   const newStyleEl = window.document.createElement("style");
 
   cssRules.forEach(rule => {
-    const unicClass = "-c-" + component.uid;
-
-    if (!rule.selectorText.startsWith("#")) {
-      component.childNodes.querySelectorAll(rule.selectorText).forEach(node => {
-        node.classList.add(unicClass);
+    if (rule.cssRules) {
+      newStyleEl.innerHTML += `@media ${Array.from(rule.media).join(", ")} {`;
+      rule.cssRules.forEach(innerRule => {
+        newStyleEl.innerHTML += modifyRule(innerRule, component);
       });
+      newStyleEl.innerHTML += `}`;
+      return;
     }
 
-    newStyleEl.innerHTML += rule.cssText.replace(
-      rule.selectorText,
-      __unic(rule.selectorText, unicClass)
-    );
+    newStyleEl.innerHTML += modifyRule(rule, component);
   });
 
   component.styles = newStyleEl;
+}
+
+function modifyRule(rule, component) {
+  const unicClass = "-c-" + component.uid;
+
+  if (!rule.selectorText.startsWith("#")) {
+    component.childNodes.querySelectorAll(rule.selectorText).forEach(node => {
+      node.classList.add(unicClass);
+    });
+  }
+
+  return rule.cssText.replace(rule.selectorText, __unic(rule.selectorText, unicClass));
 }
 
 const htmlTags = ["p", "div", "span", "h2"]; // todo add more tags
