@@ -35,13 +35,13 @@ describe("test renderPage", () => {
       `<h1>my news</h1>
 <div>
   <p>my awesome news</p>
-  <h2 class="header">first text</h2>
+  <h2 class="header -c-1">first text</h2>
   <p>bla bla</p>
-  <button class="cut">see more</button>
+  <button class="cut -c-0">see more</button>
   <div style="border:1px solid red; padding: 10px">
-    <h2 class="header">second text</h2>
+    <h2 class="header -c-1">second text</h2>
     <p>bla bla bla</p>
-    <button class="cut">see more</button>
+    <button class="cut -c-0">see more</button>
   </div>
 </div>`,
       `.-c-1.header {
@@ -58,9 +58,9 @@ describe("test renderPage", () => {
   it("uniq styles", () => {
     expect(
       msgNode(`<template data-j-component="news-item">
-  <h2 class="header">header</h2>
-  <p>text</p>
-  <div id="some-id">text2</div>
+  <h2 class="header">header1</h2>
+  <p>text1</p>
+  <div id="some-id">text1</div>
   <style>
     .header {
       color: green;
@@ -70,8 +70,8 @@ describe("test renderPage", () => {
     }
   </style>
 </template><template data-j-component="user-item">
-  <h2 class="header">header</h2>
-  <p>text</p>
+  <h2 class="header">header2</h2>
+  <p>text2</p>
   <div id="some-id">text2</div>
   <style>
     h2 + p {
@@ -86,11 +86,11 @@ describe("test renderPage", () => {
 <user-item></user-item>
 `)
     ).toEqual([
-      `<h2 class="header">header</h2>
-<p>text</p>
-<div id="some-id">text2</div>
-<h2 class="header">header</h2>
-<p>text</p>
+      `<h2 class="header -c-0">header1</h2>
+<p class="-c-0">text1</p>
+<div id="some-id">text1</div>
+<h2 class="header">header2</h2>
+<p class="-c-1">text2</p>
 <div id="some-id">text2</div>`,
       `.-c-0.header {
   color: green;

@@ -13,9 +13,17 @@ function makeUniq(component) {
   const newStyleEl = window.document.createElement("style");
 
   cssRules.forEach(rule => {
+    const unicClass = "-c-" + component.uid;
+
+    if (!rule.selectorText.startsWith("#")) {
+      component.childNodes.querySelectorAll(rule.selectorText).forEach(node => {
+        node.classList.add(unicClass);
+      });
+    }
+
     newStyleEl.innerHTML += rule.cssText.replace(
       rule.selectorText,
-      __unic(rule.selectorText, ".-c-" + component.uid)
+      __unic(rule.selectorText, unicClass)
     );
   });
 
@@ -26,13 +34,13 @@ const htmlTags = ["p", "div", "span", "h2"]; // todo add more tags
 
 function __unic(selector, salt) {
   let newSelector = selector.replace(/(\.-?[_a-zA-Z]+[_a-zA-Z0-9-]*)/g, (_, cssClass) => {
-    return salt + cssClass;
+    return "." + salt + cssClass;
   });
 
   const regexp = new RegExp(`(${htmlTags.join("|")})`, "g"); // fix cases like class ".some-button"
 
   newSelector = newSelector.replace(regexp, (_, cssClass) => {
-    return cssClass + salt;
+    return cssClass + "." + salt;
   });
 
   return newSelector;
