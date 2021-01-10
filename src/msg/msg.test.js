@@ -173,4 +173,44 @@ h2.-c-1 + p.-c-1 {
       ).html
     ).toEqual(`<header>default header</header>`);
   });
+
+  it("slot with component", () => {
+    expect(
+      msgNode(
+        [
+          `<template data-j-component="news-item" data-j-slots="header">
+<header><slot name="header">default header</slot></header>
+</template>`,
+          `<template data-j-component="my-user" data-j-props="name age">
+<p>{name}</p>{age}
+</template>`,
+        ],
+        `<news-item><div slot="header"><my-user name="Bob" age="22"></my-user></div></news-item>`
+      ).html
+    ).toEqual(`<header>
+  <div>
+    <p>Bob</p>
+    22
+  </div>
+</header>`);
+  });
+
+  it("slot with component 2", () => {
+    expect(
+      msgNode(
+        [
+          `<template data-j-component="news-item" data-j-slots="header">
+<header><slot name="header">default header</slot></header>
+</template>`,
+          `<template data-j-component="my-user" data-j-props="name age">
+<p>{name}</p>{age}
+</template>`,
+        ],
+        `<news-item><my-user name="Bob" age="22" slot="header"></my-user></news-item>`
+      ).html
+    ).toEqual(`<header>
+  <p>Bob</p>
+  22
+</header>`);
+  });
 });
