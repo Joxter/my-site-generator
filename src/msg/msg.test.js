@@ -60,23 +60,22 @@ describe("test msgNode", () => {
   });
 
   it("uniq styles", () => {
-    expect(
-      msgNode(
-        [
-          `<template data-j-component="news-item">
+    const result = msgNode(
+      [
+        `<template data-j-component="news-item">
   <h2 class="header">header1</h2>
-  <p>text1</p>
+  <p>text1 <span>span1</span></p>
   <div id="some-id">text1</div>
   <style>
     .header {
       color: green;
     }
-    p {
+    p, span {
       border: 1px solid red;
     }
   </style>
 </template>`,
-          `<template data-j-component="user-item">
+        `<template data-j-component="user-item">
   <h2 class="header">header2</h2>
   <p>text2</p>
   <div id="some-id">text2</div>
@@ -89,22 +88,23 @@ describe("test msgNode", () => {
     }
   </style>
 </template>`,
-        ],
-        `<news-item></news-item>
+      ],
+      `<news-item></news-item>
 <user-item></user-item>
 `
-      )
-    ).toEqual({
-      html: `<h2 class="header -c-0">header1</h2>
-<p class="-c-0">text1</p>
+    );
+
+    expect(result.html).toEqual(`<h2 class="header -c-0">header1</h2>
+<p class="-c-0">text1 <span class="-c-0">span1</span></p>
 <div id="some-id">text1</div>
 <h2 class="header">header2</h2>
 <p class="-c-1">text2</p>
-<div id="some-id">text2</div>`,
-      css: `.-c-0.header {
+<div id="some-id">text2</div>`);
+    expect(result.css).toEqual(`.-c-0.header {
   color: green;
 }
-p.-c-0 {
+p.-c-0,
+span.-c-0 {
   border: 1px solid red;
 }
 h2.-c-1 + p.-c-1 {
@@ -112,8 +112,7 @@ h2.-c-1 + p.-c-1 {
 }
 #some-id {
   display: block;
-}`,
-    });
+}`);
   });
 
   it("uniq styles inside media query", () => {

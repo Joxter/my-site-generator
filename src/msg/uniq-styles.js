@@ -43,20 +43,34 @@ function modifyRule(rule, component) {
   return rule.cssText.replace(rule.selectorText, __unic(rule.selectorText, unicClass));
 }
 
-const htmlTags = ["p", "div", "span", "h2"]; // todo add more tags
+const htmlTags = ["p", "div", "span", "h2", "main", "nav", "header", "footer", "h1", "h2"]; // todo add all tags
+const htmlTagsRegexp = new RegExp(`(.(${htmlTags.join("|")}).)`, "g"); // fix cases like class ".some-button"
 
 function __unic(selector, salt) {
   let newSelector = selector.replace(/(\.-?[_a-zA-Z]+[_a-zA-Z0-9-]*)/g, (_, cssClass) => {
     return "." + salt + cssClass;
   });
 
-  const regexp = new RegExp(`(${htmlTags.join("|")})`, "g"); // fix cases like class ".some-button"
-
-  newSelector = newSelector.replace(regexp, (_, cssClass) => {
-    return cssClass + "." + salt;
+  newSelector = ` ${newSelector} `.replace(htmlTagsRegexp, (_, cssClass) => {
+    if (isLooksLikeTag(cssClass)) {
+      const [first, tag, last] = splitFirstAndLastChar(cssClass);
+      return first + tag + "." + salt + last;
+    }
+    return cssClass;
   });
 
-  return newSelector;
+  return newSelector.trim();
+
+  function isLooksLikeTag(str) {
+    const firstChar = str[0];
+    const lastChar = str[str.length - 1];
+
+    return [" ", ","].includes(firstChar) && [" ", ","].includes(lastChar);
+  }
+
+  function splitFirstAndLastChar(str) {
+    return [str[0], str.slice(1, str.length - 1), str[str.length - 1]];
+  }
 }
 
 const { JSDOM } = jsdom;
