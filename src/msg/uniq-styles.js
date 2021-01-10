@@ -7,6 +7,9 @@ export function uniqStyles(Components) {
 }
 
 function makeUniq(component) {
+  if (!component.styles) {
+    return;
+  }
   const styles = myAddStylesheetRules(component.styles.innerHTML);
   const { cssRules } = styles.sheet;
 
