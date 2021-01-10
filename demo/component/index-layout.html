@@ -1,0 +1,38 @@
+<template data-j-component="index-layout" data-j-props="title" data-j-slots="content">
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <title>{title}</title>
+    </head>
+    <body>
+      <header><my-nav current-page="Index page"></my-nav></header>
+      <main>
+        <slot name="content"><p class="no-content">no content</p></slot>
+      </main>
+      <footer><p>some footer text</p></footer>
+    </body>
+  </html>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    * {
+      box-sizing: border-box;
+    }
+
+    .no-content {
+      color: red;
+    }
+
+    main {
+      text-align: center;
+    }
+    footer {
+      color: green;
+      text-align: center;
+    }
+  </style>
+</template>
