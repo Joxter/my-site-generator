@@ -145,4 +145,32 @@ h2.-c-1 + p.-c-1 {
   }
 }`);
   });
+
+  it("test simple slot", () => {
+    expect(
+      msgNode(
+        [
+          `<template data-j-component="news-item" data-j-slots="header">
+<header><slot name="header">default header</slot></header>
+</template>`,
+        ],
+        `<news-item><div slot="header"><h2>my header</h2></div></news-item>`
+      ).html
+    ).toEqual(`<header>
+  <div><h2>my header</h2></div>
+</header>`);
+  });
+
+  it("test simple slot without data", () => {
+    expect(
+      msgNode(
+        [
+          `<template data-j-component="news-item" data-j-slots="header">
+<header><slot name="header">default header</slot></header>
+</template>`,
+        ],
+        `<news-item></news-item>`
+      ).html
+    ).toEqual(`<header>default header</header>`);
+  });
 });

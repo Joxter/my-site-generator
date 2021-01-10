@@ -32,6 +32,7 @@ function getServiceNodes(templateEl) {
   }
 
   const props = (templateEl.dataset.jProps || "").trim().split(/\s+/g);
+  const slots = (templateEl.dataset.jSlots || "").trim().split(/\s+/g).filter(str => !!str);
 
   const childNodes = templateEl.content;
   let styles = templateEl.content.querySelector("style") || null;
@@ -45,10 +46,11 @@ function getServiceNodes(templateEl) {
     props,
     childNodes,
     styles,
+    slots
   };
 }
 
-function nodeFromHtmlJSDOM(html) {
+export function nodeFromHtmlJSDOM(html) {
   const { JSDOM } = jsdom;
   const dom = new JSDOM(`<!DOCTYPE html>`);
 
