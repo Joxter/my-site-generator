@@ -19,6 +19,7 @@
   "homepage": "https://github.com/Joxter/my-site-generator#readme",
   "dependencies": {
     "command-line-args": "^5.1.1",
+    "htmlparser2": "^6.0.0",
     "jsdom": "^16.4.0",
     "prettier": "^1.19.1"
   },
