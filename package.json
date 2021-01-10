@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Joxter/my-site-generator.git"
@@ -17,6 +18,7 @@
   },
   "homepage": "https://github.com/Joxter/my-site-generator#readme",
   "dependencies": {
+    "command-line-args": "^5.1.1",
     "jsdom": "^16.4.0",
     "prettier": "^1.19.1"
   },
