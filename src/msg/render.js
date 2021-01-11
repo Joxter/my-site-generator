@@ -1,5 +1,4 @@
-import { nodeFromHtmlJSDOM } from "./parse";
-import { append, removeElement } from "domutils";
+import { append, findOne, removeElement } from "domutils";
 
 export function render(Components, elem, data, styles, slots = null) {
   if (Components[elem.name]) {
@@ -13,6 +12,7 @@ export function render(Components, elem, data, styles, slots = null) {
     const renderedComp = render(Components, myComp.template.cloneNode(true), data, styles, slots);
     append(elem, renderedComp);
     removeElement(elem);
+    extractNode(renderedComp);
   }
 
   insertData(elem, data);
@@ -28,8 +28,7 @@ export function render(Components, elem, data, styles, slots = null) {
 }
 
 function isSlot(elem) {
-  return false; // todo implement
-  return elem.tagName === "SLOT" || elem.tagName === "slot";
+  return elem.name === "slot";
 }
 
 function getComponentPropsData(component, node) {
@@ -43,13 +42,12 @@ function getComponentPropsData(component, node) {
 
 function getComponentSlotsData(component, node) {
   const slots = {};
-  return slots; // todo implement
 
   component.slots.forEach(slotName => {
-    const slotEl = node.querySelector(`[slot="${slotName}"]`);
+    const slotEl = findOne(el => el.attribs.slot === slotName, node.children);
     if (slotEl) {
       slots[slotName] = slotEl;
-      slots[slotName].removeAttribute("slot");
+      delete slots[slotName].attribs.slot;
     }
   });
 
@@ -69,13 +67,22 @@ function insertSlots(node, slots) {
   if (!isSlot(node)) {
     return;
   }
-  const slotName = node.name;
+  const slotName = node.attribs.name;
 
   if (slots[slotName]) {
-    node.after(slots[slotName]);
-    node.remove();
+    append(node, slots[slotName]);
+    removeElement(node);
   } else {
-    node.after(nodeFromHtmlJSDOM(node.innerHTML).content.cloneNode(true)); // todo move nodeFromHtmlJSDOM to parse part
-    node.remove();
+    extractNode(node);
   }
+}
+
+function extractNode(node) {
+  let lastNode = node;
+
+  node.children.forEach(next => {
+    append(lastNode, next);
+    lastNode = next;
+  });
+  removeElement(node);
 }

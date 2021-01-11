@@ -1,62 +1,100 @@
 import { msgNode } from "./msg";
 
 describe("test msgNode", () => {
-  it("smoke", () => {
-    expect(
-      msgNode(
-        [
-          `<template data-j-component="new-cut" data-j-props="label">
-  <button class="cut">{label}</button>
-  <style>
-    .cut {
-      border: none;
-      font: inherit;
-      color: blue;
-    }
-  </style>
+  it("basic work", () => {
+    const result = msgNode(
+      [
+        `<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`,
+      ],
+      `<h1>header</h1><div><new-cut label="button text"></new-cut></div>`
+    );
+
+    expect(result.html).toEqual(`<h1>header</h1>
+<div><button>button text</button></div>`);
+  });
+
+  it("several instances of the component", () => {
+    const result = msgNode(
+      [
+        `<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`,
+      ],
+      `<h1>header</h1><div><new-cut label="button text"></new-cut><new-cut label="second text"></new-cut></div>`
+    );
+
+    expect(result.html).toEqual(`<h1>header</h1>
+<div><button>button text</button><button>second text</button></div>`);
+  });
+
+  it("several components", () => {
+    const result = msgNode(
+      [
+        `<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`,
+        `<template data-j-component="my-par" data-j-props="text"><p>{text}</p></template>`,
+      ],
+      `<h1>header</h1><div><new-cut label="button text"></new-cut><my-par text="some text"></my-par></div>`
+    );
+
+    expect(result.html).toEqual(`<h1>header</h1>
+<div>
+  <button>button text</button>
+  <p>some text</p>
+</div>`);
+  });
+
+  it("nested components", () => {
+    const result = msgNode(
+      [
+        `<template data-j-component="my-post"><div><my-par text="some text"></my-par><button>read more</button></div></template>`,
+        `<template data-j-component="my-par" data-j-props="text"><p>{text}</p></template>`,
+      ],
+      `<h1>header</h1><my-post></my-post><my-post></my-post>`
+    );
+
+    expect(result.html).toEqual(`<h1>header</h1>
+<div>
+  <p>some text</p>
+  <button>read more</button>
+</div>
+<div>
+  <p>some text</p>
+  <button>read more</button>
+</div>`);
+  });
+
+  it("smoke s", () => {
+    const result = msgNode(
+      [
+        `<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`,
+        `<template data-j-component="news-item" data-j-props="header text">
+<h2>{header}</h2><div><p>{text}</p><new-cut label="see more"></new-cut></div>
 </template>`,
-          `<template data-j-component="news-item" data-j-props="header text">
-  <h2 class="header">{header}</h2>
-  <p>{text}</p>
-  <new-cut label="see more"></new-cut>
-  <style>
-    .header {
-      color: green;
-    }
-  </style>
-</template>`,
-        ],
-        `<h1>my news </h1>
+      ],
+      `<h1>my news</h1>
 <div>
   <p>my awesome news</p>
   <news-item header="first text" text="bla bla"></news-item>
-  <div style="border:1px solid red; padding: 10px">
+  <section>
     <news-item header="second text" text="bla bla bla"></news-item>
-  </div>
+  </section>
 </div>`
-      )
-    ).toEqual({
-      html: `<h1>my news</h1>
+    );
+
+    expect(result.html).toEqual(`<h1>my news</h1>
 <div>
   <p>my awesome news</p>
-  <h2 class="header -c-1">first text</h2>
-  <p>bla bla</p>
-  <button class="cut -c-0">see more</button>
-  <div style="border:1px solid red; padding: 10px">
-    <h2 class="header -c-1">second text</h2>
-    <p>bla bla bla</p>
-    <button class="cut -c-0">see more</button>
+  <h2>first text</h2>
+  <div>
+    <p>bla bla</p>
+    <button>see more</button>
   </div>
-</div>`,
-      css: `.-c-1.header {
-  color: green;
-}
-.-c-0.cut {
-  border: none;
-  font: inherit;
-  color: blue;
-}`,
-    });
+  <section>
+    <h2>second text</h2>
+    <div>
+      <p>bla bla bla</p>
+      <button>see more</button>
+    </div>
+  </section>
+</div>`);
   });
 
   it("uniq styles", () => {
