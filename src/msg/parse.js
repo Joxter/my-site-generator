@@ -1,4 +1,5 @@
-import jsdom from "jsdom";
+import { parseDocument } from "htmlparser2";
+import { findOne, removeElement } from "domutils";
 
 function initComponents(componentsArr) {
   const Components = {};
@@ -13,50 +14,76 @@ function initComponents(componentsArr) {
 }
 
 export function parse(components, page) {
-  const pageElement = nodeFromHtmlJSDOM(page.replace(/\n+/g, " "));
+  const pageElement = nodeFromHtmlJSDOM(reduceSpaces(page));
   const Components = initComponents(
     components.map(template => {
-      // todo remove this mess
-      return nodeFromHtmlJSDOM(template.replace(/\n+/g, " ")).content.querySelector("template");
+      return nodeFromHtmlJSDOM(reduceSpaces(template));
     })
   );
 
   return [Components, pageElement];
 }
 
-function getServiceNodes(templateEl) {
-  const name = templateEl.dataset.jComponent;
+const COMPONENT_ATTRS = {
+  NAME: "data-j-component",
+  PROPS: "data-j-props",
+  SLOTS: "data-j-slots",
+};
+
+function getServiceNodes(templateData) {
+  const templateEl = getComponentTemplateTag(templateData);
+
+  const name = templateEl.attribs[COMPONENT_ATTRS.NAME];
 
   if (!name) {
     throw new Error("Component name should have a name");
   }
 
-  const props = (templateEl.dataset.jProps || "").trim().split(/\s+/g);
-  const slots = (templateEl.dataset.jSlots || "").trim().split(/\s+/g).filter(str => !!str);
+  const props = parseProps(templateEl.attribs[COMPONENT_ATTRS.PROPS]);
+  const slots = parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
 
-  const childNodes = templateEl.content;
-  let styles = templateEl.content.querySelector("style") || null;
+  const childNodes = templateEl.children;
+  let styles = findOne(el => el.type === "style", childNodes);
 
   if (styles) {
-    styles.remove();
+    removeElement(styles);
   }
 
   return {
     name,
     props,
-    childNodes,
+    template: templateEl,
     styles,
-    slots
+    slots,
   };
 }
 
+function parseProps(str) {
+  if (!str) {
+    return [];
+  }
+
+  return str
+    .trim()
+    .split(/\s+/g)
+    .filter(str => !!str);
+}
+
+function reduceSpaces(str) {
+  return str.replace(/\n+/g, " ").trim();
+}
+
 export function nodeFromHtmlJSDOM(html) {
-  const { JSDOM } = jsdom;
-  const dom = new JSDOM(`<!DOCTYPE html>`);
+  const result = parseDocument(html);
 
-  const el = dom.window.document.createElement("template");
+  return result;
+}
 
-  el.innerHTML = html;
+function getComponentTemplateTag(data) {
+  const res = data.children[0];
+  if (res.name === "template") {
+    return res;
+  }
 
-  return el;
+  throw new Error("Can't get component's template");
 }

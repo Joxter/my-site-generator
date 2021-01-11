@@ -1,37 +1,41 @@
 import { nodeFromHtmlJSDOM } from "./parse";
+import { append, removeElement } from "domutils";
 
 export function render(Components, elem, data, styles, slots = null) {
-  if (Components[elem.localName]) {
-    const myComp = Components[elem.localName];
+  if (Components[elem.name]) {
+    const myComp = Components[elem.name];
     if (myComp.styles) {
       styles.add(myComp.styles);
     }
     const data = getComponentPropsData(myComp, elem);
     const slots = getComponentSlotsData(myComp, elem);
 
-    const renderedComp = render(Components, myComp.childNodes.cloneNode(true), data, styles, slots);
-    elem.after(renderedComp);
-    elem.remove();
+    const renderedComp = render(Components, myComp.template.cloneNode(true), data, styles, slots);
+    append(elem, renderedComp);
+    removeElement(elem);
   }
 
   insertData(elem, data);
   insertSlots(elem, slots);
 
-  for (let node of elem.childNodes) {
-    render(Components, node, data, styles, slots);
+  if (elem.children) {
+    for (let node of elem.children) {
+      render(Components, node, data, styles, slots);
+    }
   }
 
   return elem;
 }
 
 function isSlot(elem) {
+  return false; // todo implement
   return elem.tagName === "SLOT" || elem.tagName === "slot";
 }
 
 function getComponentPropsData(component, node) {
   const data = {};
   component.props.forEach(propName => {
-    data[propName] = node.getAttribute(propName);
+    data[propName] = node.attribs[propName];
   });
 
   return data;
@@ -39,6 +43,7 @@ function getComponentPropsData(component, node) {
 
 function getComponentSlotsData(component, node) {
   const slots = {};
+  return slots; // todo implement
 
   component.slots.forEach(slotName => {
     const slotEl = node.querySelector(`[slot="${slotName}"]`);
@@ -52,8 +57,8 @@ function getComponentSlotsData(component, node) {
 }
 
 function insertData(node, data) {
-  if (node.nodeType === 3) {
-    node.textContent = node.textContent.replace(/(\{(.+?)\})/g, (match, first, second) => {
+  if (node.type === "text") {
+    node.data = node.data.replace(/(\{(.+?)\})/g, (match, first, second) => {
       return data[second] || `[no data for ${second}]`;
     });
   }
