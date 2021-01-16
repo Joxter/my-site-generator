@@ -1,5 +1,5 @@
 import jsdom from "jsdom";
-import CSSselect from "css-select";
+import { selectAll } from "css-select";
 import css from "css";
 
 export function uniqStyles(Components) {
@@ -14,40 +14,32 @@ function makeUniq(component) {
   }
 
   const rawStyles = component.styles.children[0].data;
-  const cssData =  css.parse(rawStyles);
-  const cssRules =  cssData.stylesheet.rules;
+  const cssData = css.parse(rawStyles);
+  const cssRules = cssData.stylesheet.rules;
 
   cssRules.forEach(rule => {
     const unicClass = "-c-" + component.uid;
 
-    /*
-    if (rule.cssRules) {
-      newStyleEl.innerHTML += `@media ${Array.from(rule.media).join(", ")} {`;
-      rule.cssRules.forEach(innerRule => {
-        newStyleEl.innerHTML += modifyRule(innerRule, component);
-      });
-      newStyleEl.innerHTML += `}`;
-      return;
-    }
-    */
-
-    rule.selectors = rule.selectors.map(selector => __unic(selector, unicClass))
+    rule.selectors = rule.selectors.map(selector => modifyRule(selector, component));
   });
 
   component.styles = css.stringify(cssData);
 }
 
-function modifyRule(rule, component) {
+function modifyRule(selector, component) {
   const unicClass = "-c-" + component.uid;
 
-  // CSSselect.selectAll(query, elems, options)
-  if (!rule.selectorText.startsWith("#")) {
-    component.childNodes.querySelectorAll(rule.selectorText).forEach(node => {
-      node.classList.add(unicClass);
+  if (!selector.startsWith("#")) {
+    selectAll(selector, component.template).forEach(node => {
+      if (!node.attribs.class) {
+        node.attribs.class = unicClass;
+      } else {
+        node.attribs.class += ` ${unicClass}`;
+      }
     });
   }
 
-  return rule.cssText.replace(rule.selectorText, __unic(rule.selectorText, unicClass));
+  return __unic(selector, unicClass);
 }
 
 const htmlTags = ["p", "div", "span", "h2", "main", "nav", "header", "footer", "h1", "h2"]; // todo add all tags
