@@ -4,7 +4,7 @@ import prettierCss from "prettier/parser-postcss";
 import { render } from "./render";
 import { parse } from "./parse";
 import { uniqStyles } from "./uniq-styles";
-import { getInnerHTML } from "domutils"; // todo use "dom-serializer"
+import domSerializer from "dom-serializer";
 
 export function msg(components, page, data = {}) {
   const [Components, pageElement] = parse(components, page);
@@ -16,7 +16,7 @@ export function msg(components, page, data = {}) {
 
   const css = styles.size > 0 ? [...styles].map(styleNode => styleNode.innerHTML).join("") : "";
 
-  const [prettyHtml, prettyCss] = prettify(getInnerHTML(pageElement), css);
+  const [prettyHtml, prettyCss] = prettify(domSerializer(pageElement), css);
 
   return { html: prettyHtml, css: prettyCss };
 }
