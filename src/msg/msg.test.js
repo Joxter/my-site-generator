@@ -164,6 +164,7 @@ describe("test msgNode", () => {
     expect(result.css).toEqual(`.-c-0.header {
   color: green;
 }
+
 p.-c-0,
 span.-c-0 {
   border: 1px solid red;
@@ -171,6 +172,7 @@ span.-c-0 {
 h2.-c-1 + p.-c-1 {
   display: block;
 }
+
 #some-id {
   display: block;
 }`);

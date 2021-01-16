@@ -1,4 +1,6 @@
 import jsdom from "jsdom";
+import CSSselect from "css-select";
+import css from "css";
 
 export function uniqStyles(Components) {
   Object.values(Components).forEach(comp => {
@@ -10,12 +12,15 @@ function makeUniq(component) {
   if (!component.styles) {
     return;
   }
-  const styles = myAddStylesheetRules(component.styles.innerHTML);
-  const { cssRules } = styles.sheet;
 
-  const newStyleEl = window.document.createElement("style");
+  const rawStyles = component.styles.children[0].data;
+  const cssData =  css.parse(rawStyles);
+  const cssRules =  cssData.stylesheet.rules;
 
   cssRules.forEach(rule => {
+    const unicClass = "-c-" + component.uid;
+
+    /*
     if (rule.cssRules) {
       newStyleEl.innerHTML += `@media ${Array.from(rule.media).join(", ")} {`;
       rule.cssRules.forEach(innerRule => {
@@ -24,16 +29,18 @@ function makeUniq(component) {
       newStyleEl.innerHTML += `}`;
       return;
     }
+    */
 
-    newStyleEl.innerHTML += modifyRule(rule, component);
+    rule.selectors = rule.selectors.map(selector => __unic(selector, unicClass))
   });
 
-  component.styles = newStyleEl;
+  component.styles = css.stringify(cssData);
 }
 
 function modifyRule(rule, component) {
   const unicClass = "-c-" + component.uid;
 
+  // CSSselect.selectAll(query, elems, options)
   if (!rule.selectorText.startsWith("#")) {
     component.childNodes.querySelectorAll(rule.selectorText).forEach(node => {
       node.classList.add(unicClass);

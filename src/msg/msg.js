@@ -14,7 +14,7 @@ export function msg(components, page, data = {}) {
   let styles = new Set();
   render(Components, pageElement, data, styles);
 
-  const css = styles.size > 0 ? [...styles].map(styleNode => styleNode.innerHTML).join("") : "";
+  const css = styles.size > 0 ? [...styles].join("") : "";
 
   const [prettyHtml, prettyCss] = prettify(domSerializer(pageElement), css);
 
