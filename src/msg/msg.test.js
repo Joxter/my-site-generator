@@ -13,6 +13,24 @@ describe("test msgNode", () => {
 <div><button>button text</button></div>`);
   });
 
+  it("component with several nodes", () => {
+    const result = msgNode(
+      [
+        `<template data-j-component="new-cut" data-j-props="label">
+<button>{label}</button>
+<p>123</p>
+</template>`,
+      ],
+      `<h1>header</h1><div><new-cut label="button text"></new-cut></div>`
+    );
+
+    expect(result.html).toEqual(`<h1>header</h1>
+<div>
+  <button>button text</button>
+  <p>123</p>
+</div>`);
+  });
+
   it("several instances of the component", () => {
     const result = msgNode(
       [
@@ -28,14 +46,19 @@ describe("test msgNode", () => {
   it("several components", () => {
     const result = msgNode(
       [
-        `<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`,
+        `<template data-j-component="new-cut" data-j-props="label header"><h2>{header}</h2><button>{label}</button></template>`,
         `<template data-j-component="my-par" data-j-props="text"><p>{text}</p></template>`,
       ],
-      `<h1>header</h1><div><new-cut label="button text"></new-cut><my-par text="some text"></my-par></div>`
+      `<h1>header</h1>
+<div>
+  <new-cut label="button text" header="some header"></new-cut>
+  <my-par text="some text"></my-par>
+</div>`
     );
 
     expect(result.html).toEqual(`<h1>header</h1>
 <div>
+  <h2>some header</h2>
   <button>button text</button>
   <p>some text</p>
 </div>`);

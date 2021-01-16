@@ -80,7 +80,7 @@ function insertSlots(node, slots) {
 function extractNode(node) {
   let lastNode = node;
 
-  node.children.forEach(next => {
+  [...node.children].forEach(next => {
     append(lastNode, next);
     lastNode = next;
   });
