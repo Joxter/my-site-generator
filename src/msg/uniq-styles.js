@@ -1,4 +1,3 @@
-import jsdom from "jsdom";
 import { selectAll } from "css-select";
 import css from "css";
 
@@ -18,7 +17,12 @@ function makeUniq(component) {
   const cssRules = cssData.stylesheet.rules;
 
   cssRules.forEach(rule => {
-    const unicClass = "-c-" + component.uid;
+    if (rule.type === "media") {
+      rule.rules.forEach(innerRule => {
+        innerRule.selectors = innerRule.selectors.map(selector => modifyRule(selector, component));
+      });
+      return;
+    }
 
     rule.selectors = rule.selectors.map(selector => modifyRule(selector, component));
   });
@@ -70,18 +74,4 @@ function __unic(selector, salt) {
   function splitFirstAndLastChar(str) {
     return [str[0], str.slice(1, str.length - 1), str[str.length - 1]];
   }
-}
-
-const { JSDOM } = jsdom;
-const dom = new JSDOM(`<!DOCTYPE html>`);
-
-const window = dom.window;
-
-function myAddStylesheetRules(rules) {
-  const styleEl = window.document.createElement("style");
-  window.document.head.appendChild(styleEl);
-
-  styleEl.innerHTML = rules;
-
-  return styleEl;
 }

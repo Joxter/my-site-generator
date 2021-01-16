@@ -14,10 +14,10 @@ function initComponents(componentsArr) {
 }
 
 export function parse(components, page) {
-  const pageElement = nodeFromHtmlJSDOM(reduceSpaces(page));
+  const pageElement = parseDocument(reduceSpaces(page));
   const Components = initComponents(
     components.map(template => {
-      return nodeFromHtmlJSDOM(reduceSpaces(template));
+      return parseDocument(reduceSpaces(template));
     })
   );
 
@@ -71,12 +71,6 @@ function parseProps(str) {
 
 function reduceSpaces(str) {
   return str.replace(/\n+/g, " ").trim();
-}
-
-export function nodeFromHtmlJSDOM(html) {
-  const result = parseDocument(html);
-
-  return result;
 }
 
 function getComponentTemplateTag(data) {

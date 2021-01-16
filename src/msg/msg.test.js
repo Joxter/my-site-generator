@@ -201,6 +201,7 @@ h2.-c-1 + p.-c-1 {
     ).toEqual(`.-c-0.header {
   color: green;
 }
+
 @media (min-height: 680px), screen and (orientation: portrait) {
   .-c-0.header {
     color: red;
