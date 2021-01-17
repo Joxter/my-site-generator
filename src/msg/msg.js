@@ -6,6 +6,8 @@ import { parse } from "./parse";
 import { uniqStyles } from "./uniq-styles";
 import domSerializer from "dom-serializer";
 
+console.log(domSerializer);
+
 export function msg(components, page, data = {}) {
   const [Components, pageElement] = parse(components, page);
 
@@ -16,7 +18,7 @@ export function msg(components, page, data = {}) {
 
   const css = styles.size > 0 ? [...styles].join("") : "";
 
-  const [prettyHtml, prettyCss] = prettify(domSerializer(pageElement), css);
+  const [prettyHtml, prettyCss] = prettify(domSerializer.default(pageElement), css);
 
   return { html: prettyHtml, css: prettyCss };
 }
@@ -31,5 +33,3 @@ function prettify(html, css) {
 
   return [htmlResult, cssResult];
 }
-
-export const msgNode = msg; // todo remove with browser support

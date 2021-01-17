@@ -1,8 +1,8 @@
-import { msgNode } from "./msg";
+import { msg } from "./msg";
 
-describe("test msgNode", () => {
+describe("test msg", () => {
   it("basic work", () => {
-    const result = msgNode(
+    const result = msg(
       [
         `<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`,
       ],
@@ -14,7 +14,7 @@ describe("test msgNode", () => {
   });
 
   it("component with several nodes", () => {
-    const result = msgNode(
+    const result = msg(
       [
         `<template data-j-component="new-cut" data-j-props="label">
 <button>{label}</button>
@@ -32,7 +32,7 @@ describe("test msgNode", () => {
   });
 
   it("several instances of the component", () => {
-    const result = msgNode(
+    const result = msg(
       [
         `<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`,
       ],
@@ -44,7 +44,7 @@ describe("test msgNode", () => {
   });
 
   it("several components", () => {
-    const result = msgNode(
+    const result = msg(
       [
         `<template data-j-component="new-cut" data-j-props="label header"><h2>{header}</h2><button>{label}</button></template>`,
         `<template data-j-component="my-par" data-j-props="text"><p>{text}</p></template>`,
@@ -65,7 +65,7 @@ describe("test msgNode", () => {
   });
 
   it("nested components", () => {
-    const result = msgNode(
+    const result = msg(
       [
         `<template data-j-component="my-post"><div><my-par text="some text"></my-par><button>read more</button></div></template>`,
         `<template data-j-component="my-par" data-j-props="text"><p>{text}</p></template>`,
@@ -85,7 +85,7 @@ describe("test msgNode", () => {
   });
 
   it("smoke s", () => {
-    const result = msgNode(
+    const result = msg(
       [
         `<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`,
         `<template data-j-component="news-item" data-j-props="header text">
@@ -121,7 +121,7 @@ describe("test msgNode", () => {
   });
 
   it("uniq styles", () => {
-    const result = msgNode(
+    const result = msg(
       [
         `<template data-j-component="news-item">
   <h2 class="header">header1</h2>
@@ -180,7 +180,7 @@ h2.-c-1 + p.-c-1 {
 
   it("uniq styles inside media query", () => {
     expect(
-      msgNode(
+      msg(
         [
           `<template data-j-component="news-item">
   <h2 class="header">header1</h2>
@@ -211,7 +211,7 @@ h2.-c-1 + p.-c-1 {
 
   it("test simple slot", () => {
     expect(
-      msgNode(
+      msg(
         [
           `<template data-j-component="news-item" data-j-slots="header">
 <header><slot name="header">default header</slot></header>
@@ -226,7 +226,7 @@ h2.-c-1 + p.-c-1 {
 
   it("test simple slot without data", () => {
     expect(
-      msgNode(
+      msg(
         [
           `<template data-j-component="news-item" data-j-slots="header">
 <header><slot name="header">default header</slot></header>
@@ -239,7 +239,7 @@ h2.-c-1 + p.-c-1 {
 
   it("slot with component", () => {
     expect(
-      msgNode(
+      msg(
         [
           `<template data-j-component="news-item" data-j-slots="header">
 <header><slot name="header">default header</slot></header>
@@ -260,7 +260,7 @@ h2.-c-1 + p.-c-1 {
 
   it("slot with component 2", () => {
     expect(
-      msgNode(
+      msg(
         [
           `<template data-j-component="news-item" data-j-slots="header">
 <header><slot name="header">default header</slot></header>
