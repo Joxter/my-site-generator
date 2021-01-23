@@ -1,12 +1,10 @@
 import prettier from "prettier/standalone";
 import prettierHtml from "prettier/parser-html";
 import prettierCss from "prettier/parser-postcss";
+import domSerializer from "dom-serializer";
 import { render } from "./render";
 import { parse } from "./parse";
 import { uniqStyles } from "./uniq-styles";
-import domSerializer from "dom-serializer";
-
-console.log(domSerializer);
 
 export function msg(components, page, data = {}) {
   const [Components, pageElement] = parse(components, page);
@@ -18,7 +16,7 @@ export function msg(components, page, data = {}) {
 
   const css = styles.size > 0 ? [...styles].join("") : "";
 
-  const [prettyHtml, prettyCss] = prettify(domSerializer.default(pageElement), css);
+  const [prettyHtml, prettyCss] = prettify(domSerializer(pageElement), css);
 
   return { html: prettyHtml, css: prettyCss };
 }

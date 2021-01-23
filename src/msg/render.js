@@ -1,4 +1,5 @@
 import { append, findOne, removeElement } from "domutils";
+import { deepFind } from "./utils";
 
 export function render(Components, elem, data, styles, slots = null) {
   if (Components[elem.name]) {
@@ -6,16 +7,22 @@ export function render(Components, elem, data, styles, slots = null) {
     if (myComp.styles) {
       styles.add(myComp.styles);
     }
-    const data = getComponentPropsData(myComp, elem);
+    const innerData = insertDataToObj(getComponentPropsData(myComp, elem), data);
     const slots = getComponentSlotsData(myComp, elem);
 
-    const renderedComp = render(Components, myComp.template.cloneNode(true), data, styles, slots);
+    const renderedComp = render(
+      Components,
+      myComp.template.cloneNode(true),
+      innerData,
+      styles,
+      slots
+    );
     append(elem, renderedComp);
     removeElement(elem);
     extractNode(renderedComp);
   }
 
-  insertData(elem, data);
+  insertDataToNode(elem, data);
   insertSlots(elem, slots);
 
   if (elem.children) {
@@ -54,13 +61,29 @@ function getComponentSlotsData(component, node) {
   return slots;
 }
 
-function insertData(node, data) {
+function insertDataToNode(node, data) {
   if (node.type === "text") {
-    node.data = node.data.replace(/(\{(.+?)\})/g, (match, first, second) => {
-      return data[second] || `[no data for ${second}]`;
-    });
+    node.data = insertDataToSting(node.data, data);
   }
   return node;
+}
+
+function insertDataToObj(obj, data) {
+  for (let key in obj) {
+    obj[key] = insertDataToSting(obj[key], data);
+  }
+  return obj;
+}
+
+function insertDataToSting(str, data) {
+  return str.replace(/(?:\{(.+?)\})/g, (match, $1) => {
+    if ($1.includes(".") || $1.includes("[") || $1.includes("]")) {
+      const keys = $1.split(/[\[\].]+/);
+      return deepFind(data, keys);
+    }
+
+    return data[$1] || `[no data for ${$1}]`;
+  });
 }
 
 function insertSlots(node, slots) {

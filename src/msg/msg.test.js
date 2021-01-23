@@ -276,4 +276,49 @@ h2.-c-1 + p.-c-1 {
   22
 </header>`);
   });
+
+  describe("should insert data", () => {
+    it("simple data", () => {
+      expect(msg([], `<div>{text}</div>`, { text: "hi" }).html).toEqual(`<div>hi</div>`);
+    });
+    it("simple data several times", () => {
+      expect(msg([], `<div>{text} {text}</div>`, { text: "hi" }).html).toEqual(`<div>hi hi</div>`);
+    });
+    it("data in components", () => {
+      expect(
+        msg(
+          [
+            `<template data-j-component="my-par" data-j-props="content"><p>{content}</p></template>`,
+          ],
+          `<my-par content="{text}"></my-par>`,
+          { text: "hi" }
+        ).html
+      ).toEqual(`<p>hi</p>`);
+    });
+    it("deep data in component 1", () => {
+      expect(msg([], `<p>{user.Nick.name}</p>`, { user: { Nick: { name: "Nick" } } }).html).toEqual(
+        `<p>Nick</p>`
+      );
+    });
+    it("deep data in component 2 with array", () => {
+      expect(msg([], `<p>{users[1].name}</p>`, { users: [{}, { name: "Nick" }] }).html).toEqual(
+        `<p>Nick</p>`
+      );
+    });
+    it("deep data in components", () => {
+      expect(
+        msg(
+          [
+            `<template data-j-component="my-par" data-j-props="text"><p>{content}</p></template>`,
+            `<template data-j-component="my-article" data-j-props="content">
+  <my-par text="{content[0].text}"></my-par>
+  <my-par text="{content[1].text}"></my-par>
+</template>`,
+          ],
+          `<my-article content="{data.content}"></my-article>`,
+          { data: { content: [{ text: "first text" }, { text: "second text" }] } }
+        ).html
+      ).toEqual(`<p>first text</p><p>second text</p>`);
+    });
+  });
 });
