@@ -1,5 +1,6 @@
 import { selectAll } from "css-select";
 import css from "css";
+import { removeFirstLastChar } from "./utils";
 
 export function uniqStyles(Components) {
   Object.values(Components).forEach(comp => {
@@ -72,6 +73,6 @@ function __unic(selector, salt) {
   }
 
   function splitFirstAndLastChar(str) {
-    return [str[0], str.slice(1, str.length - 1), str[str.length - 1]];
+    return [str[0], removeFirstLastChar(str), str[str.length - 1]];
   }
 }

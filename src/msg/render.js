@@ -1,5 +1,5 @@
 import { append, findOne, removeElement } from "domutils";
-import { deepFind } from "./utils";
+import { deepFind, getKeysFromStr, removeFirstLastChar } from "./utils";
 
 export function render(Components, elem, data, styles, slots = null) {
   if (Components[elem.name]) {
@@ -7,7 +7,7 @@ export function render(Components, elem, data, styles, slots = null) {
     if (myComp.styles) {
       styles.add(myComp.styles);
     }
-    const innerData = insertDataToObj(getComponentPropsData(myComp, elem), data);
+    const innerData = getComponentPropsData(myComp, elem, data);
     const slots = getComponentSlotsData(myComp, elem);
 
     const renderedComp = render(
@@ -19,7 +19,7 @@ export function render(Components, elem, data, styles, slots = null) {
     );
     append(elem, renderedComp);
     removeElement(elem);
-    extractNode(renderedComp);
+    elem = extractNode(renderedComp);
   }
 
   insertDataToNode(elem, data);
@@ -38,13 +38,13 @@ function isSlot(elem) {
   return elem.name === "slot";
 }
 
-function getComponentPropsData(component, node) {
+function getComponentPropsData(component, node, compData) {
   const data = {};
   component.props.forEach(propName => {
     data[propName] = node.attribs[propName];
   });
 
-  return data;
+  return insertDataToProp(data, compData);
 }
 
 function getComponentSlotsData(component, node) {
@@ -68,21 +68,23 @@ function insertDataToNode(node, data) {
   return node;
 }
 
-function insertDataToObj(obj, data) {
-  for (let key in obj) {
-    obj[key] = insertDataToSting(obj[key], data);
+function insertDataToProp(props, data) {
+  for (let key in props) {
+    if (/^\{.+\}$/.test(props[key])) {
+      const path = removeFirstLastChar(props[key]);
+      props[key] = deepFind(data, getKeysFromStr(path));
+    } else {
+      props[key] = insertDataToSting(props[key], data);
+    }
   }
-  return obj;
+
+  return props;
 }
 
 function insertDataToSting(str, data) {
   return str.replace(/(?:\{(.+?)\})/g, (match, $1) => {
-    if ($1.includes(".") || $1.includes("[") || $1.includes("]")) {
-      const keys = $1.split(/[\[\].]+/);
-      return deepFind(data, keys);
-    }
-
-    return data[$1] || `[no data for ${$1}]`;
+    const keys = getKeysFromStr($1);
+    return deepFind(data, keys);
   });
 }
 
@@ -102,10 +104,13 @@ function insertSlots(node, slots) {
 
 function extractNode(node) {
   let lastNode = node;
+  let firstChildren = node.children[0];
 
   [...node.children].forEach(next => {
     append(lastNode, next);
     lastNode = next;
   });
   removeElement(node);
+
+  return firstChildren;
 }
