@@ -5,16 +5,22 @@ import domSerializer from "dom-serializer";
 import { render } from "./render";
 import { parse } from "./parse";
 import { uniqStyles } from "./uniq-styles";
+import { setCssInline } from "./option-css-inline";
 
-export function msg(components, page, data = {}) {
+export function msg(components, page, data = {}, options = {}) {
   const [Components, pageElement] = parse(components, page);
 
   uniqStyles(Components);
 
   let styles = new Set();
   render(Components, pageElement, data, styles);
+  styles = [...styles];
 
-  const css = styles.size > 0 ? [...styles].join("") : "";
+  const css = styles.map(({ children }) => children[0].data).join("");
+
+  if (options.cssInline) {
+    setCssInline(pageElement, styles);
+  }
 
   const [prettyHtml, prettyCss] = prettify(domSerializer(pageElement), css);
 

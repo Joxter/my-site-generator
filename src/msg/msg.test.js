@@ -3,9 +3,7 @@ import { msg } from "./msg";
 describe("test msg", () => {
   it("basic work", () => {
     const result = msg(
-      [
-        `<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`,
-      ],
+      [`<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`],
       `<h1>header</h1><div><new-cut label="button text"></new-cut></div>`
     );
 
@@ -33,9 +31,7 @@ describe("test msg", () => {
 
   it("several instances of the component", () => {
     const result = msg(
-      [
-        `<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`,
-      ],
+      [`<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`],
       `<h1>header</h1><div><new-cut label="button text"></new-cut><new-cut label="second text"></new-cut></div>`
     );
 
@@ -287,23 +283,17 @@ h2.-c-1 + p.-c-1 {
     it("data in components", () => {
       expect(
         msg(
-          [
-            `<template data-j-component="my-par" data-j-props="content"><p>{content}</p></template>`,
-          ],
+          [`<template data-j-component="my-par" data-j-props="content"><p>{content}</p></template>`],
           `<my-par content="{text}"></my-par>`,
           { text: "hi" }
         ).html
       ).toEqual(`<p>hi</p>`);
     });
     it("deep data in component 1", () => {
-      expect(msg([], `<p>{user.Nick.name}</p>`, { user: { Nick: { name: "Nick" } } }).html).toEqual(
-        `<p>Nick</p>`
-      );
+      expect(msg([], `<p>{user.Nick.name}</p>`, { user: { Nick: { name: "Nick" } } }).html).toEqual(`<p>Nick</p>`);
     });
     it("deep data in component 2 with array", () => {
-      expect(msg([], `<p>{users[1].name}</p>`, { users: [{}, { name: "Nick" }] }).html).toEqual(
-        `<p>Nick</p>`
-      );
+      expect(msg([], `<p>{users[1].name}</p>`, { users: [{}, { name: "Nick" }] }).html).toEqual(`<p>Nick</p>`);
     });
     it("deep data in components", () => {
       expect(
@@ -321,5 +311,41 @@ h2.-c-1 + p.-c-1 {
       ).toEqual(`<p>first text</p>
 <p>second text</p>`);
     });
+  });
+
+  it('option "cssInline" should paste css at the end of head', () => {
+    expect(
+      msg(
+        [
+          `<template data-j-component="my-par" data-j-props="content">
+<p>{content}</p>
+<style>.foo {color: red}</style>
+</template>`,
+        ],
+        `<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <title>Some title</title>
+  </head>
+  <body>
+    <my-par content="some text"></my-par>  
+  </body>`,
+        {},
+        { cssInline: true }
+      ).html
+    ).toEqual(`<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Some title</title>
+    <style>
+      .-c-0.foo {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <p>some text</p>
+  </body>
+</html>`);
   });
 });

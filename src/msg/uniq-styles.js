@@ -28,7 +28,7 @@ function makeUniq(component) {
     rule.selectors = rule.selectors.map(selector => modifyRule(selector, component));
   });
 
-  component.styles = css.stringify(cssData);
+  component.styles.children[0].data = css.stringify(cssData);
 }
 
 function modifyRule(selector, component) {
