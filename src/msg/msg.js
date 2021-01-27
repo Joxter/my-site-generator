@@ -4,13 +4,13 @@ import prettierCss from "prettier/parser-postcss";
 import domSerializer from "dom-serializer";
 import { render } from "./render";
 import { parse } from "./parse";
-import { uniqStyles } from "./uniq-styles";
+import { scopedStyles } from "./scoped-styles";
 import { setCssInline } from "./option-css-inline";
 
 export function msg(components, page, data = {}, options = {}) {
   const [Components, pageElement] = parse(components, page);
 
-  uniqStyles(Components);
+  scopedStyles(Components);
 
   let styles = new Set();
   render(Components, pageElement, data, styles);

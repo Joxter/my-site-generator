@@ -116,7 +116,7 @@ describe("test msg", () => {
 </div>`);
   });
 
-  it("uniq styles", () => {
+  it("scoped styles", () => {
     const result = msg(
       [
         `<template data-j-component="news-item">
@@ -157,7 +157,7 @@ describe("test msg", () => {
 <h2 class="header">header2</h2>
 <p class="-c-1">text2</p>
 <div id="some-id">text2</div>`);
-    expect(result.css).toEqual(`.-c-0.header {
+    expect(result.css).toEqual(`.header.-c-0 {
   color: green;
 }
 
@@ -174,7 +174,7 @@ h2.-c-1 + p.-c-1 {
 }`);
   });
 
-  it("uniq styles inside media query", () => {
+  it("scoped styles inside media query", () => {
     expect(
       msg(
         [
@@ -194,12 +194,12 @@ h2.-c-1 + p.-c-1 {
         ],
         `<news-item></news-item>`
       ).css
-    ).toEqual(`.-c-0.header {
+    ).toEqual(`.header.-c-0 {
   color: green;
 }
 
 @media (min-height: 680px), screen and (orientation: portrait) {
-  .-c-0.header {
+  .header.-c-0 {
     color: red;
   }
 }`);
@@ -338,7 +338,7 @@ h2.-c-1 + p.-c-1 {
   <head>
     <title>Some title</title>
     <style>
-      .-c-0.foo {
+      .foo.-c-0 {
         color: red;
       }
     </style>
