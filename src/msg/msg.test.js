@@ -151,12 +151,12 @@ describe("test msg", () => {
 `
     );
 
-    expect(result.html).toEqual(`<h2 class="header -c-0">header1</h2>
-<p class="-c-0">text1 <span class="-c-0">span1</span></p>
-<div id="some-id">text1</div>
-<h2 class="header">header2</h2>
+    expect(result.html).toEqual(`<h2 class="header -c-0 -c-0 -c-0">header1</h2>
+<p class="-c-0 -c-0 -c-0">text1 <span class="-c-0 -c-0 -c-0">span1</span></p>
+<div id="some-id" class="-c-0 -c-0 -c-0">text1</div>
+<h2 class="header -c-1">header2</h2>
 <p class="-c-1">text2</p>
-<div id="some-id">text2</div>`);
+<div id="some-id" class="-c-1">text2</div>`);
     expect(result.css).toEqual(`.header.-c-0 {
   color: green;
 }
@@ -344,7 +344,7 @@ h2.-c-1 + p.-c-1 {
     </style>
   </head>
   <body>
-    <p>some text</p>
+    <p class="-c-0">some text</p>
   </body>
 </html>`);
   });

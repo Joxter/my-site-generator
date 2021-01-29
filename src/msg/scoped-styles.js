@@ -1,6 +1,5 @@
 import { selectAll } from "css-select";
 import css from "css";
-import { removeFirstLastChar } from "./utils";
 
 export function scopedStyles(Components) {
   Object.values(Components).forEach(comp => makeUniq(comp));
@@ -29,38 +28,40 @@ function makeUniq(component) {
 }
 
 function modifyRule(selector, component) {
-  const unicClass = "-c-" + component.uid;
-
-  if (!selector.startsWith("#")) {
-    selectAll(selector, component.template).forEach(node => {
-      if (!node.attribs.class) {
-        node.attribs.class = unicClass;
-      } else {
-        node.attribs.class += ` ${unicClass}`;
-      }
-    });
-  }
-
-  return __unic(selector, unicClass);
-}
-
-
-export function __unic(selector, salt) {
   if (selector.includes("#")) {
     return selector;
   }
 
+  const unicClass = "-c-" + component.uid;
+
+  selectAll("*", component.template).forEach(node => { // todo remove selectAll dep
+    if (!node.attribs.class) {
+      node.attribs.class = unicClass;
+    } else {
+      node.attribs.class += ` ${unicClass}`;
+    }
+  });
+
+  return __unic(selector, unicClass);
+}
+
+export function __unic(selector, salt) {
   const isEndOfBLock = char => [" ", "+", "~", ">"].includes(char);
   const arr = selector.split("");
 
   let i = 0;
-  let state = "block-end"; // 'matter-start' 'block-end' 'pseudo-start'
+  let state = "block-end"; // 'matter-start' 'block-end' 'pseudo-start' 'attr-start'
 
   while (i < arr.length && i < 1000) {
     // something like state-machine
     const char = arr[i];
     if (char.length > 1) {
       i++;
+      continue;
+    }
+
+    if (char === "*") {
+      arr[i] = `.${salt}`;
       continue;
     }
 

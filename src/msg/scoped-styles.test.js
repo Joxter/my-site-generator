@@ -32,7 +32,16 @@ describe("__unic", () => {
     expect(__unic(".foo:first-child", "mix")).toEqual(".foo.mix:first-child");
     expect(__unic(".foo::first-child", "mix")).toEqual(".foo.mix::first-child");
     expect(__unic("p:first-child", "mix")).toEqual("p.mix:first-child");
-
     expect(__unic(".foo:first-child .bar", "mix")).toEqual(".foo.mix:first-child .bar.mix");
+  });
+
+  it("should works with attibute selectors", function() {
+    expect(__unic("[target] .foo", "mix")).toEqual("[target].mix .foo.mix");
+    expect(__unic("a[target] .foo", "mix")).toEqual("a[target].mix .foo.mix");
+    expect(__unic("div[target=foo] .foo", "mix")).toEqual("div[target=foo].mix .foo.mix");
+  });
+
+  it("should works with *", function() {
+    expect(__unic("* .foo", "mix")).toEqual(".mix .foo.mix");
   });
 });
