@@ -1,7 +1,17 @@
 import { append, findOne, removeElement } from "domutils";
 import { deepFind, getKeysFromStr, removeFirstLastChar } from "./utils";
 
+const COND_ATTRIB = "j-if";
+
 export function render(Components, elem, data, styles, slots = null) {
+  const cond = resolveCondition(elem, data);
+  if (cond === true) {
+    delete elem.attribs[COND_ATTRIB];
+  } else if (cond === false) {
+    removeElement(elem);
+    return;
+  }
+
   if (Components[elem.name]) {
     const myComp = Components[elem.name];
     if (myComp.styles) {
@@ -10,13 +20,8 @@ export function render(Components, elem, data, styles, slots = null) {
     const innerData = getComponentPropsData(myComp, elem, data);
     const slots = getComponentSlotsData(myComp, elem);
 
-    const renderedComp = render(
-      Components,
-      myComp.template.cloneNode(true),
-      innerData,
-      styles,
-      slots
-    );
+    const renderedComp = myComp.template.cloneNode(true);
+    render(Components, renderedComp, innerData, styles, slots);
     append(elem, renderedComp);
     removeElement(elem);
     elem = extractNode(renderedComp);
@@ -30,8 +35,6 @@ export function render(Components, elem, data, styles, slots = null) {
       render(Components, node, data, styles, slots);
     }
   }
-
-  return elem;
 }
 
 function isSlot(elem) {
@@ -74,6 +77,7 @@ function insertDataToProp(props, data) {
       const path = removeFirstLastChar(props[key]);
       props[key] = deepFind(data, getKeysFromStr(path));
     } else {
+      console.log(props, key);
       props[key] = insertDataToSting(props[key], data);
     }
   }
@@ -86,6 +90,25 @@ function insertDataToSting(str, data) {
     const keys = getKeysFromStr($1);
     return deepFind(data, keys);
   });
+}
+
+function resolveCondition(elem, data) {
+  if (!elem.attribs || !(COND_ATTRIB in elem.attribs)) {
+    return;
+  }
+
+  const condStr = elem.attribs[COND_ATTRIB];
+
+  if (["false", "", "0"].includes(condStr)) {
+    return false;
+  }
+
+  if (condStr[0] === "{" && condStr[condStr.length - 1] === "}") {
+    const path = removeFirstLastChar(condStr);
+    const condValue = deepFind(data, getKeysFromStr(path));
+
+    return !!condValue;
+  }
 }
 
 function insertSlots(node, slots) {

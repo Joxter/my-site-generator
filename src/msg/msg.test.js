@@ -348,4 +348,38 @@ h2.-c-1 + p.-c-1 {
   </body>
 </html>`);
   });
+
+  describe("test j-if", () => {
+    it("should works", () => {
+      expect(msg([], `<p>one</p><p j-if="{cond}">none</p>`, { cond: false }).html).toEqual(`<p>one</p>`);
+      expect(msg([], `<p>one</p><p j-if="">none</p>`, { cond: false }).html).toEqual(`<p>one</p>`);
+      expect(msg([], `<p>one</p><p j-if="false">none</p>`, { cond: false }).html).toEqual(`<p>one</p>`);
+      expect(msg([], `<p>one</p><p j-if="0">none</p>`, { cond: false }).html).toEqual(`<p>one</p>`);
+      expect(msg([], `<p>one</p><p j-if="{cond}">two</p>`, { cond: true }).html).toEqual(`<p>one</p>
+<p>two</p>`);
+    });
+
+    it("should works with components", () => {
+      const components = [
+        `<template data-j-component="my-par" data-j-props="content">
+<p>{content}</p>
+<style>.foo {color: red}</style>
+</template>`,
+      ];
+      const page = `<p>one</p><my-par j-if="{cond}" content="two"></my-par>`;
+
+      const result = msg(components, page, { cond: false });
+
+      expect(result.html).toEqual(`<p>one</p>`);
+      expect(result.css).toEqual(``);
+
+      const result2 = msg(components, page, { cond: true });
+
+      expect(result2.html).toEqual(`<p>one</p>
+<p class="-c-0">two</p>`);
+      expect(result2.css).toEqual(`.foo.-c-0 {
+  color: red;
+}`);
+    });
+  });
 });
