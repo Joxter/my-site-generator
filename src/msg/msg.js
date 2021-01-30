@@ -6,6 +6,7 @@ import { render } from "./render";
 import { parse } from "./parse";
 import { scopedStyles } from "./scoped-styles";
 import { setCssInline } from "./option-css-inline";
+import { commonInArr } from "./utils";
 
 export function msg(components, page, data = {}, options = {}) {
   const [Components, pageElement] = parse(components, page);
@@ -20,12 +21,15 @@ export function msg(components, page, data = {}, options = {}) {
       common: { css: "" },
     };
 
+    let commonStyles = Object.keys(Components);
+
     result.pages = pageElements.map(pageElement => {
       let styles = new Set();
       render(Components, pageElement, data, styles);
       styles = [...styles];
+      commonStyles = commonInArr(commonStyles, styles);
 
-      const css = styles.map(({ children }) => children[0].data).join("");
+      const css = getStylesFromComponents(Components, styles).join("");
 
       if (options.cssInline) {
         setCssInline(pageElement, styles);
@@ -36,22 +40,27 @@ export function msg(components, page, data = {}, options = {}) {
       return { html: prettyHtml, css: prettyCss };
     });
 
+    result.common.css = prettifyCss(getStylesFromComponents(Components, commonStyles).join(""));
+
     return result;
   }
 
   let styles = new Set();
   render(Components, pageElement, data, styles);
-  styles = [...styles];
 
-  const css = styles.map(({ children }) => children[0].data).join("");
+  const css = getStylesFromComponents(Components, [...styles]).join("");
 
   if (options.cssInline) {
-    setCssInline(pageElement, styles);
+    setCssInline(pageElement, [...styles]);
   }
 
   const [prettyHtml, prettyCss] = prettify(domSerializer(pageElement), css);
 
   return { html: prettyHtml, css: prettyCss };
+}
+
+function getStylesFromComponents(Components, compNames) {
+  return compNames.map(compName => Components[compName].styles.children[0].data);
 }
 
 function prettify(html, css) {
@@ -63,4 +72,13 @@ function prettify(html, css) {
   const cssResult = prettier.format(css, { ...options, parser: "css" }).trim();
 
   return [htmlResult, cssResult];
+}
+
+function prettifyCss(css) {
+  const options = {
+    plugins: [prettierCss],
+    printWidth: 120,
+  };
+
+  return prettier.format(css, { ...options, parser: "css" }).trim();
 }

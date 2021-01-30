@@ -366,11 +366,11 @@ h2.-c-1 + p.-c-1 {
   <p class="-c-0">one</p>
   <p class="-c-1">two</p>
 </div>`);
-      expect(result.pages[0].css).toEqual(``);
-      expect(result.pages[1].css).toEqual(`.two.-c-1 {
+      expect(result.common.css).toEqual(`.one.-c-0 {
   color: red;
 }`);
-      expect(result.common.css).toEqual(`.one.-c-0 {
+      expect(result.pages[0].css).toEqual(``);
+      expect(result.pages[1].css).toEqual(`.two.-c-1 {
   color: red;
 }`);
     });

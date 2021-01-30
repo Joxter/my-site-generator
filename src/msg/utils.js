@@ -18,3 +18,19 @@ export function getKeysFromStr(str) {
 export function removeFirstLastChar(str) {
   return str.slice(1, str.length - 1);
 }
+
+export function commonInArr(arr1, arr2) {
+  const common = {};
+
+  [...arr1, ...arr2].forEach(item => {
+    common[item] = common[item] + 1 || 1;
+  });
+
+  for (let key in common) {
+    if (common[key] === 1) {
+      delete common[key];
+    }
+  }
+
+  return Object.keys(common);
+}

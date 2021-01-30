@@ -15,7 +15,7 @@ export function render(Components, elem, data, styles, slots = null) {
   if (Components[elem.name]) {
     const myComp = Components[elem.name];
     if (myComp.styles) {
-      styles.add(myComp.styles);
+      styles.add(myComp.name);
     }
     const innerData = getComponentPropsData(myComp, elem, data);
     const slots = getComponentSlotsData(myComp, elem);
@@ -77,7 +77,6 @@ function insertDataToProp(props, data) {
       const path = removeFirstLastChar(props[key]);
       props[key] = deepFind(data, getKeysFromStr(path));
     } else {
-      console.log(props, key);
       props[key] = insertDataToSting(props[key], data);
     }
   }
