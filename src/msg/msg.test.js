@@ -349,6 +349,33 @@ h2.-c-1 + p.-c-1 {
 </html>`);
   });
 
+  describe("test several pages", () => {
+    it("basic work", () => {
+      const components = [
+        `<template data-j-component="comp-one"><p>one</p><style>.one {color: red}</style></template>`,
+        `<template data-j-component="comp-two"><p>two</p><style>.two {color: red}</style></template>`,
+        `<template data-j-component="comp-three"><p>three</p><style>.three {color: red}</style></template>`,
+      ];
+      const page1 = `<div><comp-one></comp-one></div>`;
+      const page2 = `<div><comp-one></comp-one><comp-two></comp-two></div>`;
+
+      const result = msg(components, [page1, page2]);
+
+      expect(result.pages[0].html).toEqual('<div><p class="-c-0">one</p></div>');
+      expect(result.pages[1].html).toEqual(`<div>
+  <p class="-c-0">one</p>
+  <p class="-c-1">two</p>
+</div>`);
+      expect(result.pages[0].css).toEqual(``);
+      expect(result.pages[1].css).toEqual(`.two.-c-1 {
+  color: red;
+}`);
+      expect(result.common.css).toEqual(`.one.-c-0 {
+  color: red;
+}`);
+    });
+  });
+
   describe("test j-if", () => {
     it("should works", () => {
       expect(msg([], `<p>one</p><p j-if="{cond}">none</p>`, { cond: false }).html).toEqual(`<p>one</p>`);

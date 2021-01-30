@@ -12,6 +12,33 @@ export function msg(components, page, data = {}, options = {}) {
 
   scopedStyles(Components);
 
+  if (Array.isArray(pageElement)) {
+    const pageElements = pageElement;
+
+    const result = {
+      pages: [],
+      common: { css: "" },
+    };
+
+    result.pages = pageElements.map(pageElement => {
+      let styles = new Set();
+      render(Components, pageElement, data, styles);
+      styles = [...styles];
+
+      const css = styles.map(({ children }) => children[0].data).join("");
+
+      if (options.cssInline) {
+        setCssInline(pageElement, styles);
+      }
+
+      const [prettyHtml, prettyCss] = prettify(domSerializer(pageElement), css);
+
+      return { html: prettyHtml, css: prettyCss };
+    });
+
+    return result;
+  }
+
   let styles = new Set();
   render(Components, pageElement, data, styles);
   styles = [...styles];

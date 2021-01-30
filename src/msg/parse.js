@@ -13,8 +13,11 @@ function initComponents(componentsArr) {
   return Components;
 }
 
-export function parse(components, page) {
-  const pageElement = parseDocument(reduceSpaces(page));
+export function parse(components, pages) {
+  const pageElement = Array.isArray(pages)
+    ? pages.map(page => parseDocument(reduceSpaces(page)))
+    : parseDocument(reduceSpaces(pages));
+
   const Components = initComponents(
     components.map(template => {
       return parseDocument(reduceSpaces(template));
