@@ -2,13 +2,11 @@ import { append, findOne, removeElement } from "domutils";
 import { deepFind, getKeysFromStr, removeFirstLastChar } from "./utils";
 
 const COND_ATTRIB = "j-if";
+const COND_ELSE_ATTRIB = "j-else";
 
 export function render(Components, elem, data, styles, slots = null) {
-  const cond = resolveCondition(elem, data);
-  if (cond === true) {
-    delete elem.attribs[COND_ATTRIB];
-  } else if (cond === false) {
-    removeElement(elem);
+  elem = resolveCondition(elem, data);
+  if (!elem) {
     return;
   }
 
@@ -93,20 +91,35 @@ function insertDataToSting(str, data) {
 
 function resolveCondition(elem, data) {
   if (!elem.attribs || !(COND_ATTRIB in elem.attribs)) {
-    return;
+    return elem;
   }
-
   const condStr = elem.attribs[COND_ATTRIB];
+  const next = elem.next;
+  const elseBranch = (next && next.attribs && COND_ELSE_ATTRIB in next.attribs) || false;
+
+  if (elseBranch) {
+    delete next.attribs[COND_ELSE_ATTRIB];
+  }
+  delete elem.attribs[COND_ATTRIB];
 
   if (["false", "", "0"].includes(condStr)) {
-    return false;
+    removeElement(elem);
+    return next;
   }
 
   if (condStr[0] === "{" && condStr[condStr.length - 1] === "}") {
     const path = removeFirstLastChar(condStr);
     const condValue = deepFind(data, getKeysFromStr(path));
 
-    return !!condValue;
+    if (condValue) {
+      if (next) {
+        removeElement(next);
+      }
+      return elem;
+    } else {
+      removeElement(elem);
+      return next;
+    }
   }
 }
 

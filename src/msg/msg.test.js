@@ -386,6 +386,11 @@ h2.-c-1 + p.-c-1 {
 <p>two</p>`);
     });
 
+    it("should works 'else' branch", () => {
+      expect(msg([], `<p j-if="{cond}">then</p><p j-else>else</p>`, { cond: true }).html).toEqual(`<p>then</p>`);
+      expect(msg([], `<p j-if="{cond}">then</p><p j-else>else</p>`, { cond: false }).html).toEqual(`<p>else</p>`);
+    });
+
     it("should works with components", () => {
       const components = [
         `<template data-j-component="my-par" data-j-props="content">
@@ -407,6 +412,24 @@ h2.-c-1 + p.-c-1 {
       expect(result2.css).toEqual(`.foo.-c-0 {
   color: red;
 }`);
+    });
+
+    it("should works in components", () => {
+      const components = [
+        `<template data-j-component="my-par" data-j-props="inner-cond">
+<p>one</p><p j-if="{inner-cond}">optional</p>
+</template>`,
+      ];
+      const page = `<my-par inner-cond="{cond}"></my-par>`;
+
+      const result = msg(components, page, { cond: false });
+
+      expect(result.html).toEqual(`<p>one</p>`);
+
+      const result2 = msg(components, page, { cond: true });
+
+      expect(result2.html).toEqual(`<p>one</p>
+<p>optional</p>`);
     });
   });
 });
