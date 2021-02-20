@@ -157,7 +157,8 @@ describe("test msg", () => {
 <h2 class="header -c-1">header2</h2>
 <p class="-c-1">text2</p>
 <div id="some-id" class="-c-1">text2</div>`);
-    expect(result.css).toEqual(`.header.-c-0 { color: green; } p.-c-0, span.-c-0 { border: 1px solid red; }h2.-c-1 + p.-c-1 { display: block; } #some-id
+    expect(result.css)
+      .toEqual(`.header.-c-0 { color: green; } p.-c-0, span.-c-0 { border: 1px solid red; }h2.-c-1 + p.-c-1 { display: block; } #some-id
 { display: block; }`);
   });
 
@@ -181,7 +182,8 @@ describe("test msg", () => {
         ],
         `<news-item></news-item>`
       ).css
-    ).toEqual(`.header.-c-0 { color: green; } @media (min-height: 680px), screen and (orientation: portrait) { .header.-c-0 { color:
+    )
+      .toEqual(`.header.-c-0 { color: green; } @media (min-height: 680px), screen and (orientation: portrait) { .header.-c-0 { color:
 red; } }`);
   });
 
@@ -353,6 +355,21 @@ red; } }`);
       expect(result.pages[1].css).toEqual(`.two.-c-1 {
   color: red;
 }`);
+    });
+  });
+
+  describe("test j-for", () => {
+    it("should works", () => {
+      expect(msg([], `<p j-for="{item in arr}">{item}</p>`, { arr: [123, 456] }).html).toEqual(`<p>123</p>
+<p>456</p>`);
+      expect(
+        msg([], `<p j-for="{item in arr}">{item.label}</p>`, { arr: [{ label: "123" }, { label: "456" }] }).html
+      ).toEqual(`<p>123</p>
+<p>456</p>`);
+    });
+
+    it("should render nothing if arr is empty", () => {
+      expect(msg([], `<p j-for="{item in arr}">{item}</p><p>boo</p>`, { arr: [] }).html).toEqual(`<p>boo</p>`);
     });
   });
 

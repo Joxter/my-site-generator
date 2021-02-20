@@ -1,11 +1,18 @@
 import { append, findOne, removeElement } from "domutils";
-import { deepFind, getKeysFromStr, removeFirstLastChar } from "./utils";
+import { deepFind, first, getKeysFromStr, last, removeFirstLastChar } from "./utils";
 
 const COND_ATTRIB = "j-if";
 const COND_ELSE_ATTRIB = "j-else";
+const FOR_ATTRIB = "j-for"; // {item in arr}
 
 export function render(Components, elem, data, styles, slots = null) {
   elem = resolveCondition(elem, data);
+  if (!elem) {
+    return;
+  }
+  elem = resolveFor(elem, data, (newELem, arrItem, itemKey) => {
+    render(Components, newELem, { ...data, [itemKey]: arrItem }, styles, slots);
+  });
   if (!elem) {
     return;
   }
@@ -107,7 +114,7 @@ function resolveCondition(elem, data) {
     return next;
   }
 
-  if (condStr[0] === "{" && condStr[condStr.length - 1] === "}") {
+  if (first(condStr) === "{" && last(condStr) === "}") {
     const path = removeFirstLastChar(condStr);
     const condValue = deepFind(data, getKeysFromStr(path));
 
@@ -120,6 +127,37 @@ function resolveCondition(elem, data) {
       removeElement(elem);
       return next;
     }
+  }
+}
+
+function resolveFor(elem, data, cb) {
+  if (!elem.attribs || !(FOR_ATTRIB in elem.attribs)) {
+    return elem;
+  }
+  const forStr = elem.attribs[FOR_ATTRIB];
+  delete elem.attribs[FOR_ATTRIB];
+
+  if (first(forStr) === "{" && last(forStr) === "}") {
+    const [itemKey, arr] = removeFirstLastChar(forStr).split(" in ");
+    const items = deepFind(data, getKeysFromStr(arr));
+
+    if (!items || items.length === 0) {
+      removeElement(elem);
+      return elem.next;
+    }
+
+    let lastELem = elem;
+    items.forEach(arrItem => {
+      const newELem = elem.cloneNode(true);
+
+      cb(newELem, arrItem, itemKey);
+
+      append(lastELem, newELem);
+      lastELem = newELem;
+    });
+    removeElement(elem);
+
+    return lastELem;
   }
 }
 

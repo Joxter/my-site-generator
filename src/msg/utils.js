@@ -19,6 +19,14 @@ export function removeFirstLastChar(str) {
   return str.slice(1, str.length - 1);
 }
 
+export function first(inp) {
+  return inp[0];
+}
+
+export function last(inp) {
+  return inp[inp.length - 1];
+}
+
 export function commonInArr(arr1, arr2) {
   const common = {};
 
