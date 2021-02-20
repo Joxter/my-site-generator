@@ -157,21 +157,8 @@ describe("test msg", () => {
 <h2 class="header -c-1">header2</h2>
 <p class="-c-1">text2</p>
 <div id="some-id" class="-c-1">text2</div>`);
-    expect(result.css).toEqual(`.header.-c-0 {
-  color: green;
-}
-
-p.-c-0,
-span.-c-0 {
-  border: 1px solid red;
-}
-h2.-c-1 + p.-c-1 {
-  display: block;
-}
-
-#some-id {
-  display: block;
-}`);
+    expect(result.css).toEqual(`.header.-c-0 { color: green; } p.-c-0, span.-c-0 { border: 1px solid red; }h2.-c-1 + p.-c-1 { display: block; } #some-id
+{ display: block; }`);
   });
 
   it("scoped styles inside media query", () => {
@@ -194,15 +181,8 @@ h2.-c-1 + p.-c-1 {
         ],
         `<news-item></news-item>`
       ).css
-    ).toEqual(`.header.-c-0 {
-  color: green;
-}
-
-@media (min-height: 680px), screen and (orientation: portrait) {
-  .header.-c-0 {
-    color: red;
-  }
-}`);
+    ).toEqual(`.header.-c-0 { color: green; } @media (min-height: 680px), screen and (orientation: portrait) { .header.-c-0 { color:
+red; } }`);
   });
 
   it("test simple slot", () => {
@@ -409,9 +389,7 @@ h2.-c-1 + p.-c-1 {
 
       expect(result2.html).toEqual(`<p>one</p>
 <p class="-c-0">two</p>`);
-      expect(result2.css).toEqual(`.foo.-c-0 {
-  color: red;
-}`);
+      expect(result2.css).toEqual(`.foo.-c-0 { color: red; }`);
     });
 
     it("should works in components", () => {
