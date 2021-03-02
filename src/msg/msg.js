@@ -60,7 +60,8 @@ export function msg(components, page, data = {}, options = {}) {
     setCssInline(pageElement, getStylesNodesFromComponents(Components, [...styles]));
   }
 
-  return { html: prettifyHtml(domSerializer(pageElement)), css: prettifyHtml(css) };
+  const domSer = domSerializer.default || domSerializer
+  return { html: prettifyHtml(domSer(pageElement)), css: prettifyHtml(css) };
 }
 
 function getStylesFromComponents(Components, compNames) {

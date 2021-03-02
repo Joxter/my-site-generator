@@ -1,5 +1,5 @@
+import { readdirSync, readFileSync, writeFileSync, unlink } from "fs";
 import commandLineArgs from "command-line-args";
-import { readdirSync, readFileSync, writeFileSync } from "fs";
 import { msg } from "./src";
 
 const optionDefinitions = [
@@ -18,10 +18,9 @@ const components = readdirSync("./demo/components").map(name => {
   return readFileSync(`./demo/components/${name}`).toString();
 });
 
-// console.log(page, components);
+const result = msg(components, page, {}, {cssInline: true});
 
-const result = msg(components, page);
-
+// console.log(result.html);
 writeFileSync("./demo/result/index.html", result.html);
-writeFileSync("./demo/result/style.css", result.css);
+// writeFileSync("./demo/result/style.css", result.css);
 // console.log();
