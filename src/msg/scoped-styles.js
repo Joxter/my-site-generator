@@ -10,37 +10,40 @@ function makeUniq(component) {
     return;
   }
 
+  const unicClass = "-c-" + component.uid;
   const rawStyles = component.styles.children[0].data;
   const cssData = css.parse(rawStyles);
   const cssRules = cssData.stylesheet.rules;
 
-  cssRules.forEach(rule => {
-    if (rule.type === "media") {
-      rule.rules.forEach(innerRule => {
-        innerRule.selectors = innerRule.selectors.map(selector => modifyRule(selector, component));
-      });
-    } else {
-      rule.selectors = rule.selectors.map(selector => modifyRule(selector, component));
-    }
-  });
-
-  component.styles.children[0].data = css.stringify(cssData);
-}
-
-function modifyRule(selector, component) {
-  if (selector.includes("#")) {
-    return selector;
-  }
-
-  const unicClass = "-c-" + component.uid;
-
   selectAll("*", component.template).forEach(node => { // todo remove selectAll dep
+    if (node.type === "tag" && ["html", "link", "style", "script", "title", "head", "meta"].includes(node.name)) {
+      return;
+    }
+
     if (!node.attribs.class) {
       node.attribs.class = unicClass;
     } else {
       node.attribs.class += ` ${unicClass}`;
     }
   });
+  
+  cssRules.forEach(rule => {
+    if (rule.type === "media") {
+      rule.rules.forEach(innerRule => {
+        innerRule.selectors = innerRule.selectors.map(selector => modifyRule(selector, unicClass));
+      });
+    } else {
+      rule.selectors = rule.selectors.map(selector => modifyRule(selector, unicClass));
+    }
+  });
+
+  component.styles.children[0].data = css.stringify(cssData);
+}
+
+function modifyRule(selector, unicClass) {
+  if (selector.includes("#")) {
+    return selector;
+  }
 
   return __unic(selector, unicClass);
 }
