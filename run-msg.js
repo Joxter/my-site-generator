@@ -13,14 +13,14 @@ const options = commandLineArgs(optionDefinitions);
 
 console.log(options);
 
-const page = readFileSync("./demo/index.html").toString();
 const components = readdirSync("./demo/components").map(name => {
   return readFileSync(`./demo/components/${name}`).toString();
 });
 
-const result = msg(components, page, {}, {cssInline: true});
+const page1 = readFileSync("./demo/pages/index.html").toString();
+const result1 = msg(components, page1, {}, {cssInline: true});
+writeFileSync("./demo/result/index.html", result1.html);
 
-// console.log(result.html);
-writeFileSync("./demo/result/index.html", result.html);
-// writeFileSync("./demo/result/style.css", result.css);
-// console.log();
+const page2 = readFileSync("./demo/pages/cv.html").toString();
+const result2 = msg(components, page2, {}, {cssInline: true});
+writeFileSync("./demo/result/cv.html", result2.html);
