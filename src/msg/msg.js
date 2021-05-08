@@ -33,7 +33,8 @@ export function msg(components, page, data = {}, options = {}) {
         setCssInline(pageElement, getStylesNodesFromComponents(Components, styles));
       }
 
-      const prettyHtml = prettifyHtml(domSerializer(pageElement));
+      const domSer = domSerializer.default || domSerializer
+      const prettyHtml = prettifyHtml(domSer(pageElement));
 
       return { html: prettyHtml, css: styles };
     });

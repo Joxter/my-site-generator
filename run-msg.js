@@ -18,13 +18,11 @@ const components = readdirSync("./demo/components").map(name => {
 });
 
 const page1 = readFileSync("./demo/pages/index.html").toString();
-const result1 = msg(components, page1, {}, { cssInline: true });
-writeFileSync("./demo/result/index.html", result1.html);
-
 const page2 = readFileSync("./demo/pages/cv.html").toString();
-const result2 = msg(
+
+const result = msg(
   components,
-  page2,
+  [page1, page2],
   {
     skills: [
       { title: "JavaScript", exp: "7 years exp", text: "Have a strong understanding of fundamental things." },
@@ -34,4 +32,6 @@ const result2 = msg(
   },
   { cssInline: true }
 );
-writeFileSync("./demo/result/cv.html", result2.html);
+
+writeFileSync("./demo/result/index.html", result.pages[0].html);
+writeFileSync("./demo/result/cv.html", result.pages[1].html);
