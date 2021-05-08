@@ -45,51 +45,7 @@
     </section>
     <section class="layout-grid">
       <h2>Skills</h2>
-      <div class="skills">
-        <style>
-          .skills {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 24px;
-          }
-
-          @media (max-width: 500px) {
-            .skills {
-              display: block;
-            }
-          }
-
-          .skills-exp {
-            font-size: 0.9em;
-            font-weight: normal;
-            display: block;
-            font-style: italic;
-          }
-
-          .skills h3 {
-            font-size: 18px;
-            margin-bottom: 0;
-          }
-          .skills p {
-            margin-top: 10px;
-          }
-        </style>
-        <div>
-          <h3>JavaScript<span class="skills-exp">7 years exp</span></h3>
-
-          <p>Have a strong understanding of fundamental things.</p>
-        </div>
-        <div>
-          <h3>React<span class="skills-exp">3 years exp</span></h3>
-
-          <p>Understand the good and bad parts of the React-stack.</p>
-        </div>
-        <div>
-          <h3>HTML, CSS<span class="skills-exp">8 years exp</span></h3>
-
-          <p>Adaptive layout, BEM, preprocessors.</p>
-        </div>
-      </div>
+      <three-skills skills="{skills}"></three-skills>
     </section>
 
     <section class="layout-grid experience">

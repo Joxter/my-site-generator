@@ -1,0 +1,44 @@
+<template data-j-component="three-skills" data-j-props="skills">
+  <div class="root">
+    <div>
+      <h3>{skills[0].title}<span class="exp">{skills[0].exp}</span></h3>
+      <p>{skills[0].text}</p>
+    </div>
+    <div>
+      <h3>{skills[1].title}<span class="exp">{skills[1].exp}</span></h3>
+      <p>{skills[1].text}</p>
+    </div>
+    <div>
+      <h3>{skills[2].title}<span class="exp">{skills[2].exp}</span></h3>
+      <p>{skills[2].text}</p>
+    </div>
+  </div>
+  <style>
+    .root {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 500px) {
+      .root {
+        display: block;
+      }
+    }
+
+    .exp {
+      font-size: 0.9em;
+      font-weight: normal;
+      display: block;
+      font-style: italic;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin-bottom: 0;
+    }
+    p {
+      margin-top: 10px;
+    }
+  </style>
+</template>
