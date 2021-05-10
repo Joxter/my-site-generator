@@ -1,0 +1,22 @@
+<template data-j-component="my-experience" data-j-props="period company role" data-j-slots="description">
+  <span class="period">{period}</span>
+  <h3>{company}</h3>
+  <p class="role">{role}</p>
+  <slot name="description"></slot>
+  <style>
+    h3 {
+      font-size: 20px;
+      margin-bottom: 0;
+      padding: 0;
+    }
+    .period {
+      font-style: italic;
+      float: right;
+      margin-left: 12px;
+    }
+    .role {
+      font-size: 18px;
+      margin-top: 0;
+    }
+  </style>
+</template>

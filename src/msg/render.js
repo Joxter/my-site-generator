@@ -90,6 +90,7 @@ function insertDataToProp(props, data) {
 }
 
 function insertDataToSting(str, data) {
+  // todo fix errors when we trying to pass props witch doesn't exist
   return str.replace(/(?:\{(.+?)\})/g, (match, $1) => {
     const keys = getKeysFromStr($1);
     return deepFind(data, keys);
