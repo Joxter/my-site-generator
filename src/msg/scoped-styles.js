@@ -78,32 +78,23 @@ export function modifyRule(selector, salt) {
     return selector;
   }
 
-  const arr = selector.split("");
-  salt = `.${salt}`;
-
+  const selectorArr = selector.split("");
+  salt = "." + salt;
   let currState = "none";
-  let i = 0;
 
-  while (i < arr.length && i < 1000) {
-    const char = arr[i];
-    if (char.length > 1) {
-      i++;
-      continue;
-    }
+  for (let i = 0; i < selectorArr.length; i++) {
+    const char = selectorArr[i];
 
     for (const [fromState, tester, nextState, needAddSalt] of machine) {
       if (currState === fromState && tester(char)) {
         currState = nextState;
-        if (needAddSalt) {
-          arr.splice(i, 0, salt);
-        }
+        if (needAddSalt) selectorArr.splice(i, 0, salt);
         break;
       }
     }
-    i++;
   }
 
-  if (currState === "class" || currState === "tag") arr.push(salt);
+  if (currState === "class" || currState === "tag") selectorArr.push(salt);
 
-  return arr.join("");
+  return selectorArr.join("");
 }
