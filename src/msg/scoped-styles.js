@@ -41,90 +41,69 @@ function makeUniq(component) {
   component.styles.children[0].data = css.stringify(cssData);
 }
 
-function modifyRule(selector, unicClass) {
-  return __unic(selector, unicClass);
+function eq(pattern) {
+  return char => pattern === char;
 }
 
-export function __unic(selector, salt) {
-  selector = selector.trim();
-  
+function byRegexp(reg) {
+  return char => reg.test(char);
+}
+
+const toNone = byRegexp(/[\s+~>]/i);
+const machine = [
+  ["none", eq("*"), "none"],
+  ["none", eq("."), "dot"],
+  ["none", eq(":"), "colon"],
+  ["none", byRegexp(/[\w]/i), "tag"],
+  //
+  ["tag", byRegexp(/[\w]/i), "tag"],
+  ["tag", eq("."), "dot"],
+  ["tag", eq(":"), "colon", true],
+  ["tag", toNone, "none", true],
+  //
+  ["colon", eq(":"), "pseudo"],
+  ["colon", byRegexp(/[\w-()[]/i), "pseudo"],
+  ["pseudo", byRegexp(/[\w-()[]/i), "pseudo"],
+  ["pseudo", toNone, "none"],
+  //
+  ["dot", byRegexp(/[\w-]/i), "class"],
+  ["class", byRegexp(/[\w-]/i), "class"],
+  ["class", eq("."), "dot"],
+  ["class", eq(":"), "colon", true],
+  ["class", toNone, "none", true],
+];
+
+export function modifyRule(selector, salt) {
   if (selector.includes("#")) {
     return selector;
   }
 
-  const isEndOfBLock = char => [" ", "+", "~", ">", ":"].includes(char);
   const arr = selector.split("");
+  salt = `.${salt}`;
 
+  let currState = "none";
   let i = 0;
-  let state = "matter-end"; // 'matter-start' 'matter-end' 'pseudo-start' 'attr-start'
 
   while (i < arr.length && i < 1000) {
-    // something like state-machine
-    // todo fix total mess here T_T
     const char = arr[i];
     if (char.length > 1) {
       i++;
       continue;
     }
 
-    if (char === "*") {
-      arr[i] = `.${salt}`;
-      continue;
-    }
-
-    if (char === ":") {
-      state = "pseudo-start";
-      i++;
-      continue;
-    }
-
-    if (state === "matter-end") {
-      if (/[\w.]/i.test(char)) {
-        state = "matter-start";
-
-        if (arr[i + 1] === undefined) {
-          state = "matter-end";
-          arr.splice(i + 1, 0, `.${salt}`);
-
-          i++;
-          continue;
+    for (const [fromState, tester, nextState, needAddSalt] of machine) {
+      if (currState === fromState && tester(char)) {
+        currState = nextState;
+        if (needAddSalt) {
+          arr.splice(i, 0, salt);
         }
+        break;
       }
-
-      i++;
-      continue;
-    }
-
-    if (state === "pseudo-start") {
-      if (isEndOfBLock(char)) {
-        state = "matter-end";
-        i++;
-        continue;
-      }
-    }
-
-    if (state === "matter-start") {
-      if (isEndOfBLock(char)) {
-        state = "matter-end";
-        arr.splice(i, 0, `.${salt}`);
-
-        i++;
-        continue;
-      }
-
-      if (arr[i + 1] === undefined) {
-        state = "matter-end";
-        arr.splice(i + 1, 0, `.${salt}`);
-
-        i++;
-        continue;
-      }
-
-      i++;
-      continue;
     }
     i++;
   }
+
+  if (currState === "class" || currState === "tag") arr.push(salt);
 
   return arr.join("");
 }
