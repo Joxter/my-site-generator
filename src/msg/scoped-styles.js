@@ -15,7 +15,8 @@ function makeUniq(component) {
   const cssData = css.parse(rawStyles);
   const cssRules = cssData.stylesheet.rules;
 
-  selectAll("*", component.template).forEach(node => { // todo remove selectAll dep
+  selectAll("*", component.template).forEach(node => {
+    // todo remove selectAll dep
     if (node.type === "tag" && ["html", "link", "style", "script", "title", "head", "meta"].includes(node.name)) {
       return;
     }
@@ -26,7 +27,7 @@ function makeUniq(component) {
       node.attribs.class += ` ${unicClass}`;
     }
   });
-  
+
   cssRules.forEach(rule => {
     if (rule.type === "media") {
       rule.rules.forEach(innerRule => {
@@ -41,22 +42,25 @@ function makeUniq(component) {
 }
 
 function modifyRule(selector, unicClass) {
-  if (selector.includes("#")) {
-    return selector;
-  }
-
   return __unic(selector, unicClass);
 }
 
 export function __unic(selector, salt) {
-  const isEndOfBLock = char => [" ", "+", "~", ">"].includes(char);
+  selector = selector.trim();
+  
+  if (selector.includes("#")) {
+    return selector;
+  }
+
+  const isEndOfBLock = char => [" ", "+", "~", ">", ":"].includes(char);
   const arr = selector.split("");
 
   let i = 0;
-  let state = "block-end"; // 'matter-start' 'block-end' 'pseudo-start' 'attr-start'
+  let state = "matter-end"; // 'matter-start' 'matter-end' 'pseudo-start' 'attr-start'
 
   while (i < arr.length && i < 1000) {
     // something like state-machine
+    // todo fix total mess here T_T
     const char = arr[i];
     if (char.length > 1) {
       i++;
@@ -68,12 +72,18 @@ export function __unic(selector, salt) {
       continue;
     }
 
-    if (state === "block-end") {
+    if (char === ":") {
+      state = "pseudo-start";
+      i++;
+      continue;
+    }
+
+    if (state === "matter-end") {
       if (/[\w.]/i.test(char)) {
         state = "matter-start";
 
         if (arr[i + 1] === undefined) {
-          state = "block-end";
+          state = "matter-end";
           arr.splice(i + 1, 0, `.${salt}`);
 
           i++;
@@ -87,7 +97,7 @@ export function __unic(selector, salt) {
 
     if (state === "pseudo-start") {
       if (isEndOfBLock(char)) {
-        state = "block-end";
+        state = "matter-end";
         i++;
         continue;
       }
@@ -95,15 +105,7 @@ export function __unic(selector, salt) {
 
     if (state === "matter-start") {
       if (isEndOfBLock(char)) {
-        state = "block-end";
-        arr.splice(i, 0, `.${salt}`);
-
-        i++;
-        continue;
-      }
-
-      if (char === ":") {
-        state = "pseudo-start";
+        state = "matter-end";
         arr.splice(i, 0, `.${salt}`);
 
         i++;
@@ -111,7 +113,7 @@ export function __unic(selector, salt) {
       }
 
       if (arr[i + 1] === undefined) {
-        state = "block-end";
+        state = "matter-end";
         arr.splice(i + 1, 0, `.${salt}`);
 
         i++;

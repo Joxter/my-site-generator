@@ -44,4 +44,9 @@ describe("__unic", () => {
   it("should works with *", function() {
     expect(__unic("* .foo", "mix")).toEqual(".mix .foo.mix");
   });
+
+  it("selector ':root' should be ignored", function() {
+    expect(__unic(":root", "mix")).toEqual(":root");
+    expect(__unic(":root .foo", "mix")).toEqual(":root .foo.mix");
+  });
 });
