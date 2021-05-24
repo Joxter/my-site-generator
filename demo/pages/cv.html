@@ -1,146 +1,142 @@
 <cv-layout title="Nikolay Morozov, Frontend developer">
   <div slot="header">
+    <h1>
+      Nikolay Morozov
+      <span style="font-size: 18px; font-weight: normal; display: block">
+        Frontend developer, remote/relocate only
+      </span>
+    </h1>
+  </div>
+  <ul class="no-list" style="margin-left: auto; line-height: 1.5" slot="header">
+    <li>
+      E-mail, Skype:
+      <a href="mailto:joxterrr@gmail.com">joxterrr@gmail.com</a>
+    </li>
+    <li><a href="https://www.linkedin.com/in/nikolay-morozov">linkedin.com/in/nikolay-morozov</a></li>
+    <li>Telegram: <a href="https://t.me/joxter">@joxter</a></li>
+    <li>Location: Moscow, Russia</li>
+  </ul>
+  <section class="layout-grid" slot="main">
+    <h2>About me</h2>
     <div>
-      <h1>
-        Nikolay Morozov
-        <span style="font-size: 18px; font-weight: normal; display: block">
-          Frontend developer, remote/relocate only
-        </span>
-      </h1>
+      <p>
+        My main skills now are <b>vanilla JavaScript</b>, <b>React</b>, <b>TypeScript</b>, HTML/CSS, Redux, Effector,
+        Jest, Webpack, Less/Sass.
+      </p>
+
+      <p>Actively used: <b>PHP</b>, <b>Node.js</b>, <b>Pug</b>, Cucumber, Hugo, MySQL, Perl, Flow, Parcel, Sphinx.</p>
+
+      <p>
+        Familiar or interested in Rust, Nginx, Docker, Vue, Gulp, Express, MongoDB.
+      </p>
+
+      <p>
+        And also.. Git, code review, Figma/Zeplin, adaptive layout, Scrum/Agile, linters, CSS modules, refactoring,
+        support lots of legacy code. I like types and don't like Redux.
+      </p>
+
+      <p>
+        I am learning English. My speaking and writing level is B1-B2.
+      </p>
     </div>
-    <ul class="no-list" style="margin-left: auto; line-height: 1.5">
+  </section>
+  <section class="layout-grid" slot="main">
+    <h2>Skills</h2>
+    <three-skills skills="{skills}"></three-skills>
+  </section>
+
+  <section class="layout-grid experience" slot="main">
+    <h2>Experience</h2>
+    <ul class="no-list">
       <li>
-        E-mail, Skype:
-        <a href="mailto:joxterrr@gmail.com">joxterrr@gmail.com</a>
+        <my-experience period="Nov 2020 - Apr 2021" company="FLEETCOR" role="Frontend developer">
+          <div slot="description">
+            <!-- todo улучшить слоты чтоб можно было не оборачивать контент в блок -->
+            <p>
+              FLEETCOR provides fuel cards, payment products and services.
+            </p>
+            <p>
+              The technical stack in my team included HUGO, vanilla JS/HTML/CSS, Cucumber, Bootstrap, SASS.
+            </p>
+            <p>
+              Creating pages for personal cabinet from the scratch, fixing layout bugs, leading user stories, doing code
+              review.
+            </p>
+            <p>Fully English-speaking environment.</p>
+          </div>
+        </my-experience>
       </li>
-      <li><a href="https://www.linkedin.com/in/nikolay-morozov">linkedin.com/in/nikolay-morozov</a></li>
-      <li>Telegram: <a href="https://t.me/joxter">@joxter</a></li>
-      <li>Location: Moscow, Russia</li>
+
+      <li>
+        <my-experience period="Mar 2017 - Nov 2020" company="Dostavista.global" role="Frontend developer">
+          <div slot="description">
+            <p>
+              The company provides information service for deliveries, like UBER for couriers. It is an international
+              project on a single codebase. The technical stack is React, Redux, TypeScript, Jest, PHP, Webpack, Less,
+              Docker.
+            </p>
+            <p>
+              I have been doing a different kind of work from adjusting styles and layout to developing huge sections of
+              sites from scratch or architecture refactoring.
+            </p>
+            <p>Some achievements:</p>
+            <ul>
+              <li>
+                Developed an application for WeChat. A custom framework with a Chinese doc.
+              </li>
+              <li>
+                Upgraded a building process from RequireJS+optimizer to Webpack, Babel, npm. Profit: less bundle size,
+                code splitting, and other modern features.
+              </li>
+              <li>
+                Full refactoring of the order form. The codebase was reduced from 250Kb to 150Kb, lots of old nasty bugs
+                were fixed.
+              </li>
+              <li>
+                Took one of the main parts of migrating to React-stack from jQuery.
+              </li>
+              <li>
+                Holding retrospectives with the frontend team. Adjusting processes, discussing ideas, reflecting on
+                fails.
+              </li>
+              <li>
+                Implemented custom UI-kit component library. Profit: consistent user interface, faster and more
+                confident development of new features.
+              </li>
+            </ul>
+          </div>
+        </my-experience>
+      </li>
+      <li>
+        <my-experience period="Apr 2015 - Feb 2017" company="FIRA" role="Web developer">
+          <div slot="description">
+            <p>
+              Maintained an information analysis system. SPA on pure JS and DHTMLX as view lib. There are Perl,
+              HTML::Mason, MySQL, Sphinx and some JS-in-Perl magic on the backend.
+            </p>
+            <p>Some parts are 10+ years old legacy.</p>
+            <p>Did lots of various tasks from adding little UX/UI features to create a custom SSR for better SEO.</p>
+          </div>
+        </my-experience>
+      </li>
+
+      <li>
+        <my-experience period="Jun 2011 - Nov 2014" company="Moscow College #30" role="IT-guy, web developer">
+          <div slot="description">
+            <p>Installed OS, drivers, soft, changed the printers' cartridges and lots of other stuff.</p>
+            <p>Maintained site of the college: self-made CMS on pure PHP/HTML/CSS/MySQL.</p>
+          </div>
+        </my-experience>
+      </li>
     </ul>
-  </div>
-  <div slot="main">
-    <section class="layout-grid">
-      <h2>About me</h2>
-      <div>
-        <p>
-          My main skills now are <b>vanilla JavaScript</b>, <b>React</b>, <b>TypeScript</b>, HTML/CSS, Redux, Effector,
-          Jest, Webpack, Less/Sass.
-        </p>
+  </section>
 
-        <p>Actively used: <b>PHP</b>, <b>Node.js</b>, <b>Pug</b>, Cucumber, Hugo, MySQL, Perl, Flow, Parcel, Sphinx.</p>
-
-        <p>
-          Familiar or interested in Rust, Nginx, Docker, Vue, Gulp, Express, MongoDB.
-        </p>
-
-        <p>
-          And also.. Git, code review, Figma/Zeplin, adaptive layout, Scrum/Agile, linters, CSS modules, refactoring,
-          support lots of legacy code. I like types and don't like Redux.
-        </p>
-
-        <p>
-          I am learning English. My speaking and writing level is B1-B2.
-        </p>
-      </div>
-    </section>
-    <section class="layout-grid">
-      <h2>Skills</h2>
-      <three-skills skills="{skills}"></three-skills>
-    </section>
-
-    <section class="layout-grid experience">
-      <h2>Experience</h2>
-      <ul class="no-list">
-        <li>
-          <my-experience period="Nov 2020 - Apr 2021" company="FLEETCOR" role="Frontend developer">
-            <div slot="description">
-              <!-- todo улучшить слоты чтоб можно было не оборачивать контент в блок -->
-              <p>
-                FLEETCOR provides fuel cards, payment products and services.
-              </p>
-              <p>
-                The technical stack in my team included HUGO, vanilla JS/HTML/CSS, Cucumber, Bootstrap, SASS.
-              </p>
-              <p>
-                Creating pages for personal cabinet from the scratch, fixing layout bugs, leading user stories, doing
-                code review.
-              </p>
-              <p>Fully English-speaking environment.</p>
-            </div>
-          </my-experience>
-        </li>
-
-        <li>
-          <my-experience period="Mar 2017 - Nov 2020" company="Dostavista.global" role="Frontend developer">
-            <div slot="description">
-              <p>
-                The company provides information service for deliveries, like UBER for couriers. It is an international
-                project on a single codebase. The technical stack is React, Redux, TypeScript, Jest, PHP, Webpack, Less,
-                Docker.
-              </p>
-              <p>
-                I have been doing a different kind of work from adjusting styles and layout to developing huge sections
-                of sites from scratch or architecture refactoring.
-              </p>
-              <p>Some achievements:</p>
-              <ul>
-                <li>
-                  Developed an application for WeChat. A custom framework with a Chinese doc.
-                </li>
-                <li>
-                  Upgraded a building process from RequireJS+optimizer to Webpack, Babel, npm. Profit: less bundle size,
-                  code splitting, and other modern features.
-                </li>
-                <li>
-                  Full refactoring of the order form. The codebase was reduced from 250Kb to 150Kb, lots of old nasty
-                  bugs were fixed.
-                </li>
-                <li>
-                  Took one of the main parts of migrating to React-stack from jQuery.
-                </li>
-                <li>
-                  Holding retrospectives with the frontend team. Adjusting processes, discussing ideas, reflecting on
-                  fails.
-                </li>
-                <li>
-                  Implemented custom UI-kit component library. Profit: consistent user interface, faster and more
-                  confident development of new features.
-                </li>
-              </ul>
-            </div>
-          </my-experience>
-        </li>
-        <li>
-          <my-experience period="Apr 2015 - Feb 2017" company="FIRA" role="Web developer">
-            <div slot="description">
-              <p>
-                Maintained an information analysis system. SPA on pure JS and DHTMLX as view lib. There are Perl,
-                HTML::Mason, MySQL, Sphinx and some JS-in-Perl magic on the backend.
-              </p>
-              <p>Some parts are 10+ years old legacy.</p>
-              <p>Did lots of various tasks from adding little UX/UI features to create a custom SSR for better SEO.</p>
-            </div>
-          </my-experience>
-        </li>
-
-        <li>
-          <my-experience period="Jun 2011 - Nov 2014" company="Moscow College #30" role="IT-guy, web developer">
-            <div slot="description">
-              <p>Installed OS, drivers, soft, changed the printers' cartridges and lots of other stuff.</p>
-              <p>Maintained site of the college: self-made CMS on pure PHP/HTML/CSS/MySQL.</p>
-            </div>
-          </my-experience>
-        </li>
-      </ul>
-    </section>
-
-    <section class="layout-grid">
-      <h2>Education</h2>
-      <my-education
-        period="Sept 2008 - Aug 2013"
-        place="Moscow Institute of State and Corporate Governance"
-        role="Informatics in economics, Specialist degree"
-      ></my-education>
-    </section>
-  </div>
+  <section class="layout-grid" slot="main">
+    <h2>Education</h2>
+    <my-education
+      period="Sept 2008 - Aug 2013"
+      place="Moscow Institute of State and Corporate Governance"
+      role="Informatics in economics, Specialist degree"
+    ></my-education>
+  </section>
 </cv-layout>

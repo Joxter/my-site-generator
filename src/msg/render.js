@@ -1,5 +1,6 @@
 import { append, findOne, removeElement } from "domutils";
 import { deepFind, first, getKeysFromStr, last, removeFirstLastChar } from "./utils";
+import { findAll } from "domutils/lib/querying";
 
 const COND_ATTRIB = "j-if";
 const COND_ELSE_ATTRIB = "j-else";
@@ -59,11 +60,11 @@ function getComponentSlotsData(component, node) {
   const slots = {};
 
   component.slots.forEach(slotName => {
-    const slotEl = findOne(el => el.attribs.slot === slotName, node.children);
-    if (slotEl) {
-      slots[slotName] = slotEl;
-      delete slots[slotName].attribs.slot;
-    }
+    const slotEls = findAll(el => el.attribs.slot === slotName, node.children);
+    slots[slotName] = slotEls;
+    slots[slotName].forEach(slotNode => {
+      delete slotNode.attribs.slot;
+    });
   });
 
   return slots;
@@ -168,8 +169,12 @@ function insertSlots(node, slots) {
   }
   const slotName = node.attribs.name;
 
-  if (slots[slotName]) {
-    append(node, slots[slotName]);
+  if (slots[slotName].length > 0) {
+    let last = node;
+    slots[slotName].forEach(slot => {
+      append(last, slot);
+      last = slot;
+    });
     removeElement(node);
   } else {
     extractNode(node);

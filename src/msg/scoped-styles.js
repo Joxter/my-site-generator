@@ -54,16 +54,16 @@ const machine = [
   ["none", eq("*"), "none"],
   ["none", eq("."), "dot"],
   ["none", eq(":"), "colon"],
-  ["none", byRegexp(/[\w]/i), "tag"],
+  ["none", byRegexp(/\w/i), "tag"],
   //
-  ["tag", byRegexp(/[\w]/i), "tag"],
+  ["tag", byRegexp(/\w/i), "tag"],
   ["tag", eq("."), "dot"],
   ["tag", eq(":"), "colon", true],
   ["tag", toNone, "none", true],
   //
   ["colon", eq(":"), "pseudo"],
-  ["colon", byRegexp(/[\w-()[]/i), "pseudo"],
-  ["pseudo", byRegexp(/[\w-()[]/i), "pseudo"],
+  ["colon", byRegexp(/[\w-()]/i), "pseudo"],
+  ["pseudo", byRegexp(/[\w-()]/i), "pseudo"],
   ["pseudo", toNone, "none"],
   //
   ["dot", byRegexp(/[\w-]/i), "class"],

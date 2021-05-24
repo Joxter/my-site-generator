@@ -151,9 +151,9 @@ describe("test msg", () => {
 `
     );
 
-    expect(result.html).toEqual(`<h2 class="header -c-0 -c-0 -c-0">header1</h2>
-<p class="-c-0 -c-0 -c-0">text1 <span class="-c-0 -c-0 -c-0">span1</span></p>
-<div id="some-id" class="-c-0 -c-0 -c-0">text1</div>
+    expect(result.html).toEqual(`<h2 class="header -c-0">header1</h2>
+<p class="-c-0">text1 <span class="-c-0">span1</span></p>
+<div id="some-id" class="-c-0">text1</div>
 <h2 class="header -c-1">header2</h2>
 <p class="-c-1">text2</p>
 <div id="some-id" class="-c-1">text2</div>`);
@@ -213,6 +213,22 @@ red; } }`);
         `<news-item></news-item>`
       ).html
     ).toEqual(`<header>default header</header>`);
+  });
+
+  it("several slots with one name", () => {
+    expect(
+      msg(
+        [
+          `<template data-j-component="news-item" data-j-slots="header">
+<header><slot name="header">default header</slot></header>
+</template>`,
+        ],
+        `<news-item><h1 slot="header">main header</h1><h2 slot="header">second header</h2></news-item>`
+      ).html
+    ).toEqual(`<header>
+  <h1>main header</h1>
+  <h2>second header</h2>
+</header>`);
   });
 
   it("slot with component", () => {
@@ -362,9 +378,8 @@ red; } }`);
     it("should works", () => {
       expect(msg([], `<p j-for="{item in arr}">{item}</p>`, { arr: [123, 456] }).html).toEqual(`<p>123</p>
 <p>456</p>`);
-      expect(
-        msg([], `<p j-for="{item in arr}">{item.label}</p>`, { arr: [{ label: "123" }, { label: "456" }] }).html
-      ).toEqual(`<p>123</p>
+      expect(msg([], `<p j-for="{item in arr}">{item.label}</p>`, { arr: [{ label: "123" }, { label: "456" }] }).html)
+        .toEqual(`<p>123</p>
 <p>456</p>`);
     });
 

@@ -31,6 +31,8 @@ describe("modifyRule", () => {
   it("should works with pseudo selectors", function() {
     expect(modifyRule(".foo:first-child", "mix")).toEqual(".foo.mix:first-child");
     expect(modifyRule(".foo::first-child", "mix")).toEqual(".foo.mix::first-child");
+    expect(modifyRule(".foo:nth-child(3)", "mix")).toEqual(".foo.mix:nth-child(3)");
+    expect(modifyRule(".foo::nth-child(3)", "mix")).toEqual(".foo.mix::nth-child(3)");
     expect(modifyRule("p:first-child", "mix")).toEqual("p.mix:first-child");
     expect(modifyRule(".foo:first-child .bar", "mix")).toEqual(".foo.mix:first-child .bar.mix");
   });
