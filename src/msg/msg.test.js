@@ -309,6 +309,43 @@ red; } }`);
       ).toEqual(`<p>first text</p>
 <p>second text</p>`);
     });
+    it("should works in slots", () => {
+      expect(
+        msg(
+          [
+            `<template data-j-component="news-item" data-j-slots="header">
+<header><slot name="header">default header</slot></header>
+</template>`,
+          ],
+          `<news-item><div slot="header"><h2>My name is {name}</h2></div></news-item>`,
+          { name: "Kolya" }
+        ).html
+      ).toEqual(`<header>
+  <div><h2>My name is Kolya</h2></div>
+</header>`);
+    });
+
+    it("should works with several slots", () => {
+      expect(
+        msg(
+          [
+            `<template data-j-component="my-layout" data-j-slots="header">
+<header><slot name="header"></slot></header>
+</template>`,
+          ],
+          `<my-layout>
+<section slot="header"><h1>first header {skill}</h1></section>
+<section slot="header"><h1>second header {skill}</h1></section>
+</my-layout>`,
+          {
+            skill: "JS",
+          }
+        ).html
+      ).toEqual(`<header>
+  <section><h1>first header JS</h1></section>
+  <section><h1>second header JS</h1></section>
+</header>`);
+    });
   });
 
   it('option "cssInline" should paste css at the end of head', () => {
