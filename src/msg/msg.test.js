@@ -338,12 +338,12 @@ red; } }`);
 <section slot="header"><h1>second header {skill}</h1></section>
 </my-layout>`,
           {
-            skill: "JS",
+            skill: "Skill",
           }
         ).html
       ).toEqual(`<header>
-  <section><h1>first header JS</h1></section>
-  <section><h1>second header JS</h1></section>
+  <section><h1>first header Skill</h1></section>
+  <section><h1>second header Skill</h1></section>
 </header>`);
     });
   });

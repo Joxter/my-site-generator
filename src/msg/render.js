@@ -27,7 +27,7 @@ export function render(Components, elem, data, styles, slots = null) {
     const slots = getComponentSlotsData(myComp, elem);
 
     const renderedComp = myComp.template.cloneNode(true);
-    render(Components, renderedComp, innerData, styles, slots);
+    render(Components, renderedComp, { ...innerData, ...data }, styles, slots);
     append(elem, renderedComp);
     removeElement(elem);
     elem = extractNode(renderedComp);
