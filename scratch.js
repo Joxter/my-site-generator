@@ -40,11 +40,10 @@ newRender({}, tree);
 throw 1;
 
 function newRender(Components, rootNode, data, styles, slots = null) {
-  const path = [];
   shallowRender(rootNode, function render(elem) {
     // console.log(elem.value);
-    path.push(elem.value);
     if (elem.add) {
+      // todo сделать if и for
       return elem.add.map(val => {
         return {
           value: val,
@@ -53,7 +52,13 @@ function newRender(Components, rootNode, data, styles, slots = null) {
       });
     }
   });
+
+  const path = [];
+  shallowRender(rootNode, function render(elem) {
+    path.push(elem.value);
+  });
   console.log("---->", path.join(", "));
+  console.log(rootNode);
 }
 
 function fmtStack(arr) {
