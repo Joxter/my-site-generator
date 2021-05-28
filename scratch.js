@@ -21,7 +21,7 @@ const tree = {
     },
     {
       value: 3,
-      for: [6, [7, 8]],
+      for: true,
       children: [
         {
           value: 4,
@@ -37,27 +37,16 @@ const tree = {
 };
 
 newRender({}, tree);
-throw 1;
 
 function newRender(Components, rootNode, data, styles, slots = null) {
   shallowRender(rootNode, function render(elem) {
-    // console.log(elem.value);
-    if (elem.add) {
-      // todo сделать if и for
-      return elem.add.map(val => {
-        return {
-          value: val,
-          children: [],
-        };
-      });
-    }
   });
 
   const path = [];
   shallowRender(rootNode, function render(elem) {
     path.push(elem.value);
   });
-  console.log("---->", path.join(", "));
+  console.log("---->", path.join(", "), path.join("") === "12345678");
   console.log(rootNode);
 }
 
@@ -67,22 +56,48 @@ function fmtStack(arr) {
 
 function shallowRender(elem, cb) {
   const store = [elem];
+  // pop + unshift =  обход вширь
+  // pop + push =  какой-то вглубь задом на перед
+  // shift + push =  обход вширь
+  // shift + unshift =   какой-то вглубь задом на перед
+
+  // reverse
+  // pop + unshift = обход вширь задом на перед
+  // pop + push =  обход вглубь
+  // shift + push =  обход вширь задом на перед
+  // shift + unshift =   обход вглубь
 
   while (store.length > 0) {
-    let str = fmtStack(store);
-    const el = store.shift();
+    // let str = fmtStack(store);
+    const el = store.pop();
+    cb(el);
+    // str += ` -${el.value} ` + fmtStack(store);
 
-    str += ` -${el.value} ` + fmtStack(store);
+    for (let i = el.children.length - 1; i >= 0; i--) {
+      const ch = el.children[i];
+      if ("if" in ch && ch.if === false) continue; // todo убрать это из цикла, скорее всего в колбек
 
-    const newNodes = cb(el);
+      if ("for" in ch) {  // todo убрать это из цикла, скорее всего в колбек
+        store.push({
+          value: 6,
+          children: [
+            {
+              value: 7,
+              children: [],
+            },
+            {
+              value: 8,
+              children: [],
+            },
+          ],
+        });
+        store.push(ch);
+        continue;
+      }
 
-    if (newNodes) {
-      store.unshift(...newNodes);
-      str += ` +new ` + fmtStack(store);
+      store.push(ch);
     }
-
-    store.unshift(...el.children);
-    str += ` +children ` + fmtStack(store);
-    console.log(str);
+    // str += ` +children ` + fmtStack(store);
+    // console.log(str);
   }
 }
