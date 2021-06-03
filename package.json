@@ -21,7 +21,6 @@
   "dependencies": {
     "command-line-args": "^5.1.1",
     "css": "^3.0.0",
-    "css-select": "^3.1.2",
     "dom-serializer": "^1.2.0",
     "domutils": "^2.4.4",
     "htmlparser2": "^6.0.0",

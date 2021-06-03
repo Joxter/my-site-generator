@@ -42,3 +42,18 @@ export function commonInArr(arr1, arr2) {
 
   return Object.keys(common);
 }
+
+export function forEachNodes(root, cb) {
+  const store = [root];
+
+  while (store.length > 0) {
+    const el = store.pop();
+    cb(el);
+
+    if (el.children) {
+      for (let i = el.children.length - 1; i >= 0; i--) {
+        store.push(el.children[i]);
+      }
+    }
+  }
+}

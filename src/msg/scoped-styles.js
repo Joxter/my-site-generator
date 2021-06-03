@@ -1,4 +1,4 @@
-import { selectAll } from "css-select";
+import { forEachNodes } from "./utils";
 import css from "css";
 
 export function scopedStyles(Components) {
@@ -15,8 +15,10 @@ function makeUniq(component) {
   const cssData = css.parse(rawStyles);
   const cssRules = cssData.stylesheet.rules;
 
-  selectAll("*", component.template).forEach(node => {
-    // todo remove selectAll dep
+  forEachNodes(component.template, node => {
+    if (node.type !== "tag") {
+      return;
+    }
     if (node.type === "tag" && ["html", "link", "style", "script", "title", "head", "meta"].includes(node.name)) {
       return;
     }

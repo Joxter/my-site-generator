@@ -1,5 +1,6 @@
 import { parseDocument } from "htmlparser2";
 import { removeElement } from "domutils";
+import { forEachNodes } from "./utils";
 
 function initComponents(componentsArr) {
   const Components = {};
@@ -42,15 +43,19 @@ function getServiceNodes(templateData) {
   }
 
   let styles;
+  let componentNodes = [];
   let nodesToData = []; // текстовые ноды, в которые можно вставить какой-то текст "some text {insert}"
   const props = parseProps(templateEl.attribs[COMPONENT_ATTRS.PROPS]);
   const slots = parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
 
   forEachNodes(templateEl, el => {
     if (el.type === "tag") {
-      // el.name: 'div'
+      if (el.name.includes("-")) {
+        componentNodes.push(el);
+      }
     } else if (el.type === "text") {
-      if (el.data.includes("{")) { // fixme исправить на более надежное
+      if (el.data.includes("{")) {
+        // fixme исправить на более надежное
         nodesToData.push(el);
       }
     } else if (el.type === "style") {
@@ -67,6 +72,7 @@ function getServiceNodes(templateData) {
     name,
     props,
     template: templateEl,
+    componentNodes,
     styles,
     nodesToData,
     slots,
@@ -95,19 +101,4 @@ function getComponentTemplateTag(data) {
   }
 
   throw new Error("Can't get component's template");
-}
-
-function forEachNodes(root, cb) {
-  const store = [root];
-
-  while (store.length > 0) {
-    const el = store.pop();
-    cb(el);
-
-    if (el.children) {
-      for (let i = el.children.length - 1; i >= 0; i--) {
-        store.push(el.children[i]);
-      }
-    }
-  }
 }
