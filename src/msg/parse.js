@@ -1,5 +1,5 @@
 import { parseDocument } from "htmlparser2";
-import { findOne, removeElement } from "domutils";
+import { removeElement } from "domutils";
 
 function initComponents(componentsArr) {
   const Components = {};
@@ -28,26 +28,37 @@ export function parse(components, pages) {
 }
 
 const COMPONENT_ATTRS = {
-  NAME: "data-j-component",
-  PROPS: "data-j-props",
-  SLOTS: "data-j-slots",
+  NAME: "name",
+  PROPS: "props",
+  SLOTS: "slots",
 };
 
 function getServiceNodes(templateData) {
   const templateEl = getComponentTemplateTag(templateData);
 
   const name = templateEl.attribs[COMPONENT_ATTRS.NAME];
-
   if (!name) {
     throw new Error("Component name should have a name");
   }
 
+  let styles;
+  let nodesToData = []; // текстовые ноды, в которые можно вставить какой-то текст "some text {insert}"
   const props = parseProps(templateEl.attribs[COMPONENT_ATTRS.PROPS]);
   const slots = parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
 
-  const childNodes = templateEl.children;
-  let styles = findOne(el => el.type === "style", childNodes);
-
+  forEachNodes(templateEl, el => {
+    if (el.type === "tag") {
+      // el.name: 'div'
+    } else if (el.type === "text") {
+      if (el.data.includes("{")) { // fixme исправить на более надежное
+        nodesToData.push(el);
+      }
+    } else if (el.type === "style") {
+      if (!styles) {
+        styles = el;
+      }
+    }
+  });
   if (styles) {
     removeElement(styles);
   }
@@ -57,6 +68,7 @@ function getServiceNodes(templateData) {
     props,
     template: templateEl,
     styles,
+    nodesToData,
     slots,
   };
 }
@@ -83,4 +95,19 @@ function getComponentTemplateTag(data) {
   }
 
   throw new Error("Can't get component's template");
+}
+
+function forEachNodes(root, cb) {
+  const store = [root];
+
+  while (store.length > 0) {
+    const el = store.pop();
+    cb(el);
+
+    if (el.children) {
+      for (let i = el.children.length - 1; i >= 0; i--) {
+        store.push(el.children[i]);
+      }
+    }
+  }
 }

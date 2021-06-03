@@ -33,7 +33,7 @@ export function msg(components, page, data = {}, options = {}) {
         setCssInline(pageElement, getStylesNodesFromComponents(Components, styles));
       }
 
-      const domSer = domSerializer.default || domSerializer
+      const domSer = domSerializer.default || domSerializer;
       const prettyHtml = prettifyHtml(domSer(pageElement));
 
       return { html: prettyHtml, css: styles };
@@ -61,7 +61,7 @@ export function msg(components, page, data = {}, options = {}) {
     setCssInline(pageElement, getStylesNodesFromComponents(Components, [...styles]));
   }
 
-  const domSer = domSerializer.default || domSerializer
+  const domSer = domSerializer.default || domSerializer;
   return { html: prettifyHtml(domSer(pageElement)), css: prettifyHtml(css) };
 }
 

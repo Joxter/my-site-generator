@@ -3,7 +3,7 @@ import { msg } from "./msg";
 describe("test msg", () => {
   it("basic work", () => {
     const result = msg(
-      [`<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`],
+      [`<template name="new-cut" props="label"><button>{label}</button></template>`],
       `<h1>header</h1><div><new-cut label="button text"></new-cut></div>`
     );
 
@@ -14,7 +14,7 @@ describe("test msg", () => {
   it("component with several nodes", () => {
     const result = msg(
       [
-        `<template data-j-component="new-cut" data-j-props="label">
+        `<template name="new-cut" props="label">
 <button>{label}</button>
 <p>123</p>
 </template>`,
@@ -31,7 +31,7 @@ describe("test msg", () => {
 
   it("several instances of the component", () => {
     const result = msg(
-      [`<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`],
+      [`<template name="new-cut" props="label"><button>{label}</button></template>`],
       `<h1>header</h1><div><new-cut label="button text"></new-cut><new-cut label="second text"></new-cut></div>`
     );
 
@@ -42,8 +42,8 @@ describe("test msg", () => {
   it("several components", () => {
     const result = msg(
       [
-        `<template data-j-component="new-cut" data-j-props="label header"><h2>{header}</h2><button>{label}</button></template>`,
-        `<template data-j-component="my-par" data-j-props="text"><p>{text}</p></template>`,
+        `<template name="new-cut" props="label header"><h2>{header}</h2><button>{label}</button></template>`,
+        `<template name="my-par" props="text"><p>{text}</p></template>`,
       ],
       `<h1>header</h1>
 <div>
@@ -63,8 +63,8 @@ describe("test msg", () => {
   it("nested components", () => {
     const result = msg(
       [
-        `<template data-j-component="my-post"><div><my-par text="some text"></my-par><button>read more</button></div></template>`,
-        `<template data-j-component="my-par" data-j-props="text"><p>{text}</p></template>`,
+        `<template name="my-post"><div><my-par text="some text"></my-par><button>read more</button></div></template>`,
+        `<template name="my-par" props="text"><p>{text}</p></template>`,
       ],
       `<h1>header</h1><my-post></my-post><my-post></my-post>`
     );
@@ -83,8 +83,8 @@ describe("test msg", () => {
   it("smoke s", () => {
     const result = msg(
       [
-        `<template data-j-component="new-cut" data-j-props="label"><button>{label}</button></template>`,
-        `<template data-j-component="news-item" data-j-props="header text">
+        `<template name="new-cut" props="label"><button>{label}</button></template>`,
+        `<template name="news-item" props="header text">
 <h2>{header}</h2><div><p>{text}</p><new-cut label="see more"></new-cut></div>
 </template>`,
       ],
@@ -119,7 +119,7 @@ describe("test msg", () => {
   it("scoped styles", () => {
     const result = msg(
       [
-        `<template data-j-component="news-item">
+        `<template name="news-item">
   <h2 class="header">header1</h2>
   <p>text1 <span>span1</span></p>
   <div id="some-id">text1</div>
@@ -132,7 +132,7 @@ describe("test msg", () => {
     }
   </style>
 </template>`,
-        `<template data-j-component="user-item">
+        `<template name="user-item">
   <h2 class="header">header2</h2>
   <p>text2</p>
   <div id="some-id">text2</div>
@@ -166,7 +166,7 @@ describe("test msg", () => {
     expect(
       msg(
         [
-          `<template data-j-component="news-item">
+          `<template name="news-item">
   <h2 class="header">header1</h2>
   <style>
     .header {
@@ -191,7 +191,7 @@ red; } }`);
     expect(
       msg(
         [
-          `<template data-j-component="news-item" data-j-slots="header">
+          `<template name="news-item" slots="header">
 <header><slot name="header">default header</slot></header>
 </template>`,
         ],
@@ -206,7 +206,7 @@ red; } }`);
     expect(
       msg(
         [
-          `<template data-j-component="news-item" data-j-slots="header">
+          `<template name="news-item" slots="header">
 <header><slot name="header">default header</slot></header>
 </template>`,
         ],
@@ -219,7 +219,7 @@ red; } }`);
     expect(
       msg(
         [
-          `<template data-j-component="news-item" data-j-slots="header">
+          `<template name="news-item" slots="header">
 <header><slot name="header">default header</slot></header>
 </template>`,
         ],
@@ -235,10 +235,10 @@ red; } }`);
     expect(
       msg(
         [
-          `<template data-j-component="news-item" data-j-slots="header">
+          `<template name="news-item" slots="header">
 <header><slot name="header">default header</slot></header>
 </template>`,
-          `<template data-j-component="my-user" data-j-props="name age">
+          `<template name="my-user" props="name age">
 <p>{name}</p>{age}
 </template>`,
         ],
@@ -256,10 +256,10 @@ red; } }`);
     expect(
       msg(
         [
-          `<template data-j-component="news-item" data-j-slots="header">
+          `<template name="news-item" slots="header">
 <header><slot name="header">default header</slot></header>
 </template>`,
-          `<template data-j-component="my-user" data-j-props="name age">
+          `<template name="my-user" props="name age">
 <p>{name}</p>{age}
 </template>`,
         ],
@@ -281,7 +281,7 @@ red; } }`);
     it("data in components", () => {
       expect(
         msg(
-          [`<template data-j-component="my-par" data-j-props="content"><p>{content}</p></template>`],
+          [`<template name="my-par" props="content"><p>{content}</p></template>`],
           `<my-par content="{text}"></my-par>`,
           { text: "hi" }
         ).html
@@ -297,8 +297,8 @@ red; } }`);
       expect(
         msg(
           [
-            `<template data-j-component="my-par" data-j-props="text"><p>{text}</p></template>`,
-            `<template data-j-component="my-article" data-j-props="content">
+            `<template name="my-par" props="text"><p>{text}</p></template>`,
+            `<template name="my-article" props="content">
   <my-par text="{content[0].text}"></my-par>
   <my-par text="{content[1].text}"></my-par>
 </template>`,
@@ -313,7 +313,7 @@ red; } }`);
       expect(
         msg(
           [
-            `<template data-j-component="news-item" data-j-slots="header">
+            `<template name="news-item" slots="header">
 <header><slot name="header">default header</slot></header>
 </template>`,
           ],
@@ -329,7 +329,7 @@ red; } }`);
       expect(
         msg(
           [
-            `<template data-j-component="my-layout" data-j-slots="header">
+            `<template name="my-layout" slots="header">
 <header><slot name="header"></slot></header>
 </template>`,
           ],
@@ -352,7 +352,7 @@ red; } }`);
     expect(
       msg(
         [
-          `<template data-j-component="my-par" data-j-props="content">
+          `<template name="my-par" props="content">
 <p>{content}</p>
 <style>.foo {color: red}</style>
 </template>`,
@@ -387,9 +387,9 @@ red; } }`);
   describe("test several pages", () => {
     it("basic work", () => {
       const components = [
-        `<template data-j-component="comp-one"><p>one</p><style>.one {color: red}</style></template>`,
-        `<template data-j-component="comp-two"><p>two</p><style>.two {color: red}</style></template>`,
-        `<template data-j-component="comp-three"><p>three</p><style>.three {color: red}</style></template>`,
+        `<template name="comp-one"><p>one</p><style>.one {color: red}</style></template>`,
+        `<template name="comp-two"><p>two</p><style>.two {color: red}</style></template>`,
+        `<template name="comp-three"><p>three</p><style>.three {color: red}</style></template>`,
       ];
       const page1 = `<div><comp-one></comp-one></div>`;
       const page2 = `<div><comp-one></comp-one><comp-two></comp-two></div>`;
@@ -442,7 +442,7 @@ red; } }`);
 
     it("should works with components", () => {
       const components = [
-        `<template data-j-component="my-par" data-j-props="content">
+        `<template name="my-par" props="content">
 <p>{content}</p>
 <style>.foo {color: red}</style>
 </template>`,
@@ -463,7 +463,7 @@ red; } }`);
 
     it("should works in components", () => {
       const components = [
-        `<template data-j-component="my-par" data-j-props="inner-cond">
+        `<template name="my-par" props="inner-cond">
 <p>one</p><p j-if="{inner-cond}">optional</p>
 </template>`,
       ];
