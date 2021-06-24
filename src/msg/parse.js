@@ -1,6 +1,6 @@
 import { parseDocument } from "htmlparser2";
 import { removeElement } from "domutils";
-import { forEachNodes } from "./utils";
+import { forEachNodes } from "./utils.js";
 
 function initComponents(componentsArr) {
   const Components = {};

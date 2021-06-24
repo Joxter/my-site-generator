@@ -1,4 +1,4 @@
-import { modifyRule } from "./scoped-styles";
+import { modifyRule } from "./scoped-styles.js";
 
 describe("modifyRule", () => {
   it("should works is the most simple cases", function() {

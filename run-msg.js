@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, writeFileSync, unlink } from "fs";
 import commandLineArgs from "command-line-args";
-import { msg } from "./src";
+import { msg } from "./src/index.js";
 
 const optionDefinitions = [
   { name: "components", alias: "c", type: String },

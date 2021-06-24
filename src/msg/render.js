@@ -1,6 +1,6 @@
-import { append, findOne, removeElement } from "domutils";
-import { deepFind, first, getKeysFromStr, last, removeFirstLastChar } from "./utils";
-import { findAll } from "domutils/lib/querying";
+import { append, removeElement } from "domutils";
+import { findAll } from "domutils/lib/querying.js";
+import { deepFind, first, getKeysFromStr, last, removeFirstLastChar } from "./utils.js";
 
 const COND_ATTRIB = "j-if";
 const COND_ELSE_ATTRIB = "j-else";

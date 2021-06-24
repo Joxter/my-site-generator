@@ -1,12 +1,12 @@
-import prettier from "prettier/standalone";
-import prettierHtml from "prettier/parser-html";
-import prettierCss from "prettier/parser-postcss";
 import domSerializer from "dom-serializer";
-import { render } from "./render";
-import { parse } from "./parse";
-import { scopedStyles } from "./scoped-styles";
-import { setCssInline } from "./option-css-inline";
-import { commonInArr } from "./utils";
+import prettier from "prettier/standalone.js";
+import prettierHtml from "prettier/parser-html.js";
+import prettierCss from "prettier/parser-postcss.js";
+import { render } from "./render.js";
+import { parse } from "./parse.js";
+import { scopedStyles } from "./scoped-styles.js";
+import { setCssInline } from "./option-css-inline.js";
+import { commonInArr } from "./utils.js";
 
 export function msg(components, page, data = {}, options = {}) {
   const [Components, pageElement] = parse(components, page);

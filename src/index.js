@@ -1,1 +1,1 @@
-export { msg } from "./msg";
+export { msg } from "./msg/index.js";
