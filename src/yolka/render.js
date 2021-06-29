@@ -1,5 +1,5 @@
 export function render(Components, page, data) {
-  return renderNotMy(page);
+  return renderNotMy(page, { components: Components });
 }
 
 let selfEnclosingTag = new Set([
@@ -25,8 +25,10 @@ let selfEnclosingTag = new Set([
 ]);
 /**
  * обрезанный код из dom-serializer
+ * todo: components в options не смотрится, может убрать в другое место
  *
  * options:
+ * - components
  * - selfClosingTags
  * - emptyAttrs
  * */
@@ -41,6 +43,7 @@ function renderNotMy(node, options = {}) {
 }
 
 const ElementType = {
+  Component: "component",
   Root: "root",
   Directive: "directive",
   Doctype: "doctype",
@@ -56,6 +59,8 @@ function renderNode(node, options) {
   switch (node.type) {
     case ElementType.Root:
       return renderNotMy(node.children, options);
+    case ElementType.Component:
+      return renderComponent(node, options);
     case ElementType.Directive:
     case ElementType.Doctype:
       return renderDirective(node);
@@ -68,8 +73,16 @@ function renderNode(node, options) {
     case ElementType.Tag:
       return renderTag(node, options);
     case ElementType.Text:
-      return renderText(node, options);
+      return renderText(node);
   }
+}
+
+function renderComponent(node, options) {
+  const componentData = options.components[node.name];
+  if (!componentData) {
+    return `<div>MISSING COMPONENT "${node.name}"</div>`;
+  }
+  return renderNotMy(componentData.template.children, options);
 }
 
 function renderTag(elem, opts) {

@@ -2,11 +2,11 @@ import { parseDocument } from "htmlparser2";
 import { removeElement } from "domutils";
 import { forEachNodes } from "../utils.js";
 
-function initComponents(componentsArr) {
+function initComponents(componentsAST) {
   const Components = {};
 
-  componentsArr.forEach((el, i) => {
-    const component = getServiceNodes(el);
+  componentsAST.forEach((componentAST, i) => {
+    const component = getServiceNodes(componentAST);
     component.uid = i;
     Components[component.name] = component;
   });
@@ -20,35 +20,37 @@ const COMPONENT_ATTRS = {
   SLOTS: "slots",
 };
 
-export function parse(components, pages) {
-  const pageElements = pages.map(page => parseDocument(page));
+export function parse(componentStrs, pageStrs) {
+  const pages = pageStrs.map(page => getServiceNodes(parseDocument(page), true));
 
   const Components = initComponents(
-    components.map(template => {
+    componentStrs.map(template => {
       return parseDocument(template);
     })
   );
 
-  return [Components, pageElements];
+  return [Components, pages];
 }
 
-function getServiceNodes(templateData) {
-  const templateEl = getComponentTemplateTag(templateData);
+function getServiceNodes(componentAST, isPage = false) {
+  const templateEl = getComponentTemplateTag(componentAST, isPage);
 
-  const name = templateEl.attribs[COMPONENT_ATTRS.NAME];
-  if (!name) {
+  const name = isPage ? null : templateEl.attribs[COMPONENT_ATTRS.NAME];
+  if (!isPage && !name) {
+    // todo может сюда что-то подставлять, типа название файла?
     throw new Error("Component name should have a name");
   }
 
-  let style;
+  let style = null;
   let componentNodes = [];
   let nodesToData = []; // текстовые ноды, в которые можно вставить какой-то текст "some text {insert}"
-  const props = parseProps(templateEl.attribs[COMPONENT_ATTRS.PROPS]);
-  const slots = parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
+  const props = isPage ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.PROPS]);
+  const slots = isPage ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
 
   forEachNodes(templateEl, el => {
     if (el.type === "tag") {
       if (el.name.includes("-")) {
+        el.type = "component"; // hack первый хак парсера, нужен чтоб подружить AST с моей логикой
         componentNodes.push(el);
       }
     } else if (el.type === "text") {
@@ -88,8 +90,10 @@ function parseProps(str) {
     .filter(str => !!str);
 }
 
-function getComponentTemplateTag(data) {
-  const res = data.children[0];
+function getComponentTemplateTag(node, isPage = false) {
+  if (isPage) return node;
+
+  const res = node.children[0];
   if (res.name === "template") {
     return res;
   }
