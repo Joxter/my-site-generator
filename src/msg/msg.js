@@ -6,7 +6,7 @@ import { render } from "./render.js";
 import { parse } from "./parse.js";
 import { scopedStyles } from "./scoped-styles.js";
 import { setCssInline } from "./option-css-inline.js";
-import { commonInArr } from "./utils.js";
+import { commonInArr } from "../utils.js";
 
 export function msg(components, page, data = {}, options = {}) {
   const [Components, pageElement] = parse(components, page);

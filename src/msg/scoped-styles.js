@@ -1,5 +1,5 @@
 import css from "css";
-import { forEachNodes } from "./utils.js";
+import { forEachNodes } from "../utils.js";
 
 export function scopedStyles(Components) {
   Object.values(Components).forEach(comp => makeUniq(comp));

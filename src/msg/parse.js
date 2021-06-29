@@ -1,6 +1,6 @@
 import { parseDocument } from "htmlparser2";
 import { removeElement } from "domutils";
-import { forEachNodes } from "./utils.js";
+import { forEachNodes } from "../utils.js";
 
 function initComponents(componentsArr) {
   const Components = {};
@@ -43,7 +43,7 @@ function getServiceNodes(templateData) {
   }
 
   let styles;
-  let componentNodes = [];
+  let componentNodes = []; // todo убрать все что будет реализовано в ёлке
   let nodesToData = []; // текстовые ноды, в которые можно вставить какой-то текст "some text {insert}"
   const props = parseProps(templateEl.attribs[COMPONENT_ATTRS.PROPS]);
   const slots = parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
