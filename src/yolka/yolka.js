@@ -4,12 +4,10 @@ import { render } from "./render.js";
 export function yolka(components, pages, options = {}, data = {}) {
   const [Components, pageElements] = parse(components, pages);
 
-  console.log(Components);
-  console.log(pageElements);
+  // console.log(Components);
+  // console.log(pageElements);
 
   const resPages = pageElements.map(pageEL => render(Components, pageEL, data));
 
   return { pages: resPages };
 }
-
-yolka([`<div><h1>header</h1></div>`]);
