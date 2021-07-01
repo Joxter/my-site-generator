@@ -1,6 +1,6 @@
 import { parseDocument } from "htmlparser2";
 import { removeElement } from "domutils";
-import { forEachNodes } from "../utils.js";
+import { forEachNodes, getKeysFromStr, removeFirstLastChar } from "../utils.js";
 
 function initComponents(componentsAST) {
   const Components = {};
@@ -42,8 +42,8 @@ function getServiceNodes(componentAST, isPage = false) {
   }
 
   let style = null;
-  let componentNodes = [];
-  let nodesToData = []; // текстовые ноды, в которые можно вставить какой-то текст "some text {insert}"
+  // let componentNodes = [];
+  // let nodesToData = []; // текстовые ноды, в которые можно вставить какой-то текст "some text {insert}"
   const props = isPage ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.PROPS]);
   const slots = isPage ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
 
@@ -51,14 +51,20 @@ function getServiceNodes(componentAST, isPage = false) {
     if (el.type === "tag") {
       if (el.name.includes("-")) {
         el.type = "component"; // hack первый хак парсера, нужен чтоб подружить AST с моей логикой
-        componentNodes.push(el);
+
+        for (let name in el.attribs) {
+          el.attribs[name] = getKeysFromStr(removeFirstLastChar(el.attribs[name]));
+        }
+
+        // if (isPage) componentNodes.push(el);
       }
     } else if (el.type === "text") {
       if (el.data.includes("{")) {
+        el.type = "text-with-data"; // hack хак парсера, нужен чтоб подружить AST с моей логикой
         // fixme исправить на более надежное и правильное, наверное это новый тип ноды
         //  чтоб insertDataToSting не понадобилось, а весь парсинг делать тут
         //  может как-то так "Hello, {user.name}!" => ["hello," + ['user', 'name'], '!'];
-        nodesToData.push(el);
+        // nodesToData.push(el);
       }
     } else if (el.type === "style") {
       if (!style) {
@@ -77,8 +83,8 @@ function getServiceNodes(componentAST, isPage = false) {
     slots, // имена слотов
     style, // нода <style>
     children: templateEl.children, // осонвная верстка
-    componentNodes, // ссылки на ноды вложенных компонентов
-    nodesToData, // ссылки на ноды куда можно вставить некий текст
+    // componentNodes, // ссылки на ноды вложенных компонентов
+    // nodesToData, // ссылки на ноды куда можно вставить некий текст
   };
 }
 

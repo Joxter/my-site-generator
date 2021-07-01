@@ -28,14 +28,59 @@ describe("yolka basics", () => {
     expect(result.pages[0]).toEqual("<h1>header</h1><p>hello, Kolya!</p>");
   });
 
-  it.skip("test simple component with props", () => {
-    // todo implement
+  it("test simple component with props", () => {
     const result = yolka(
-      [`<template name="my-greeting" props="name"><p>hello, {name}!</p></template>`],
-      [`<h1>header</h1><div><my-greeting name="{userName}"></my-greeting></div>`],
-      { userName: "Kolya" }
+      [`<template name="my-greeting" props="user"><p>hello, {user.name}!</p></template>`],
+      [`<h1>header</h1><div><my-greeting user="{users[0]}"></my-greeting></div>`],
+      {},
+      { users: [{ name: "Kolya" }] }
     );
 
     expect(result.pages[0]).toEqual("<h1>header</h1><div><p>hello, Kolya!</p></div>");
+  });
+
+  it("test several instances of component", () => {
+    const result = yolka(
+      [`<template name="my-greeting" props="user"><p>hello, {user.name}!</p></template>`],
+      [
+        `<h1>header</h1>
+<div>
+  <my-greeting user="{users[0]}"></my-greeting>
+  <my-greeting user="{users[1]}"></my-greeting>
+</div>`,
+      ],
+      {},
+      { users: [{ name: "Kolya" }, { name: "Petya" }] }
+    );
+
+    expect(result.pages[0]).toEqual(`<h1>header</h1>
+<div>
+  <p>hello, Kolya!</p>
+  <p>hello, Petya!</p>
+</div>`);
+  });
+
+  it("test several components", () => {
+    const result = yolka(
+      [
+        `<template name="my-header" props="user"><p>my best site for {user.name}!</p></template>`,
+        `<template name="my-greeting" props="user"><p>hello, {user.name}!</p></template>`,
+      ],
+      [
+        `<h1>header</h1>
+<div>
+  <my-header user="{users[0]}"></my-header>
+  <my-greeting user="{users[0]}"></my-greeting>
+</div>`,
+      ],
+      {},
+      { users: [{ name: "Kolya" }] }
+    );
+
+    expect(result.pages[0]).toEqual(`<h1>header</h1>
+<div>
+  <p>my best site for Kolya!</p>
+  <p>hello, Kolya!</p>
+</div>`);
   });
 });

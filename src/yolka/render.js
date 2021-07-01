@@ -1,4 +1,4 @@
-import { insertDataToSting } from "../utils.js";
+import { deepFind, insertDataToSting } from "../utils.js";
 
 export function render(Components, pageComp, data) {
   return renderNotMy(pageComp, { components: Components, data });
@@ -58,6 +58,7 @@ const ElementType = {
   Style: "style",
   Tag: "tag",
   Text: "text",
+  TextWithData: "text-with-data",
 };
 
 function renderNode(node, options) {
@@ -81,14 +82,12 @@ function renderNode(node, options) {
       return renderTag(node, options);
     case ElementType.Text:
       return renderText(node);
+    case ElementType.TextWithData:
+      return renderTextWithData(node, options);
   }
 }
 
 function renderPage(node, options) {
-  node.nodesToData.forEach(n => {
-    n.data = insertDataToSting(n.data, options.data);
-  });
-
   return renderNotMy(node.children, options);
 }
 
@@ -98,11 +97,12 @@ function renderComponent(node, options) {
     return `<div>MISSING COMPONENT "${node.name}"</div>`;
   }
 
-  componentData.nodesToData.forEach(n => {
-    n.data = insertDataToSting(n.data, options.data);
-  });
+  const data = {};
+  for (let name in node.attribs) {
+    data[name] = deepFind(options.data, node.attribs[name]);
+  }
 
-  return renderNotMy(componentData.children, options);
+  return renderNotMy(componentData.children, { ...options, data });
 }
 
 function renderTag(elem, opts) {
@@ -131,6 +131,10 @@ function renderDirective(elem) {
 
 function renderText(elem) {
   return elem.data || "";
+}
+
+function renderTextWithData(elem, options) {
+  return insertDataToSting(elem.data, options.data);
 }
 
 function renderCdata(elem) {

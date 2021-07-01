@@ -12,7 +12,7 @@ export function deepFind(obj, props) {
  * do this: 'foo[2].bar' -> ['foo', '2', 'bar']
  */
 export function getKeysFromStr(str) {
-  return str.split(/[\[\].]+/);
+  return str.split(/[\[\].]+/).filter(key => !!key);
 }
 
 export function removeFirstLastChar(str) {
