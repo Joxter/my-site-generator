@@ -1,5 +1,7 @@
-export function render(Components, page, data) {
-  return renderNotMy(page, { components: Components });
+import { insertDataToSting } from "../utils.js";
+
+export function render(Components, pageComp, data) {
+  return renderNotMy(pageComp, { components: Components, data });
 }
 
 let selfEnclosingTag = new Set([
@@ -27,10 +29,12 @@ let selfEnclosingTag = new Set([
  * обрезанный код из dom-serializer
  * todo: components в options не смотрится, может убрать в другое место
  *
- * options:
- * - components
- * - selfClosingTags
- * - emptyAttrs
+ * Options:
+ *   - components
+ *   - data
+ *   ---
+ *   - selfClosingTags
+ *   - emptyAttrs
  * */
 function renderNotMy(node, options = {}) {
   // todo что за node.cheerio ??
@@ -44,6 +48,7 @@ function renderNotMy(node, options = {}) {
 
 const ElementType = {
   Component: "component",
+  Page: "page",
   Root: "root",
   Directive: "directive",
   Doctype: "doctype",
@@ -61,6 +66,8 @@ function renderNode(node, options) {
       return renderNotMy(node.children, options);
     case ElementType.Component:
       return renderComponent(node, options);
+    case ElementType.Page:
+      return renderPage(node, options);
     case ElementType.Directive:
     case ElementType.Doctype:
       return renderDirective(node);
@@ -77,12 +84,25 @@ function renderNode(node, options) {
   }
 }
 
+function renderPage(node, options) {
+  node.nodesToData.forEach(n => {
+    n.data = insertDataToSting(n.data, options.data);
+  });
+
+  return renderNotMy(node.children, options);
+}
+
 function renderComponent(node, options) {
   const componentData = options.components[node.name];
   if (!componentData) {
     return `<div>MISSING COMPONENT "${node.name}"</div>`;
   }
-  return renderNotMy(componentData.template.children, options);
+
+  componentData.nodesToData.forEach(n => {
+    n.data = insertDataToSting(n.data, options.data);
+  });
+
+  return renderNotMy(componentData.children, options);
 }
 
 function renderTag(elem, opts) {

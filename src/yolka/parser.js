@@ -55,7 +55,9 @@ function getServiceNodes(componentAST, isPage = false) {
       }
     } else if (el.type === "text") {
       if (el.data.includes("{")) {
-        // fixme исправить на более надежное
+        // fixme исправить на более надежное и правильное, наверное это новый тип ноды
+        //  чтоб insertDataToSting не понадобилось, а весь парсинг делать тут
+        //  может как-то так "Hello, {user.name}!" => ["hello," + ['user', 'name'], '!'];
         nodesToData.push(el);
       }
     } else if (el.type === "style") {
@@ -70,11 +72,12 @@ function getServiceNodes(componentAST, isPage = false) {
 
   return {
     name, // имя компонента
+    type: isPage ? "page" : "component",
     props, // имена параметров
-    slots, // именя слотов
-    style, // компонент со стилями
-    template: templateEl, // осонвная верстка
-    componentNodes, // ссылки на новы вложенных компонентов
+    slots, // имена слотов
+    style, // нода <style>
+    children: templateEl.children, // осонвная верстка
+    componentNodes, // ссылки на ноды вложенных компонентов
     nodesToData, // ссылки на ноды куда можно вставить некий текст
   };
 }
