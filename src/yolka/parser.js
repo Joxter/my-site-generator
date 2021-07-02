@@ -42,7 +42,7 @@ function getServiceNodes(componentAST, isPage = false) {
   }
 
   let style = null;
-  // let componentNodes = [];
+  let dependsOn = new Set(); // компоненты которые используются в этом
   // let nodesToData = []; // текстовые ноды, в которые можно вставить какой-то текст "some text {insert}"
   const props = isPage ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.PROPS]);
   const slots = isPage ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
@@ -56,6 +56,7 @@ function getServiceNodes(componentAST, isPage = false) {
           el.attribs[name] = getKeysFromStr(removeFirstLastChar(el.attribs[name]));
         }
 
+        dependsOn.add(el.name);
         // if (isPage) componentNodes.push(el);
       }
     } else if (el.type === "text") {
@@ -83,7 +84,7 @@ function getServiceNodes(componentAST, isPage = false) {
     slots, // имена слотов
     style, // нода <style>
     children: templateEl.children, // осонвная верстка
-    // componentNodes, // ссылки на ноды вложенных компонентов
+    dependsOn, // имена компонентов которые используются в текущем
     // nodesToData, // ссылки на ноды куда можно вставить некий текст
   };
 }
