@@ -46,9 +46,17 @@ function getServiceNodes(componentAST, isPage = false) {
   // let nodesToData = []; // текстовые ноды, в которые можно вставить какой-то текст "some text {insert}"
   const props = isPage ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.PROPS]);
   const slots = isPage ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
+  let headEl = null;
+  let bodyEl = null;
 
   forEachNodes(templateEl, el => {
     if (el.type === "tag") {
+      if (isPage && el.name === "head") {
+        headEl = el;
+      }
+      if (isPage && el.name === "body") {
+        bodyEl = el;
+      }
       if (el.name.includes("-")) {
         el.type = "component"; // hack первый хак парсера, нужен чтоб подружить AST с моей логикой
 
@@ -61,16 +69,11 @@ function getServiceNodes(componentAST, isPage = false) {
       }
     } else if (el.type === "text") {
       if (el.data.includes("{")) {
-        el.type = "text-with-data"; // hack хак парсера, нужен чтоб подружить AST с моей логикой
-        // fixme исправить на более надежное и правильное, наверное это новый тип ноды
-        //  чтоб insertDataToSting не понадобилось, а весь парсинг делать тут
-        //  может как-то так "Hello, {user.name}!" => ["hello," + ['user', 'name'], '!'];
+        toTextWithDataNode(el); // hack хак парсера, нужен чтоб подружить AST с моей логикой
         // nodesToData.push(el);
       }
     } else if (el.type === "style") {
-      if (!style) {
-        style = el;
-      }
+      style = el;
     }
   });
   if (style) {
@@ -86,7 +89,38 @@ function getServiceNodes(componentAST, isPage = false) {
     children: templateEl.children, // осонвная верстка
     dependsOn, // имена компонентов которые используются в текущем
     // nodesToData, // ссылки на ноды куда можно вставить некий текст
+    bodyEl, // ссылка на <body>
+    headEl, // ссылка на <head>
   };
+}
+
+function toTextWithDataNode(node) {
+  //  как-то так "Hello, {user.name}!" => ["hello,", ['user', 'name'], '!'];
+
+  let str = node.data;
+  let result = [];
+  let lastBorder = 0;
+
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] === "{" || str[i] === "}") {
+      if (str[i] === "{") {
+        if (lastBorder !== i) {
+          result.push(str.slice(lastBorder, i));
+        }
+      } else {
+        result.push(getKeysFromStr(str.slice(lastBorder + 1, i)));
+      }
+
+      lastBorder = i;
+    }
+  }
+
+  if (lastBorder < str.length - 1) {
+    result.push(str.slice(lastBorder + 1, str.length));
+  }
+
+  node.data = result;
+  node.type = "text-with-data";
 }
 
 function parseProps(str) {
