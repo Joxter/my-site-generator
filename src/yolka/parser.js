@@ -1,6 +1,7 @@
 import { parseDocument } from "htmlparser2";
 import { removeElement } from "domutils";
 import { forEachNodes, getKeysFromStr, removeFirstLastChar } from "../utils.js";
+import { COMPONENT_ATTRS, NODE_SPEC_ATTRS } from "./constants.js";
 
 function initComponents(componentsAST) {
   const Components = {};
@@ -13,12 +14,6 @@ function initComponents(componentsAST) {
 
   return Components;
 }
-
-const COMPONENT_ATTRS = {
-  NAME: "name",
-  PROPS: "props",
-  SLOTS: "slots",
-};
 
 export function parse(componentStrs, pageStrs) {
   const pages = pageStrs.map(page => getServiceNodes(parseDocument(page), true));
@@ -51,12 +46,15 @@ function getServiceNodes(componentAST, isPage = false) {
 
   forEachNodes(templateEl, el => {
     if (el.type === "tag") {
-      if (isPage && el.name === "head") {
-        headEl = el;
+      if (isPage && el.name === "head") headEl = el;
+      if (isPage && el.name === "body") bodyEl = el;
+
+      if (NODE_SPEC_ATTRS.IF in el.attribs) {
+        let cond = el.attribs[NODE_SPEC_ATTRS.IF];
+
+        el.attribs[NODE_SPEC_ATTRS.IF] = getKeysFromStr(removeFirstLastChar(cond));
       }
-      if (isPage && el.name === "body") {
-        bodyEl = el;
-      }
+
       if (el.name.includes("-")) {
         el.type = "component"; // hack первый хак парсера, нужен чтоб подружить AST с моей логикой
 
@@ -96,6 +94,7 @@ function getServiceNodes(componentAST, isPage = false) {
 
 function toTextWithDataNode(node) {
   //  как-то так "Hello, {user.name}!" => ["hello,", ['user', 'name'], '!'];
+  // todo исправить на нормальное, а то сейчас все сломается если "Hello}, {} my name is {name!"
 
   let str = node.data;
   let result = [];

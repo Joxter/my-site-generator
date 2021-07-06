@@ -1,4 +1,5 @@
 import { deepFind, insertDataToSting } from "../utils.js";
+import { NODE_SPEC_ATTRS } from "./constants.js";
 
 /*
  * todo идеи наброски
@@ -70,6 +71,10 @@ const ElementType = {
 };
 
 function renderNode(node, options) {
+  if (solveIf(node, options) === "") {
+    return "";
+  }
+
   switch (node.type) {
     case ElementType.Root:
       return renderNotMy(node.children, options);
@@ -92,6 +97,18 @@ function renderNode(node, options) {
       return renderText(node);
     case ElementType.TextWithData:
       return renderTextWithData(node, options);
+  }
+}
+
+function solveIf(node, options) {
+  if (node.attribs && NODE_SPEC_ATTRS.IF in node.attribs) {
+    // todo выглядит неочень, наверное надо перенести
+    const res = deepFind(options.data, node.attribs[NODE_SPEC_ATTRS.IF]);
+    if (res) {
+      delete node.attribs[NODE_SPEC_ATTRS.IF];
+    } else {
+      return "";
+    }
   }
 }
 

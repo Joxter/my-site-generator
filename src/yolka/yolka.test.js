@@ -91,4 +91,11 @@ describe("yolka basics", () => {
     expect(pages.render({ users: [{ name: "Kolya" }] }).pages[0]).toEqual(`<div><p>hello, Kolya!</p></div>`);
     expect(pages.render({ users: [{ name: "Petya" }] }).pages[0]).toEqual(`<div><p>hello, Petya!</p></div>`);
   });
+
+  it("test j-if attribute", () => {
+    const pages = defaultYolka([], [`<div><p y-if="{show}">hello if</p><p>hello</p></div>`]);
+
+    expect(pages.render({ show: false }).pages[0]).toEqual(`<div><p>hello</p></div>`);
+    expect(pages.render({ show: true }).pages[0]).toEqual(`<div><p>hello if</p><p>hello</p></div>`);
+  });
 });
