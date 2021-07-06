@@ -6,4 +6,5 @@ export const COMPONENT_ATTRS = {
 
 export const NODE_SPEC_ATTRS = {
   IF: "y-if",
+  FOR: "y-for",
 };

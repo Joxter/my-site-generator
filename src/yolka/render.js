@@ -71,9 +71,12 @@ const ElementType = {
 };
 
 function renderNode(node, options) {
-  if (solveIf(node, options) === "") {
-    return "";
-  }
+  // todo выглядит неочень, наверное надо перенести
+  if (!solveIf(node, options)) return "";
+
+  // todo выглядит неочень, наверное надо перенести
+  let forRest = solveFor(node, options, (_node, _opt) => renderNode(_node, _opt));
+  if (forRest) return forRest;
 
   switch (node.type) {
     case ElementType.Root:
@@ -109,6 +112,24 @@ function solveIf(node, options) {
     } else {
       return "";
     }
+  }
+}
+
+function solveFor(node, options, cb) {
+  if (node.attribs && NODE_SPEC_ATTRS.FOR in node.attribs) {
+    const { itemName, arrayPath } = node.attribs[NODE_SPEC_ATTRS.FOR];
+    delete node.attribs[NODE_SPEC_ATTRS.FOR];
+
+    const array = deepFind(options.data, arrayPath);
+
+    return array
+      .map(item => {
+        return cb(node, {
+          ...options,
+          data: { ...options.data, [itemName]: item },
+        });
+      })
+      .join("");
   }
 }
 

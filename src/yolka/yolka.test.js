@@ -98,4 +98,12 @@ describe("yolka basics", () => {
     expect(pages.render({ show: false }).pages[0]).toEqual(`<div><p>hello</p></div>`);
     expect(pages.render({ show: true }).pages[0]).toEqual(`<div><p>hello if</p><p>hello</p></div>`);
   });
+
+  it("test j-for attribute", () => {
+    const pages = defaultYolka([], [`<div><p y-for="{item in arr}">{item.label}</p></div>`]);
+
+    expect(pages.render({ arr: [{ label: "123" }, { label: "456" }] }).pages[0]).toEqual(
+      `<div><p>123</p><p>456</p></div>`
+    );
+  });
 });

@@ -51,8 +51,13 @@ function getServiceNodes(componentAST, isPage = false) {
 
       if (NODE_SPEC_ATTRS.IF in el.attribs) {
         let cond = el.attribs[NODE_SPEC_ATTRS.IF];
-
         el.attribs[NODE_SPEC_ATTRS.IF] = getKeysFromStr(removeFirstLastChar(cond));
+      }
+
+      if (NODE_SPEC_ATTRS.FOR in el.attribs) {
+        let forStr = el.attribs[NODE_SPEC_ATTRS.FOR];
+        let [itemName, arrayName] = removeFirstLastChar(forStr).split(" in ");
+        el.attribs[NODE_SPEC_ATTRS.FOR] = { itemName, arrayPath: getKeysFromStr(arrayName) };
       }
 
       if (el.name.includes("-")) {
