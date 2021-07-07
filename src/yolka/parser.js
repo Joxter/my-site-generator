@@ -43,6 +43,7 @@ function getServiceNodes(componentAST, isPage = false) {
   const slots = isPage ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
   let headEl = null;
   let bodyEl = null;
+  let slotContent = {}; // { header: [el1,el2], ... }
 
   forEachNodes(templateEl, el => {
     if (el.type === "tag") {
@@ -59,6 +60,13 @@ function getServiceNodes(componentAST, isPage = false) {
         let [itemName, arrayName] = removeFirstLastChar(forStr).split(" in ");
         el.attribs[NODE_SPEC_ATTRS.FOR] = { itemName, arrayPath: getKeysFromStr(arrayName) };
       }
+
+      // if (NODE_SPEC_ATTRS.SLOT in el.attribs) {
+      //   let slotName = el.attribs[NODE_SPEC_ATTRS.SLOT];
+      //   if (!slotContent[slotName]) slotContent[slotName] = [];
+      //   slotContent[slotName].push(el);
+      //   delete el.attribs[NODE_SPEC_ATTRS.SLOT];
+      // }
 
       if (el.name.includes("-")) {
         el.type = "component"; // hack первый хак парсера, нужен чтоб подружить AST с моей логикой
@@ -94,6 +102,7 @@ function getServiceNodes(componentAST, isPage = false) {
     // nodesToData, // ссылки на ноды куда можно вставить некий текст
     bodyEl, // ссылка на <body>
     headEl, // ссылка на <head>
+    slotContent,
   };
 }
 

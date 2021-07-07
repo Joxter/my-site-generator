@@ -72,11 +72,12 @@ const ElementType = {
 
 function renderNode(node, options) {
   // todo выглядит неочень, наверное надо перенести
-  if (!solveIf(node, options)) return "";
+  let ifRes = solveIf(node, options);
+  if (!ifRes) return "";
 
   // todo выглядит неочень, наверное надо перенести
-  let forRest = solveFor(node, options, (_node, _opt) => renderNode(_node, _opt));
-  if (forRest) return forRest;
+  let forRes = solveFor(node, options, (_node, _opt) => renderNode(_node, _opt));
+  if (forRes) return forRes;
 
   switch (node.type) {
     case ElementType.Root:
@@ -105,14 +106,12 @@ function renderNode(node, options) {
 
 function solveIf(node, options) {
   if (node.attribs && NODE_SPEC_ATTRS.IF in node.attribs) {
-    // todo выглядит неочень, наверное надо перенести
+    // todo обработать всякие y-if='', y-if='0', y-if='1'
     const res = deepFind(options.data, node.attribs[NODE_SPEC_ATTRS.IF]);
-    if (res) {
-      delete node.attribs[NODE_SPEC_ATTRS.IF];
-    } else {
-      return "";
-    }
+    return res;
   }
+
+  return true;
 }
 
 function solveFor(node, options, cb) {
@@ -203,6 +202,8 @@ function formatAttributes(attributes, opts) {
   if (!attributes) return;
   return Object.keys(attributes)
     .map(function(key) {
+      if (key === NODE_SPEC_ATTRS.IF) return "";
+
       let _a;
       // todo упростить условие ниже
       let value = (_a = attributes[key]) !== null && _a !== undefined ? _a : "";

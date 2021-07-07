@@ -106,4 +106,15 @@ describe("yolka basics", () => {
       `<div><p>123</p><p>456</p></div>`
     );
   });
+
+  it.skip("test simple slot", () => {
+    const result = defaultYolka(
+      [
+        `<template name="news-item" slots="header"><header><slot name="header">default header</slot></header></template>`,
+      ],
+      [`<news-item><div slot="header"><h2>my header</h2></div></news-item>`]
+    ).render();
+
+    expect(result.pages[0]).toEqual(`<header><div><h2>my header</h2></div></header>`);
+  });
 });
