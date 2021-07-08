@@ -41,6 +41,7 @@ let selfEnclosingTag = new Set([
  * Options:
  *   - components
  *   - data
+ *     - renderedSlots
  *   ---
  *   - selfClosingTags
  *   - emptyAttrs
@@ -49,6 +50,9 @@ function renderNotMy(node, options = {}) {
   // todo что за node.cheerio ??
   let nodes = Array.isArray(node) || node.cheerio ? node : [node];
   let output = "";
+  if (!options.data.renderedSlots) {
+    options.data.renderedSlots = {};
+  }
   for (let i = 0; i < nodes.length; i++) {
     output += renderNode(nodes[i], options);
   }
@@ -57,6 +61,7 @@ function renderNotMy(node, options = {}) {
 
 const ElementType = {
   Component: "component",
+  Slot: "slot",
   Page: "page",
   Root: "root",
   Directive: "directive",
@@ -84,6 +89,8 @@ function renderNode(node, options) {
       return renderNotMy(node.children, options);
     case ElementType.Component:
       return renderComponent(node, options);
+    case ElementType.Slot:
+      return renderSlot(node, options);
     case ElementType.Page:
       return renderPage(node, options);
     case ElementType.Directive:
@@ -136,6 +143,14 @@ function renderPage(node, options) {
   return renderNotMy(node.children, options);
 }
 
+function renderSlot(node, options) {
+  if (options.data.renderedSlots[node.attribs.name]) {
+    return options.data.renderedSlots[node.attribs.name].join("");
+  } else {
+    return renderNotMy(node.children, options);
+  }
+}
+
 function renderComponent(node, options) {
   const componentData = options.components[node.name];
   if (!componentData) {
@@ -145,6 +160,26 @@ function renderComponent(node, options) {
   const data = {};
   for (let name in node.attribs) {
     data[name] = deepFind(options.data, node.attribs[name]);
+  }
+
+  if (componentData.slots.length > 0) {
+    let renderedSlots = {};
+
+    for (let i = 0; i < node.children.length; i++) {
+      let childrenNode = node.children[i];
+      if (childrenNode.attribs && childrenNode.attribs[NODE_SPEC_ATTRS.SLOT]) {
+        let slotName = childrenNode.attribs[NODE_SPEC_ATTRS.SLOT];
+        if (!renderedSlots[slotName]) renderedSlots[slotName] = [];
+
+        let res = renderNotMy(childrenNode, options);
+        renderedSlots[slotName].push(res);
+      }
+    }
+
+    data.renderedSlots = {
+      ...data.renderedSlots,
+      ...renderedSlots,
+    };
   }
 
   return renderNotMy(componentData.children, { ...options, data });
@@ -202,7 +237,7 @@ function formatAttributes(attributes, opts) {
   if (!attributes) return;
   return Object.keys(attributes)
     .map(function(key) {
-      if (key === NODE_SPEC_ATTRS.IF) return "";
+      if (key === NODE_SPEC_ATTRS.IF || key === "slot") return "";
 
       let _a;
       // todo упростить условие ниже
