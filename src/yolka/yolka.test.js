@@ -128,4 +128,44 @@ describe("yolka basics", () => {
 
     expect(result.pages[0]).toEqual(`<header>default header</header>`);
   });
+
+  it("collect styles", () => {
+    const result = defaultYolka(
+      [
+        `<template name="news-item">
+<h2 class="header">header1</h2>
+<p>text1 <span>span1</span></p>
+<div id="some-id">text1</div>
+<style>
+  .header { color: green; }
+  p, span { border: 1px solid red; }
+</style>
+</template>`,
+        `<template name="user-item">
+<h2 class="header">header2</h2>
+<p>text2</p>
+<div id="some-id">text2</div>
+<style>
+  h2 + p { display: block; }
+  #some-id { display: block; }
+</style>
+</template>`,
+      ],
+      [`<news-item></news-item><user-item></user-item>`]
+    ).render();
+
+    expect(result.pages[0]).toEqual(`<h2 class="header">header1</h2>
+<p>text1 <span>span1</span></p>
+<div id="some-id">text1</div>
+
+
+<h2 class="header">header2</h2>
+<p>text2</p>
+<div id="some-id">text2</div>`);
+    expect(result.common.pages[0])
+      .toEqual(`.header { color: green; }
+  p, span { border: 1px solid red; }
+h2 + p { display: block; }
+  #some-id { display: block; }`);
+  });
 });

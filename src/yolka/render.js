@@ -10,7 +10,7 @@ import { NODE_SPEC_ATTRS } from "./constants.js";
  *  - не забыть что рендериться могут несколько страниц и общие стили нужно прогруппировать
  */
 export function render(Components, pageComp, data) {
-  return renderNotMy(pageComp, { components: Components, data });
+  return renderNotMy(pageComp, { components: Components, data }).trim();
 }
 
 let selfEnclosingTag = new Set([

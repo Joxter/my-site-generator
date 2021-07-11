@@ -75,7 +75,7 @@ function getServiceNodes(componentAST, isPage = false) {
         // if (isPage) componentNodes.push(el);
       }
     } else if (el.type === "text") {
-      if (el.data.includes("{")) {
+      if (el.data.includes("{") && el.parent.type !== "style") {
         toTextWithDataNode(el); // hack хак парсера, нужен чтоб подружить AST с моей логикой
         // nodesToData.push(el);
       }

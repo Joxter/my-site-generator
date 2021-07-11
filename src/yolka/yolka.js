@@ -1,5 +1,6 @@
 import { parse } from "./parser.js";
 import { render } from "./render.js";
+import { collectStyles } from "./collectStyles.js";
 
 export function yolka(options = {}) {
   return function parsing(componentStrs, pageStrs) {
@@ -12,9 +13,21 @@ export function yolka(options = {}) {
 
     return {
       render(data = {}) {
-        const resPages = pageComponents.map(pageComponent => render(Components, pageComponent, data));
+        let pageStyles = [];
+        let resPages = [];
 
-        return { pages: resPages };
+        pageComponents.forEach(pageComponent => {
+          pageStyles.push(collectStyles(Components, pageComponent));
+          resPages.push(render(Components, pageComponent, data));
+        });
+
+        return {
+          pages: resPages,
+          common: {
+            css: "", // todo просто сделать
+            pages: pageStyles,
+          },
+        };
       },
     };
   };
