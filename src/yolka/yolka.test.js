@@ -162,10 +162,32 @@ describe("yolka basics", () => {
 <h2 class="header">header2</h2>
 <p>text2</p>
 <div id="some-id">text2</div>`);
-    expect(result.common.pages[0])
-      .toEqual(`.header { color: green; }
+    expect(result.common.pages[0]).toEqual(`.header { color: green; }
   p, span { border: 1px solid red; }
 h2 + p { display: block; }
   #some-id { display: block; }`);
+  });
+
+  it("test body/head render page", () => {
+    const result = defaultYolka(
+      [`<template name="my-content"><main>page content</main><style>.main {color: red}</style></template>`],
+      [
+        `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{title}</title>
+  </head>
+  <body>
+    <my-content></my-content>
+  </body>
+</html>`,
+      ]
+    ).render({ title: "page title" });
+
+    expect(result.pages[0]).toEqual(`<!DOCTYPE html><html><head>
+    <title>page title</title>
+  <style>.main {color: red}</style></head><body>
+    <main>page content</main>
+  </body></html>`);
   });
 });

@@ -16,10 +16,10 @@ function initComponents(componentsAST) {
 }
 
 export function parse(componentStrs, pageStrs) {
-  const pages = pageStrs.map(page => getServiceNodes(parseDocument(page), true));
+  const pages = pageStrs.map((page) => getServiceNodes(parseDocument(page), true));
 
   const Components = initComponents(
-    componentStrs.map(template => {
+    componentStrs.map((template) => {
       return parseDocument(template);
     })
   );
@@ -27,11 +27,11 @@ export function parse(componentStrs, pageStrs) {
   return [Components, pages];
 }
 
-function getServiceNodes(componentAST, isPage = false) {
-  const templateEl = getComponentTemplateTag(componentAST, isPage);
+function getServiceNodes(componentAST, noTemplateTag = false) {
+  const templateEl = noTemplateTag ? componentAST : getComponentTemplateTag(componentAST);
 
-  const name = isPage ? null : templateEl.attribs[COMPONENT_ATTRS.NAME];
-  if (!isPage && !name) {
+  const name = noTemplateTag ? null : templateEl.attribs[COMPONENT_ATTRS.NAME];
+  if (!noTemplateTag && !name) {
     // todo может сюда что-то подставлять, типа название файла?
     throw new Error("Component name should have a name");
   }
@@ -39,16 +39,16 @@ function getServiceNodes(componentAST, isPage = false) {
   let style = null;
   let dependsOn = new Set(); // компоненты которые используются в этом
   // let nodesToData = []; // текстовые ноды, в которые можно вставить какой-то текст "some text {insert}"
-  const props = isPage ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.PROPS]);
-  const slots = isPage ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
-  let headEl = null;
-  let bodyEl = null;
+  const props = noTemplateTag ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.PROPS]);
+  const slots = noTemplateTag ? [] : parseProps(templateEl.attribs[COMPONENT_ATTRS.SLOTS]);
+  let pageNodes = {};
 
-  forEachNodes(templateEl, el => {
+  forEachNodes(templateEl, (el) => {
+    if (["html", "head", "body", "!doctype"].includes(el.name)) {
+      pageNodes[el.name] = el;
+      return;
+    }
     if (el.type === "tag") {
-      if (isPage && el.name === "head") headEl = el;
-      if (isPage && el.name === "body") bodyEl = el;
-
       if (NODE_SPEC_ATTRS.IF in el.attribs) {
         let cond = el.attribs[NODE_SPEC_ATTRS.IF];
         el.attribs[NODE_SPEC_ATTRS.IF] = getKeysFromStr(removeFirstLastChar(cond));
@@ -72,7 +72,6 @@ function getServiceNodes(componentAST, isPage = false) {
         }
 
         dependsOn.add(el.name);
-        // if (isPage) componentNodes.push(el);
       }
     } else if (el.type === "text") {
       if (el.data.includes("{") && el.parent.type !== "style") {
@@ -84,20 +83,20 @@ function getServiceNodes(componentAST, isPage = false) {
     }
   });
   if (style) {
+    let styleContent = style.children[0].data.trim();
     removeElement(style);
+    style = styleContent;
   }
 
   return {
     name, // имя компонента
-    type: isPage ? "page" : "component",
+    type: Object.keys(pageNodes).length > 0 ? "page" : "component",
+    pageNodes,
     props, // имена параметров
     slots, // имена слотов
-    style, // нода <style>
+    style, // стили компонента
     children: templateEl.children, // осонвная верстка
     dependsOn, // имена компонентов которые используются в текущем
-    // nodesToData, // ссылки на ноды куда можно вставить некий текст
-    bodyEl, // ссылка на <body>
-    headEl, // ссылка на <head>
   };
 }
 
@@ -139,12 +138,10 @@ function parseProps(str) {
   return str
     .trim()
     .split(/\s+/g)
-    .filter(str => !!str);
+    .filter((str) => !!str);
 }
 
-function getComponentTemplateTag(node, isPage = false) {
-  if (isPage) return node;
-
+function getComponentTemplateTag(node) {
   const res = node.children[0];
   if (res.name === "template") {
     return res;

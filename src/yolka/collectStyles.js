@@ -1,10 +1,10 @@
 /*
-*
-*
-*
-*
-*
-* */
+ *
+ *
+ *
+ *
+ *
+ * */
 export function collectStyles(Components, pageComponent) {
   let result = [];
   // todo собирать стили со всех дочерних компонентов и только один раз
@@ -13,7 +13,7 @@ export function collectStyles(Components, pageComponent) {
 
   pageComponent.dependsOn.forEach((compName) => {
     if (Components[compName].style) {
-      result.push(Components[compName].style.children[0].data.trim());
+      result.push(Components[compName].style);
     }
   });
 

@@ -10,7 +10,7 @@ import { NODE_SPEC_ATTRS } from "./constants.js";
  *  - не забыть что рендериться могут несколько страниц и общие стили нужно прогруппировать
  */
 export function render(Components, pageComp, data) {
-  return renderNotMy(pageComp, { components: Components, data }).trim();
+  return renderNotMy(pageComp, { components: Components, data, usedComponents: new Set() }).trim();
 }
 
 let selfEnclosingTag = new Set([
@@ -34,12 +34,14 @@ let selfEnclosingTag = new Set([
   "track",
   "wbr",
 ]);
+
 /**
  * обрезанный код из dom-serializer
  * todo: components в options не смотрится, может убрать в другое место
  *
  * Options:
  *   - components
+ *   - usedComponents
  *   - data
  *     - renderedSlots
  *   ---
@@ -113,7 +115,7 @@ function renderNode(node, options) {
 
 function solveIf(node, options) {
   if (node.attribs && NODE_SPEC_ATTRS.IF in node.attribs) {
-    // todo обработать всякие y-if='', y-if='0', y-if='1'
+    // todo обработать всякие y-if='', y-if='0', y-if='1', y-if='true', y-if='false'
     const res = deepFind(options.data, node.attribs[NODE_SPEC_ATTRS.IF]);
     return res;
   }
@@ -129,7 +131,7 @@ function solveFor(node, options, cb) {
     const array = deepFind(options.data, arrayPath);
 
     return array
-      .map(item => {
+      .map((item) => {
         return cb(node, {
           ...options,
           data: { ...options.data, [itemName]: item },
@@ -140,7 +142,21 @@ function solveFor(node, options, cb) {
 }
 
 function renderPage(node, options) {
-  return renderNotMy(node.children, options);
+  const body = renderNotMy(node.pageNodes.body, options);
+  const styles = [...options.usedComponents].map((compName) => options.components[compName].style);
+
+  const headChildren = renderNotMy(node.pageNodes.head.children, options);
+
+  // todo alt option: <link rel="stylesheet" type="text/css" href="URL" />
+  return [
+    renderDirective(node.pageNodes["!doctype"]),
+    "<html>", // todo lang attribute possible
+    "<head>",
+    headChildren + (styles.length > 0 ? `<style>${styles.join("")}</style>` : ""),
+    "</head>",
+    body,
+    "</html>",
+  ].join("");
 }
 
 function renderSlot(node, options) {
@@ -152,7 +168,12 @@ function renderSlot(node, options) {
 }
 
 function renderComponent(node, options) {
+  if (!node.name) {
+    // todo компонент без тега template, типа страница, адски тупо выглядит, но пока сойдет
+    return renderNotMy(node.children, options);
+  }
   const componentData = options.components[node.name];
+  options.usedComponents.add(node.name);
   if (!componentData) {
     return `<div>MISSING COMPONENT "${node.name}"</div>`;
   }
@@ -215,7 +236,7 @@ function renderText(elem) {
 
 function renderTextWithData(elem, options) {
   return elem.data
-    .map(it => {
+    .map((it) => {
       if (Array.isArray(it)) {
         return deepFind(options.data, it);
       } else {
