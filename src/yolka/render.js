@@ -10,7 +10,15 @@ import { NODE_SPEC_ATTRS } from "./constants.js";
  *  - не забыть что рендериться могут несколько страниц и общие стили нужно прогруппировать
  */
 export function render(Components, pageComp, data) {
-  return renderNotMy(pageComp, { components: Components, data, usedComponents: new Set() }).trim();
+  const opts = {
+    components: Components,
+    data,
+    inlineStyles: true,
+    pageMeta: {
+      usedComponents: new Set(),
+    },
+  };
+  return renderNotMy(pageComp, opts).trim();
 }
 
 let selfEnclosingTag = new Set([
@@ -39,12 +47,7 @@ let selfEnclosingTag = new Set([
  * обрезанный код из dom-serializer
  * todo: components в options не смотрится, может убрать в другое место
  *
- * Options:
- *   - components
- *   - usedComponents
- *   - data
- *     - renderedSlots
- *   ---
+ * not my options:
  *   - selfClosingTags
  *   - emptyAttrs
  * */
@@ -142,17 +145,20 @@ function solveFor(node, options, cb) {
 }
 
 function renderPage(node, options) {
-  const body = renderNotMy(node.pageNodes.body, options);
-  const styles = [...options.usedComponents].map((compName) => options.components[compName].style);
+  if (!options.inlineStyles) throw new Error('Option "inlineStyles" should be true');
 
   const headChildren = renderNotMy(node.pageNodes.head.children, options);
+  const body = renderNotMy(node.pageNodes.body, options);
+
+  const styles = [...options.pageMeta.usedComponents].map((compName) => options.components[compName].style);
 
   // todo alt option: <link rel="stylesheet" type="text/css" href="URL" />
   return [
     renderDirective(node.pageNodes["!doctype"]),
-    "<html>", // todo lang attribute possible
-    "<head>",
-    headChildren + (styles.length > 0 ? `<style>${styles.join("")}</style>` : ""),
+    "<html>", // todo attributes possible
+    "<head>", // todo attributes possible
+    headChildren,
+    styles.length > 0 ? `<style>${styles.join("")}</style>` : "",
     "</head>",
     body,
     "</html>",
@@ -173,7 +179,7 @@ function renderComponent(node, options) {
     return renderNotMy(node.children, options);
   }
   const componentData = options.components[node.name];
-  options.usedComponents.add(node.name);
+  options.pageMeta.usedComponents.add(node.name);
   if (!componentData) {
     return `<div>MISSING COMPONENT "${node.name}"</div>`;
   }
@@ -206,18 +212,18 @@ function renderComponent(node, options) {
   return renderNotMy(componentData.children, { ...options, data });
 }
 
-function renderTag(elem, opts) {
+function renderTag(elem, options) {
   let tag = "<" + elem.name;
-  let attribs = formatAttributes(elem.attribs, opts);
+  let attribs = formatAttributes(elem.attribs, options);
   if (attribs) {
     tag += " " + attribs;
   }
-  if (elem.children.length === 0 && opts.selfClosingTags && selfEnclosingTag.has(elem.name)) {
+  if (elem.children.length === 0 && options.selfClosingTags && selfEnclosingTag.has(elem.name)) {
     tag += " />";
   } else {
     tag += ">";
     if (elem.children.length > 0) {
-      tag += renderNotMy(elem.children, opts);
+      tag += renderNotMy(elem.children, options);
     }
     if (!selfEnclosingTag.has(elem.name)) {
       tag += "</" + elem.name + ">";
