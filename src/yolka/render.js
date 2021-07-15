@@ -188,9 +188,12 @@ function renderComponent(node, options) {
 
   const data = {};
   for (let name in node.attribs) {
-    data[name] = deepFind(options.data, node.attribs[name]);
+    if (Array.isArray(node.attribs[name])) {
+      data[name] = deepFind(options.data, node.attribs[name]);
+    } else {
+      data[name] = node.attribs[name];
+    }
   }
-
   if (componentData.slots.length > 0) {
     let renderedSlots = {};
 

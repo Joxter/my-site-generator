@@ -41,6 +41,15 @@ describe("yolka basics", () => {
     expect(result.pages[0]).toEqual("<h1>header</h1><div><p>hello, Kolya!</p></div>");
   });
 
+  it("test simple component with inline data", () => {
+    const result = defaultYolka(
+      [`<template name="my-greeting" props="name"><p>hello, {name}!</p></template>`],
+      [`<h1>header</h1><div><my-greeting name="Kolya"></my-greeting></div>`]
+    ).render();
+
+    expect(result.pages[0]).toEqual("<h1>header</h1><div><p>hello, Kolya!</p></div>");
+  });
+
   it("test several instances of component", () => {
     const result = defaultYolka(
       [`<template name="my-greeting" props="user"><p>hello, {user.name}!</p></template>`],

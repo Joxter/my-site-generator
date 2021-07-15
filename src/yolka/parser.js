@@ -68,7 +68,12 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
         el.type = "component"; // hack первый хак парсера, нужен чтоб подружить AST с моей логикой
 
         for (let name in el.attribs) {
-          el.attribs[name] = getKeysFromStr(removeFirstLastChar(el.attribs[name]));
+          let attrVel = el.attribs[name];
+          if (attrVel[0] === "{" && attrVel[attrVel.length - 1] === "}") {
+            el.attribs[name] = getKeysFromStr(removeFirstLastChar(attrVel));
+          } else {
+            el.attribs[name] = attrVel;
+          }
         }
 
         dependsOn.add(el.name);
