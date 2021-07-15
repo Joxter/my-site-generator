@@ -18,6 +18,10 @@ export function render(Components, pageComp, data) {
       usedComponents: new Set(),
     },
   };
+
+  if (pageComp.type === ElementType.Page) {
+    return renderPage(pageComp, opts).trim();
+  }
   return renderNotMy(pageComp, opts).trim();
 }
 
@@ -96,8 +100,6 @@ function renderNode(node, options) {
       return renderComponent(node, options);
     case ElementType.Slot:
       return renderSlot(node, options);
-    case ElementType.Page:
-      return renderPage(node, options);
     case ElementType.Directive:
     case ElementType.Doctype:
       return renderDirective(node);

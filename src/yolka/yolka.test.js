@@ -190,4 +190,25 @@ h2 + p { display: block; }
     <main>page content</main>
   </body></html>`);
   });
+
+  it("test body/head render page as component", () => {
+    const result = defaultYolka(
+      [
+        `<template name="my-index"><!DOCTYPE html><html lang="en">
+<head>
+  <title>{title}</title>
+</head>
+<body>{content}</body>
+</html></template>`,
+      ],
+      [`<my-index title="{title}" content="{content}"></my-index>`]
+    ).render({ title: "index title", content: "index content" });
+
+    expect(result.pages[0]).toEqual(`<!DOCTYPE html><html lang="en">
+<head>
+  <title>index title</title>
+</head>
+<body>index content</body>
+</html>`);
+  });
 });
