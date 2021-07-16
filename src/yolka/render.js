@@ -152,7 +152,10 @@ function renderPage(node, options) {
   const headChildren = renderNotMy(node.pageNodes.head.children, options);
   const body = renderNotMy(node.pageNodes.body, options);
 
-  const styles = [...options.pageMeta.usedComponents].map((compName) => options.components[compName].style);
+  const styles = [...options.pageMeta.usedComponents]
+    .map((compName) => options.components[compName].style)
+    .join("")
+    .trim();
 
   // todo alt option: <link rel="stylesheet" type="text/css" href="URL" />
   return [
@@ -160,7 +163,7 @@ function renderPage(node, options) {
     "<html>", // todo attributes possible
     "<head>", // todo attributes possible
     headChildren,
-    styles.length > 0 ? `<style>${styles.join("")}</style>` : "",
+    styles.length > 0 ? `<style>${styles}</style>` : "",
     "</head>",
     body,
     "</html>",
@@ -212,6 +215,10 @@ function renderComponent(node, options) {
       ...data.renderedSlots,
       ...renderedSlots,
     };
+  }
+
+  if (componentData.type === ElementType.Page) {
+    return renderPage(componentData, { ...options, data });
   }
 
   return renderNotMy(componentData.children, { ...options, data });

@@ -203,7 +203,7 @@ h2 + p { display: block; }
   it("test body/head render page as component", () => {
     const result = defaultYolka(
       [
-        `<template name="my-index"><!DOCTYPE html><html lang="en">
+        `<template name="my-index"><!DOCTYPE html><html>
 <head>
   <title>{title}</title>
 </head>
@@ -213,11 +213,26 @@ h2 + p { display: block; }
       [`<my-index title="{title}" content="{content}"></my-index>`]
     ).render({ title: "index title", content: "index content" });
 
-    expect(result.pages[0]).toEqual(`<!DOCTYPE html><html lang="en">
-<head>
+    expect(result.pages[0]).toEqual(`<!DOCTYPE html><html><head>
   <title>index title</title>
+</head><body>index content</body></html>`);
+  });
+
+  it("test body/head render page as component with slot", () => {
+    const result = defaultYolka(
+      [
+        `<template name="my-index" slots="content" props="title"><!DOCTYPE html><html lang="en">
+<head>
+  <title>{title}</title>
 </head>
-<body>index content</body>
-</html>`);
+<body><slot name="content"></slot></body>
+</html></template>`,
+      ],
+      [`<my-index title="{title}"><div slot="content">slot content</div></my-index>`]
+    ).render({ title: "index title", content: "index content" });
+
+    expect(result.pages[0]).toEqual(`<!DOCTYPE html><html><head>
+  <title>index title</title>
+</head><body><div>slot content</div></body></html>`);
   });
 });

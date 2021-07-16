@@ -93,9 +93,11 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
     style = styleContent;
   }
 
+  let type = Object.keys(pageNodes).length > 0 ? "page" : "component";
+
   return {
     name, // имя компонента
-    type: Object.keys(pageNodes).length > 0 ? "page" : "component",
+    type,
     pageNodes,
     props, // имена параметров
     slots, // имена слотов
