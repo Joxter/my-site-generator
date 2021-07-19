@@ -1,6 +1,7 @@
 import { parse } from "./parser.js";
 import { render } from "./render.js";
 import { collectStyles } from "./collectStyles.js";
+import { scopedStyles } from "./scopedStyles";
 
 export function yolka(options = {}) {
   return function parsing(componentStrs, pageStrs) {
@@ -8,8 +9,7 @@ export function yolka(options = {}) {
     if (!Array.isArray(pageStrs)) throw new Error("pages should be an array");
 
     const [Components, pageComponents] = parse(componentStrs, pageStrs);
-    // console.log(Components);
-    // console.log(pageComponents);
+    scopedStyles(Components);
 
     return {
       render(data = {}) {

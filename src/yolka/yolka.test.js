@@ -171,10 +171,21 @@ describe("yolka basics", () => {
 <h2 class="header">header2</h2>
 <p>text2</p>
 <div id="some-id">text2</div>`);
-    expect(result.common.pages[0]).toEqual(`.header { color: green; }
-  p, span { border: 1px solid red; }
-h2 + p { display: block; }
-  #some-id { display: block; }`);
+    expect(result.common.pages[0]).toEqual(`.header.-c-0 {
+  color: green;
+}
+
+p.-c-0,
+span.-c-0 {
+  border: 1px solid red;
+}
+h2.-c-1 + p.-c-1 {
+  display: block;
+}
+
+#some-id {
+  display: block;
+}`);
   });
 
   it("test body/head render page", () => {
@@ -195,7 +206,9 @@ h2 + p { display: block; }
 
     expect(result.pages[0]).toEqual(`<!DOCTYPE html><html><head>
     <title>page title</title>
-  <style>.main {color: red}</style></head><body>
+  <style>.main.-c-0 {
+  color: red;
+}</style></head><body>
     <main>page content</main>
   </body></html>`);
   });
