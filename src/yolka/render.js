@@ -1,5 +1,5 @@
 import { deepFind, insertDataToSting } from "../utils.js";
-import { NODE_SPEC_ATTRS } from "./constants.js";
+import { ElementType, NODE_SPEC_ATTRS } from "./constants.js";
 
 /*
  * todo идеи наброски
@@ -12,7 +12,10 @@ import { NODE_SPEC_ATTRS } from "./constants.js";
 export function render(Components, pageComp, data) {
   const opts = {
     components: Components,
-    data,
+    data: {
+      ...data,
+      renderedSlots: {},
+    },
     inlineStyles: true,
     pageMeta: {
       usedComponents: new Set(),
@@ -59,38 +62,19 @@ function renderNotMy(node, options = {}) {
   // todo что за node.cheerio ??
   let nodes = Array.isArray(node) || node.cheerio ? node : [node];
   let output = "";
-  if (!options.data.renderedSlots) {
-    options.data.renderedSlots = {};
-  }
   for (let i = 0; i < nodes.length; i++) {
     output += renderNode(nodes[i], options);
   }
   return output;
 }
 
-const ElementType = {
-  Component: "component",
-  Slot: "slot",
-  Page: "page",
-  Root: "root",
-  Directive: "directive",
-  Doctype: "doctype",
-  Comment: "comment",
-  CDATA: "CDATA", // "cdata" ???
-  Script: "Script",
-  Style: "style",
-  Tag: "tag",
-  Text: "text",
-  TextWithData: "text-with-data",
-};
-
 function renderNode(node, options) {
-  // todo выглядит неочень, наверное надо перенести
+  // todo выглядит неочень, надо попробовать сделать это как новый тип ноды ElementType.If
   let ifRes = solveIf(node, options);
   if (!ifRes) return "";
 
-  // todo выглядит неочень, наверное надо перенести
-  let forRes = solveFor(node, options, (_node, _opt) => renderNode(_node, _opt));
+  // todo выглядит неочень, надо попробовать сделать это как новый тип ноды ElementType.For
+  let forRes = solveFor(node, options, (_node, _opt) => renderNotMy(_node, _opt));
   if (forRes) return forRes;
 
   switch (node.type) {

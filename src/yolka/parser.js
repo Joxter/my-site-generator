@@ -1,7 +1,7 @@
 import { parseDocument } from "htmlparser2";
 import { removeElement } from "domutils";
 import { forEachNodes, getKeysFromStr, removeFirstLastChar } from "../utils.js";
-import { COMPONENT_ATTRS, NODE_SPEC_ATTRS } from "./constants.js";
+import { COMPONENT_ATTRS, ElementType, NODE_SPEC_ATTRS } from "./constants.js";
 
 function initComponents(componentsAST) {
   const Components = {};
@@ -61,11 +61,11 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
       }
 
       if (el.name === "slot") {
-        el.type = "slot"; // hack хак парсера, нужен чтоб подружить AST с моей логикой
+        el.type = ElementType.Slot; // hack хак парсера, нужен чтоб подружить AST с моей логикой
       }
 
       if (el.name.includes("-")) {
-        el.type = "component"; // hack первый хак парсера, нужен чтоб подружить AST с моей логикой
+        el.type = ElementType.Component; // hack первый хак парсера, нужен чтоб подружить AST с моей логикой
 
         for (let name in el.attribs) {
           let attrVel = el.attribs[name];
@@ -81,7 +81,6 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
     } else if (el.type === "text") {
       if (el.data.includes("{") && el.parent.type !== "style") {
         toTextWithDataNode(el); // hack хак парсера, нужен чтоб подружить AST с моей логикой
-        // nodesToData.push(el);
       }
     } else if (el.type === "style") {
       style = el;
@@ -93,7 +92,7 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
     style = styleContent;
   }
 
-  let type = Object.keys(pageNodes).length > 0 ? "page" : "component";
+  let type = Object.keys(pageNodes).length > 0 ? ElementType.Page : ElementType.Component;
 
   return {
     name, // имя компонента
@@ -134,7 +133,7 @@ function toTextWithDataNode(node) {
   }
 
   node.data = result;
-  node.type = "text-with-data";
+  node.type = ElementType.TextWithData;
 }
 
 function parseProps(str) {
