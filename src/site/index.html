@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="./main.js" defer></script>
+    <meta charset="UTF-8" />
+    <title>yolka</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .general-grid {
+        min-height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        margin: 0 auto;
+        padding: 0 20px;
+        background-color: #ddd;
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .code {
+        background-color: #ccc;
+      }
+
+      .result {
+        background-color: #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="general-grid">
+      <header>
+        <h1>yolka</h1>
+      </header>
+      <main class="main-grid">
+        <div class="code">
+          <style>
+            .code {
+              display: grid;
+              grid-template-rows: auto 1fr auto auto;
+            }
+            .code textarea {
+              width: 100%;
+              height: 100%;
+              resize: none;
+            }
+            .code textarea:focus {
+              min-height: 200px;
+            }
+            .code-tabs {
+              padding: 8px 8px 0;
+              display: flex;
+              gap: 8px;
+              flex-wrap: wrap;
+            }
+            .code-tab {
+              padding: 4px 12px;
+            }
+          </style>
+          <div class="code-tabs">
+            <button class="code-tab">page 1</button>
+            <button class="code-tab">component "sdfdsf"</button>
+            <button class="add-tab">+ add component</button>
+          </div>
+          <div class="code-input">
+            <textarea></textarea>
+          </div>
+          <h2>Data:</h2>
+          <div class="code-data">
+            <textarea></textarea>
+          </div>
+        </div>
+        <div class="result">
+          <style>
+            .result-header {
+              display: flex;
+              align-items: baseline;
+              padding: 0 10px;
+              font-size: 24px;
+            }
+            .result-header * {
+              padding: 0;
+              margin: 0;
+            }
+            .result-checkbox {
+              margin-left: auto;
+              margin-right: 20px;
+            }
+          </style>
+          <div class="result-header">
+            <h2>Result</h2>
+            <label class="result-checkbox">
+              source code
+              <input type="checkbox" id="source-code" />
+            </label>
+            <a href="#">link</a>
+          </div>
+          <div>
+            code
+          </div>
+        </div>
+      </main>
+      <footer>
+        footer
+      </footer>
+    </div>
+  </body>
+</html>

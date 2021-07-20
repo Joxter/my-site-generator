@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "parcel ./src/site/index.html",
     "run-msg": "node --experimental-specifier-resolution=node ./run-msg.js"
   },
   "type": "module",
@@ -30,6 +31,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.12.1",
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "rollup": "^2.53.2"
   }
 }
