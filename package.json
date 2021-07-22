@@ -25,6 +25,8 @@
     "css": "^3.0.0",
     "dom-serializer": "^1.2.0",
     "domutils": "^2.4.4",
+    "effector": "^21.8.12",
+    "forest": "^0.19.6",
     "htmlparser2": "^6.0.0",
     "prettier": "^1.19.1"
   },
