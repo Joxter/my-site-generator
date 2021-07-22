@@ -1,7 +1,7 @@
 import { parse } from "./parser.js";
 import { render } from "./render.js";
 import { collectStyles } from "./collectStyles.js";
-import { scopedStyles } from "./scopedStyles";
+import { scopedStyles } from "./scopedStyles/index.js";
 
 export function yolka(options = {}) {
   return function parsing(componentStrs, pageStrs) {
