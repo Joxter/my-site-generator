@@ -17,7 +17,7 @@ function makeUniq(component) {
   const cssData = css.parse(rawStyles);
   const cssRules = cssData.stylesheet.rules;
 
-  forEachNodes(component.children, (node) => {
+  forEachNodes(component, (node) => {
     if (node.type !== "tag") {
       return;
     }
