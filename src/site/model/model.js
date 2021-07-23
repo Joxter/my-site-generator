@@ -1,5 +1,5 @@
 import { combine, createEffect, createEvent, createStore, sample } from "effector";
-import { getNameFromComponent } from "./utils.js";
+import { escapeHTML, getNameFromComponent } from "./utils.js";
 import { getSavedData, saveData } from "./local-storage.js";
 
 const initData = getSavedData();
@@ -9,12 +9,14 @@ let $componentsCode = createStore(initData.components);
 export let $data = createStore(initData.data);
 let $selectedComponent = createStore("page");
 export let $result = createStore("");
+export let $showSourceCode = createStore(false);
 
 export let addComponent = createEvent();
 export let componentTabClicked = createEvent();
 export let deleteComponentClicked = createEvent();
 export let userCodeEdited = createEvent();
 export let dataEdited = createEvent();
+export let toggleSC = createEvent();
 
 const yolkaFx = createEffect(({ page, components, data }) => {
   saveData(page, components, data);
@@ -27,6 +29,8 @@ const yolkaFx = createEffect(({ page, components, data }) => {
   }).then((res) => res.json());
 });
 
+$showSourceCode.on(toggleSC, (s) => !s);
+
 $result.on(yolkaFx.doneData, (state, res) => {
   if (res.ok) {
     return res.ok.pages[0];
@@ -36,6 +40,22 @@ $result.on(yolkaFx.doneData, (state, res) => {
 });
 $result.on(yolkaFx.failData, (state, err) => {
   return err;
+});
+
+export const $viewResult = combine($result, $showSourceCode, (result, showSourceCode) => {
+  if (!showSourceCode) {
+    return result;
+  }
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <title>page title</title>
+</head>
+<body>
+  <pre>${escapeHTML(result)}</pre>
+</body>
+</html>`;
 });
 
 export let $tabs = $componentsCode.map((componentsCode) => {

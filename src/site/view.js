@@ -1,13 +1,15 @@
-import { h, using, list, spec } from "forest";
+import { h, using, list, spec, text } from "forest";
 import {
   $data,
-  $result,
+  $showSourceCode,
   $tabs,
   $viewCode,
+  $viewResult,
   addComponent,
   componentTabClicked,
   dataEdited,
   deleteComponentClicked,
+  toggleSC,
   userCodeEdited,
 } from "./model/model.js";
 import { createEvent, forward, sample } from "effector";
@@ -22,7 +24,7 @@ using(document.querySelector(".code-input"), () => {
 });
 
 const domRes = document.querySelector("#result iframe");
-$result.watch((code) => {
+$viewResult.watch((code) => {
   domRes.srcdoc = code;
 });
 
@@ -32,6 +34,14 @@ using(document.querySelector(".code-data"), () => {
       handler: { input: dataEdited },
       text: $data,
     });
+  });
+});
+
+using(document.querySelector(".result-checkbox"), () => {
+  h("span", { text: "source code" });
+  h("input", {
+    attr: { type: "checkbox", checked: $showSourceCode },
+    handler: { change: toggleSC },
   });
 });
 
