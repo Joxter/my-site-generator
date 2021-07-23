@@ -12,10 +12,9 @@ const requestListener = function(req, res) {
           body = Buffer.concat(body).toString();
           console.log(body);
 
-          let { components, pages, data } = JSON.parse(body);
+          let { components, page, data } = JSON.parse(body);
 
-          data = eval(`[${data}]`)[0];
-          let result = yolka({})(components, pages).render(data);
+          let result = yolka({})(components, [page]).render(JSON.parse(data));
           res.statusCode = 200;
           res.setHeader("Access-Control-Allow-Origin", "*");
           res.setHeader("Access-Control-Allow-Methods", "*");

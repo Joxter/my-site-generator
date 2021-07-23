@@ -7,8 +7,10 @@ import {
   addComponent,
   componentTabClicked,
   dataEdited,
+  deleteComponentClicked,
   userCodeEdited,
 } from "./model/model.js";
+import { createEvent, forward, sample } from "effector";
 
 using(document.querySelector(".code-input"), () => {
   h("textarea", () => {
@@ -43,12 +45,37 @@ using(document.querySelector(".code-tabs"), () => {
   });
   list({
     source: $tabs,
-    fn: ({ store: tabName }) => {
-      h("button", () => {
-        spec({
-          attr: { class: "code-tab" },
-          handler: { click: componentTabClicked.prepend((ev) => ev.target.innerHTML) },
-          text: tabName,
+    fn: ({ store: tabName, key }) => {
+      let tabClick = createEvent();
+      let deleteTabClick = createEvent();
+
+      sample({
+        source: key,
+        clock: tabClick,
+        target: componentTabClicked,
+      });
+
+      sample({
+        source: key,
+        clock: deleteTabClick,
+        target: deleteComponentClicked,
+      });
+
+      h("div", () => {
+        h("button", () => {
+          spec({
+            attr: { class: "code-tab" },
+            handler: { click: tabClick },
+            text: tabName,
+          });
+        });
+
+        h("button", () => {
+          spec({
+            attr: { class: "delete-tab" },
+            handler: { click: deleteTabClick },
+            text: "X",
+          });
         });
       });
     },

@@ -1,24 +1,29 @@
 import { combine, createEffect, createEvent, createStore, sample } from "effector";
-import { EMPTY_PAGE, GET_EMPTY_COMPONENT } from "./constants.js";
+import { getNameFromComponent } from "./utils.js";
+import { getSavedData, saveData } from "./local-storage.js";
 
-let $pageCode = createStore(EMPTY_PAGE);
-let $componentsCode = createStore({}); // {[name]: "code",...}
+const initData = getSavedData();
+
+let $pageCode = createStore(initData.page);
+let $componentsCode = createStore(initData.components);
+export let $data = createStore(initData.data);
 let $selectedComponent = createStore("page");
-export let $data = createStore("");
 export let $result = createStore("");
 
 export let addComponent = createEvent();
 export let componentTabClicked = createEvent();
+export let deleteComponentClicked = createEvent();
 export let userCodeEdited = createEvent();
 export let dataEdited = createEvent();
 
-const yolkaFx = createEffect(({ pages, components, data }) => {
+const yolkaFx = createEffect(({ page, components, data }) => {
+  saveData(page, components, data);
   return fetch("http://localhost:8080/yolka", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ pages, components, data }),
+    body: JSON.stringify({ page, components, data }),
   }).then((res) => res.json());
 });
 
@@ -33,8 +38,8 @@ $result.on(yolkaFx.failData, (state, err) => {
   return err;
 });
 
-export let $tabs = combine($pageCode, $componentsCode, (pageCode, componentsCode) => {
-  return Object.keys(componentsCode);
+export let $tabs = $componentsCode.map((componentsCode) => {
+  return componentsCode.map((code) => getNameFromComponent(code));
 });
 
 export let $viewCode = combine($pageCode, $componentsCode, $selectedComponent, (pageCode, componentsCode, selected) => {
@@ -45,10 +50,11 @@ $selectedComponent.on(componentTabClicked, (state, tab) => tab);
 
 sample({
   source: [$pageCode, $componentsCode, $data],
+  clock: [userCodeEdited, dataEdited],
   fn: ([pageCode, componentsCode, data]) => {
     return {
-      pages: [pageCode],
-      components: Object.values(componentsCode),
+      page: pageCode,
+      components: componentsCode,
       data: data,
     };
   },
@@ -57,20 +63,29 @@ sample({
 
 $componentsCode
   .on(addComponent, (state) => {
-    const newComponent = GET_EMPTY_COMPONENT();
+    let name = `my-component-${Math.floor(Math.random() * 1000)}`;
 
-    return {
+    return [
       ...state,
-      [newComponent.name]: newComponent.code,
-    };
+      `<template name="${name}" props="" slots="">
+<div>${name}</div>
+<style>
+</style>
+</template>`,
+    ];
+  })
+  .on(deleteComponentClicked, (state, id) => {
+    let newState = [...state];
+    newState.splice(id, 1);
+    return newState;
   })
   .on(
     sample($selectedComponent, userCodeEdited, (s, p) => [s, p]),
     (state, [selected, ev]) => {
-      if (state[selected]) {
-        return {
-          [selected]: ev.target.value,
-        };
+      if (selected !== "page") {
+        let newState = [...state];
+        newState[selected] = ev.target.value;
+        return newState;
       }
     }
   );

@@ -61,13 +61,20 @@
               min-height: 200px;
             }
             .code-tabs {
-              padding: 8px 8px 0;
+              padding: 8px 8px 2px;
               display: flex;
               gap: 8px;
               flex-wrap: wrap;
             }
             .code-tab {
               padding: 4px 12px;
+              border-radius: 5px 0px 0px 5px;
+              border: 1px solid #cccccc;
+            }
+            .delete-tab {
+              border-radius: 0px 5px 5px 0px;
+              padding: 4px 8px;
+              border: 1px solid #cccccc;
             }
           </style>
           <div class="code-tabs"></div>
