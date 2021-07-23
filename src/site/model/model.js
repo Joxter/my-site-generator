@@ -100,7 +100,7 @@ $componentsCode
     return newState;
   })
   .on(
-    sample($selectedComponent, userCodeEdited, (s, p) => [s, p]),
+    sample({ source: $selectedComponent, clock: userCodeEdited, fn: (s, p) => [s, p], greedy: true }),
     (state, [selected, ev]) => {
       if (selected !== "page") {
         let newState = [...state];
@@ -113,7 +113,7 @@ $componentsCode
 $data.on(dataEdited, (state, ev) => ev.target.value);
 
 $pageCode.on(
-  sample($selectedComponent, userCodeEdited, (s, p) => [s, p]),
+  sample({ source: $selectedComponent, clock: userCodeEdited, fn: (s, p) => [s, p], greedy: true }),
   (state, [selected, ev]) => {
     if (selected === "page") {
       return ev.target.value;
