@@ -14,14 +14,13 @@ using(document.querySelector(".code-input"), () => {
   h("textarea", () => {
     spec({
       handler: { input: userCodeEdited },
-      text: $viewCode,
+      attr: { value: $viewCode },
     });
   });
 });
 
 const domRes = document.querySelector("#result iframe");
 $result.watch((code) => {
-  console.log({ code });
   domRes.srcdoc = code;
 });
 

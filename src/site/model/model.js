@@ -1,4 +1,4 @@
-import { combine, createEvent, createStore, sample } from "effector";
+import { combine, createEffect, createEvent, createStore, sample } from "effector";
 import { EMPTY_PAGE, GET_EMPTY_COMPONENT } from "./constants.js";
 
 let $pageCode = createStore(EMPTY_PAGE);
@@ -12,6 +12,27 @@ export let componentTabClicked = createEvent();
 export let userCodeEdited = createEvent();
 export let dataEdited = createEvent();
 
+const yolkaFx = createEffect(({ pages, components, data }) => {
+  return fetch("http://localhost:8080/yolka", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ pages, components, data }),
+  }).then((res) => res.json());
+});
+
+$result.on(yolkaFx.doneData, (state, res) => {
+  if (res.ok) {
+    return res.ok.pages[0];
+  } else {
+    return res;
+  }
+});
+$result.on(yolkaFx.failData, (state, err) => {
+  return err;
+});
+
 export let $tabs = combine($pageCode, $componentsCode, (pageCode, componentsCode) => {
   return Object.keys(componentsCode);
 });
@@ -22,8 +43,17 @@ export let $viewCode = combine($pageCode, $componentsCode, $selectedComponent, (
 
 $selectedComponent.on(componentTabClicked, (state, tab) => tab);
 
-// $componentsCode.watch(console.log);
-// $selectedComponent.watch(console.log);
+sample({
+  source: [$pageCode, $componentsCode, $data],
+  fn: ([pageCode, componentsCode, data]) => {
+    return {
+      pages: [pageCode],
+      components: Object.values(componentsCode),
+      data: data,
+    };
+  },
+  target: yolkaFx,
+});
 
 $componentsCode
   .on(addComponent, (state) => {
@@ -45,7 +75,7 @@ $componentsCode
     }
   );
 
-$data.on(userCodeEdited, (state, ev) => ev.target.value);
+$data.on(dataEdited, (state, ev) => ev.target.value);
 
 $pageCode.on(
   sample($selectedComponent, userCodeEdited, (s, p) => [s, p]),
