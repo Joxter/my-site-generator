@@ -10,7 +10,7 @@ export const EMPTY_PAGE = `<!DOCTYPE html>
 
 let i = 0;
 export const GET_EMPTY_COMPONENT = () => {
-  let name = `my-comp-${i}`;
+  let name = `my-comp-${i++}`;
 
   return {
     code: `<template name="${name}" props="" slots="">

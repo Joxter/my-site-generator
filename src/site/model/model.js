@@ -2,21 +2,28 @@ import { combine, createEvent, createStore, sample } from "effector";
 import { EMPTY_PAGE, GET_EMPTY_COMPONENT } from "./constants.js";
 
 let $pageCode = createStore(EMPTY_PAGE);
-let $componentsCode = createStore([]); // {[name]: "code",...}
+let $componentsCode = createStore({}); // {[name]: "code",...}
 let $selectedComponent = createStore("page");
-let $data = createStore("");
+export let $data = createStore("");
+export let $result = createStore("");
 
-let addComponent = createEvent();
-let componentTabClicked = createEvent();
-let userCodeEdited = createEvent();
+export let addComponent = createEvent();
+export let componentTabClicked = createEvent();
+export let userCodeEdited = createEvent();
+export let dataEdited = createEvent();
+
+export let $tabs = combine($pageCode, $componentsCode, (pageCode, componentsCode) => {
+  return Object.keys(componentsCode);
+});
 
 export let $viewCode = combine($pageCode, $componentsCode, $selectedComponent, (pageCode, componentsCode, selected) => {
   return selected === "page" ? pageCode : componentsCode[selected];
 });
 
-$selectedComponent.on(componentTabClicked, (state, ev) => {
-  console.log(ev);
-});
+$selectedComponent.on(componentTabClicked, (state, tab) => tab);
+
+// $componentsCode.watch(console.log);
+// $selectedComponent.watch(console.log);
 
 $componentsCode
   .on(addComponent, (state) => {
@@ -37,6 +44,8 @@ $componentsCode
       }
     }
   );
+
+$data.on(userCodeEdited, (state, ev) => ev.target.value);
 
 $pageCode.on(
   sample($selectedComponent, userCodeEdited, (s, p) => [s, p]),
