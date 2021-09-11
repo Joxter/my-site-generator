@@ -259,4 +259,30 @@ h2.-c-1 + p.-c-1 {
     expect(result.pages[0]).toEqual("<div><p>first</p><button>button text</button><p>second</p></div>");
     expect(result.pages[1]).toEqual("<div><p>first</p><button>button text</button><p>second</p></div>");
   });
+
+  describe("pretty output", () => {
+    it.skip("basic html", () => {
+      const result = defaultYolka(
+        [],
+        [
+          `
+<div>
+<p>line</p>
+<div>
+
+<p>line 2</p>
+</div>
+</div>
+`,
+        ]
+      ).render({ name: "Kolya" });
+
+      expect(result.pages[0]).toEqual(`<div>
+  <p>line</p>
+  <div>
+    <p>line 2</p>
+  </div>
+</div>`);
+    });
+  });
 });
