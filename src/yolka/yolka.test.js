@@ -248,4 +248,15 @@ h2.-c-1 + p.-c-1 {
   <title>index title</title>
 </head><body><div>slot content</div></body></html>`);
   });
+
+  it.skip("component can be used as self-closing tag", () => {
+    // it seems to be, I can't do it with without patching the htmlparser2
+    const result = defaultYolka(
+      [`<template name="my-button"><button>button text</button></template>`],
+      [`<div><p>first</p><my-button /><p>second</p></div>`, `<div><p>first</p><my-button><p>second</p></div>`]
+    ).render();
+
+    expect(result.pages[0]).toEqual("<div><p>first</p><button>button text</button><p>second</p></div>");
+    expect(result.pages[1]).toEqual("<div><p>first</p><button>button text</button><p>second</p></div>");
+  });
 });
