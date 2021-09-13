@@ -250,7 +250,7 @@ h2.-c-1 + p.-c-1 {
   });
 
   it.skip("component can be used as self-closing tag", () => {
-    // it seems to be, I can't do it with without patching the htmlparser2
+    // it seems to be, I can't do it without patching the htmlparser2
     const result = defaultYolka(
       [`<template name="my-button"><button>button text</button></template>`],
       [`<div><p>first</p><my-button /><p>second</p></div>`, `<div><p>first</p><my-button><p>second</p></div>`]
@@ -258,6 +258,37 @@ h2.-c-1 + p.-c-1 {
 
     expect(result.pages[0]).toEqual("<div><p>first</p><button>button text</button><p>second</p></div>");
     expect(result.pages[1]).toEqual("<div><p>first</p><button>button text</button><p>second</p></div>");
+  });
+
+  describe.skip("fun with data and conditions", () => {
+    it.skip("data can be placed in tags content", () => {
+      // not sure about the syntax
+      const pages = defaultYolka([], [`<p class="foo {myClass}">hello</p>`]);
+
+      expect(pages.render({ myClass: "greeting" }).pages[0]).toEqual(`<p class="foo greeting">hello</p>`);
+      expect(pages.render({}).pages[0]).toEqual(`<p class="foo">hello</p>`);
+    });
+
+    it.skip("ternary operator inside tag", () => {
+      // not sure about the syntax
+      const pages = defaultYolka(
+        [],
+        [`<p class="foo {show}?show:hidden">hello</p>`, `<p class="foo {show}?show">hello</p>`]
+      );
+
+      expect(pages.render({ show: true }).pages[0]).toEqual(`<p class="foo show">hello</p>`);
+      expect(pages.render({ show: false }).pages[0]).toEqual(`<p class="foo hidden">hello</p>`);
+      expect(pages.render({ show: true }).pages[1]).toEqual(`<p class="foo show">hello</p>`);
+      expect(pages.render({ show: false }).pages[1]).toEqual(`<p class="foo">hello</p>`);
+    });
+
+    it.skip("ternary operator of tag", () => {
+      // not sure about the syntax
+      const pages = defaultYolka([], [`<p {abc}?class="foo">hello</p>`]);
+
+      expect(pages.render({ abc: true }).pages[0]).toEqual(`<p class="foo">hello</p>`);
+      expect(pages.render({ abc: false }).pages[0]).toEqual(`<p>hello</p>`);
+    });
   });
 
   describe("pretty output", () => {
