@@ -119,6 +119,10 @@ function solveFor(node, options, cb) {
 
     const array = deepFind(options.data, arrayPath);
 
+    if (!Array.isArray(array)) {
+      throw new Error(`Can not find array "${arrayPath}" in the data`);
+    }
+
     return array
       .map((item) => {
         return cb(node, {
@@ -259,7 +263,7 @@ function renderComment(elem) {
 function formatAttributes(attributes, opts) {
   if (!attributes) return;
   return Object.keys(attributes)
-    .map(function(key) {
+    .map(function (key) {
       if (key === NODE_SPEC_ATTRS.IF || key === "slot") return "";
 
       let _a;

@@ -26,7 +26,17 @@ const yolkaFx = createEffect(({ page, components, data }) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ page, components, data }),
-  }).then((res) => res.json());
+  }).then((res) => {
+    return res.text().then((text) => {
+      try {
+        return JSON.parse(text);
+      } catch (err) {
+        console.error(text);
+        console.error(err);
+        return err.message + "<br />" + text;
+      }
+    });
+  });
 });
 
 $showSourceCode.on(toggleSC, (s) => !s);
