@@ -12,7 +12,7 @@ export function deepFind(obj, props) {
  * do this: 'foo[2].bar' -> ['foo', '2', 'bar']
  */
 export function getKeysFromStr(str) {
-  return str.split(/[\[\].]+/).filter(key => !!key);
+  return str.split(/[\[\].]+/).filter((key) => !!key);
 }
 
 export function removeFirstLastChar(str) {
@@ -30,7 +30,7 @@ export function last(inp) {
 export function commonInArr(arr1, arr2) {
   const common = {};
 
-  [...arr1, ...arr2].forEach(item => {
+  [...arr1, ...arr2].forEach((item) => {
     common[item] = common[item] + 1 || 1;
   });
 
@@ -70,4 +70,29 @@ export function insertDataToSting(str, data) {
     const keys = getKeysFromStr($1);
     return deepFind(data, keys);
   });
+}
+
+function _niceEl(el) {
+  let lines = [];
+  let attrs = el.attribs ? JSON.stringify(el.attribs) : `-`;
+  let data = niceData(el) || "EMPTY";
+
+  lines.push(`[${el.type}: ${el.name || "NO_NAME"}] attribs: ${attrs} >>> data: ${data}`);
+
+  if (el.children && el.children.length > 0) {
+    let ch = el.children.map((c) => _niceEl(c).map((str) => "  " + str));
+    if (ch.length === 1) debugger;
+    ch.forEach((c) => lines.push(...c));
+  }
+  return lines;
+}
+
+function niceData(el) {
+  if (!el.data) return "";
+  return el.data.replace(/\n/, "\\n").replace(/\t/, "\\t");
+}
+
+export function niceEl(el, msg = "") {
+  msg && console.log(msg);
+  console.log(_niceEl(el).join("\n"));
 }

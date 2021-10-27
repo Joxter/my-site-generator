@@ -68,15 +68,23 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
         el.type = ElementType.Component; // hack первый хак парсера, нужен чтоб подружить AST с моей логикой
 
         for (let name in el.attribs) {
-          let attrVel = el.attribs[name];
-          if (attrVel[0] === "{" && attrVel[attrVel.length - 1] === "}") {
-            el.attribs[name] = getKeysFromStr(removeFirstLastChar(attrVel));
-          } else {
-            el.attribs[name] = attrVel;
+          let attrVal = el.attribs[name];
+          if (attrVal[0] === "{" && attrVal[attrVal.length - 1] === "}") {
+            el.attribs[name] = getKeysFromStr(removeFirstLastChar(attrVal));
           }
         }
 
         dependsOn.add(el.name);
+      } else {
+        // атрибуты обычных нод могут быть сложнее и обрабатываются отдельно
+        for (let name in el.attribs) {
+          if (Object.values(NODE_SPEC_ATTRS).includes(name)) continue;
+
+          let attrVal = el.attribs[name];
+          if (attrVal.includes("{")) {
+            el.attribs[name] = strToArrWithPaths(attrVal);
+          }
+        }
       }
     } else if (el.type === "text") {
       if (el.data.includes("{") && el.parent.type !== "style") {
@@ -106,11 +114,10 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
   };
 }
 
-function toTextWithDataNode(node) {
+function strToArrWithPaths(str) {
   //  как-то так "Hello, {user.name}!" => ["hello,", ['user', 'name'], '!'];
   // todo исправить на нормальное, а то сейчас все сломается если "Hello}, {} my name is {name!"
 
-  let str = node.data;
   let result = [];
   let lastBorder = 0;
 
@@ -132,7 +139,11 @@ function toTextWithDataNode(node) {
     result.push(str.slice(lastBorder + 1, str.length));
   }
 
-  node.data = result;
+  return result;
+}
+
+function toTextWithDataNode(node) {
+  node.data = strToArrWithPaths(node.data);
   node.type = ElementType.TextWithData;
 }
 
