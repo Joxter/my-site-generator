@@ -25,8 +25,8 @@ describe("yolka basics", () => {
   });
 
   it("test simple page with deep data", () => {
-    const result = defaultYolka([], [`<h1>header</h1><p>hello, {users[0].name}!</p>`]).render({
-      users: [{ name: "Kolya" }],
+    const result = defaultYolka([], [`<h1>header</h1><p>hello, {data.users[0].name}!</p>`]).render({
+      data: { users: [{ name: "Kolya" }] },
     });
 
     expect(result.pages[0]).toEqual("<h1>header</h1><p>hello, Kolya!</p>");
@@ -91,6 +91,29 @@ describe("yolka basics", () => {
 </div>`);
   });
 
+  it("nested components", () => {
+    const result = defaultYolka(
+      [
+        `<template name="my-post">
+<div>
+  <my-par text="some text"></my-par>
+  <button>read more</button></div>
+</template>`,
+        `<template name="my-par" props="text"><p>{text}</p></template>`,
+      ],
+      [`<h1>header</h1><my-post></my-post><my-post></my-post>`]
+    ).render();
+
+    expect(result.pages[0]).toEqual(`<h1>header</h1>
+<div>
+  <p>some text</p>
+  <button>read more</button></div>
+
+<div>
+  <p>some text</p>
+  <button>read more</button></div>`);
+  });
+
   it("test several renders with different data", () => {
     const pages = defaultYolka(
       [`<template name="my-greeting" props="user"><p>hello, {user.name}!</p></template>`],
@@ -101,19 +124,31 @@ describe("yolka basics", () => {
     expect(pages.render({ users: [{ name: "Petya" }] }).pages[0]).toEqual(`<div><p>hello, Petya!</p></div>`);
   });
 
-  it("test j-if attribute", () => {
+  it("test y-if attribute", () => {
     const pages = defaultYolka([], [`<div><p y-if="{show}">hello if</p><p>hello</p></div>`]);
 
     expect(pages.render({ show: false }).pages[0]).toEqual(`<div><p>hello</p></div>`);
     expect(pages.render({ show: true }).pages[0]).toEqual(`<div><p>hello if</p><p>hello</p></div>`);
   });
 
-  it("test j-for attribute", () => {
+  it.skip("test y-if attribute, should works 'else' branch", () => {
+    const pages = defaultYolka([], [`<p y-if="{cond}">then</p><p j-else>else</p><p>foo</p>`]);
+
+    expect(pages.render({ cond: true }).pages[0]).toEqual(`<p>then</p><p>foo</p>`);
+    expect(pages.render({ cond: false }).pages[0]).toEqual(`<p>else</p><p>foo</p>`);
+  });
+
+  it("test y-for attribute", () => {
     const pages = defaultYolka([], [`<div><p y-for="{item in arr}">{item.label}</p></div>`]);
 
     expect(pages.render({ arr: [{ label: "123" }, { label: "456" }] }).pages[0]).toEqual(
       `<div><p>123</p><p>456</p></div>`
     );
+  });
+
+  it("y-for should render nothing if arr is empty", () => {
+    const result = defaultYolka([], [`<p y-for="{item in arr}">{item}</p><p>boo</p>`]).render({ arr: [] });
+    expect(result.pages[0]).toEqual(`<p>boo</p>`);
   });
 
   it("test simple slot", () => {
@@ -138,6 +173,27 @@ describe("yolka basics", () => {
     expect(result.pages[0]).toEqual(`<header>default header</header>`);
   });
 
+  it("several elements to one slot", () => {
+    const result = defaultYolka(
+      [`<template name="news-item" slots="header"><header><slot name="header">default</slot></header></template>`],
+      [`<news-item><h1 slot="header">main header</h1><h2 slot="header">second header</h2></news-item>`]
+    ).render();
+
+    expect(result.pages[0]).toEqual(`<header><h1>main header</h1><h2>second header</h2></header>`);
+  });
+
+  it("component as a slot content", () => {
+    const result = defaultYolka(
+      [
+        `<template name="my-user" props="name age"><p>{name}</p>{age}</template>`,
+        `<template name="news-item" slots="header"><header><slot name="header">default header</slot></header></template>`,
+      ],
+      [`<news-item><my-user name="Bob" age="22" slot="header"></my-user></news-item>`]
+    ).render();
+
+    expect(result.pages[0]).toEqual(`<header><p>Bob</p>22</header>`);
+  });
+
   it("collect styles", () => {
     const result = defaultYolka(
       [
@@ -155,7 +211,9 @@ describe("yolka basics", () => {
 <p>text2</p>
 <div id="some-id">text2</div>
 <style>
-  h2 + p { display: block; }
+  @media (min-height: 680px), screen and (orientation: portrait) {
+    h2 + p { display: block; }
+  }
   #some-id { display: block; }
 </style>
 </template>`,
@@ -179,8 +237,10 @@ p.-c-0,
 span.-c-0 {
   border: 1px solid red;
 }
-h2.-c-1 + p.-c-1 {
-  display: block;
+@media (min-height: 680px), screen and (orientation: portrait) {
+  h2.-c-1 + p.-c-1 {
+    display: block;
+  }
 }
 
 #some-id {
@@ -258,6 +318,52 @@ h2.-c-1 + p.-c-1 {
 
     expect(result.pages[0]).toEqual("<div><p>first</p><button>button text</button><p>second</p></div>");
     expect(result.pages[1]).toEqual("<div><p>first</p><button>button text</button><p>second</p></div>");
+  });
+
+  describe("test several pages", () => {
+    it("basic work", () => {
+      const components = [
+        `<template name="comp-one"><p>one</p><style>.one {color: red}</style></template>`,
+        `<template name="comp-two"><p>two</p><style>.two {color: red}</style></template>`,
+      ];
+      const page1 = `<div><comp-one></comp-one></div>`;
+      const page2 = `<div><comp-one></comp-one><comp-two></comp-two></div>`;
+
+      const result = defaultYolka(components, [page1, page2]).render();
+
+      expect(result.pages[0]).toEqual('<div><p class="-c-0">one</p></div>');
+      expect(result.pages[1]).toEqual(`<div><p class="-c-0">one</p><p class="-c-1">two</p></div>`);
+      expect(result.common.pages[0]).toEqual(`.one.-c-0 {
+  color: red;
+}`);
+      expect(result.common.pages[1]).toEqual(`.one.-c-0 {
+  color: red;
+}
+.two.-c-1 {
+  color: red;
+}`);
+    });
+
+    it.skip("test common styles (WILL BREAK 'basic work' TEST)", () => {
+      const components = [
+        `<template name="comp-one"><p>one</p><style>.one {color: red}</style></template>`,
+        `<template name="comp-two"><p>two</p><style>.two {color: red}</style></template>`,
+      ];
+      const page1 = `<div><comp-one></comp-one></div>`;
+      const page2 = `<div><comp-one></comp-one><comp-two></comp-two></div>`;
+
+      const result = defaultYolka(components, [page1, page2]).render();
+
+      expect(result.pages[0]).toEqual('<div><p class="-c-0">one</p></div>');
+      expect(result.pages[1]).toEqual(`<div><p class="-c-0">one</p><p class="-c-1">two</p></div>`);
+      expect(result.common.css).toEqual(`.one.-c-0 {
+  color: red;
+}`);
+      expect(result.common.pages[0]).toEqual(``);
+      expect(result.common.pages[1]).toEqual(`.two.-c-1 {
+  color: red;
+}`);
+    });
   });
 
   describe("fun with data and conditions", () => {
