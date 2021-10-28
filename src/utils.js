@@ -59,20 +59,6 @@ export function forEachNodes(root, cb) {
   }
 }
 
-/**
- * str: 'Hello, {user.name}!'
- * data: {user: {name: Kolya}}
- *
- * result: 'Hello, Kolya!"
- */
-export function insertDataToSting(str, data) {
-  // todo fix errors when we trying to pass props witch doesn't exist
-  return str.replace(/(?:\{(.+?)\})/g, (match, $1) => {
-    const keys = getKeysFromStr($1);
-    return deepFind(data, keys);
-  });
-}
-
 function _niceEl(el) {
   let lines = [];
   let attrs = el.attribs ? JSON.stringify(el.attribs) : `-`;

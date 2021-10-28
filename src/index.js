@@ -1,1 +1,1 @@
-export { msg } from "./msg/index.js";
+export { yolka } from "./yolka/index.js";

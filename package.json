@@ -7,7 +7,7 @@
     "test": "jest --runInBand",
     "dev": "parcel ./src/site/index.html",
     "server": "node ./src/site/server.js",
-    "run-msg": "node --experimental-specifier-resolution=node ./run-msg.js"
+    "run-yolka": "node --experimental-specifier-resolution=node ./run-yolka.js"
   },
   "type": "module",
   "repository": {
