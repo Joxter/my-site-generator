@@ -260,13 +260,13 @@ h2.-c-1 + p.-c-1 {
     expect(result.pages[1]).toEqual("<div><p>first</p><button>button text</button><p>second</p></div>");
   });
 
-  describe.skip("fun with data and conditions", () => {
-    it.skip("data can be placed in tags content", () => {
+  describe("fun with data and conditions", () => {
+    it("data can be placed in tags content", () => {
       // not sure about the syntax
       const pages = defaultYolka([], [`<p class="foo {myClass}">hello</p>`]);
 
       expect(pages.render({ myClass: "greeting" }).pages[0]).toEqual(`<p class="foo greeting">hello</p>`);
-      expect(pages.render({}).pages[0]).toEqual(`<p class="foo">hello</p>`);
+      expect(pages.render({}).pages[0]).toEqual(`<p class="foo ">hello</p>`);
     });
 
     it.skip("ternary operator inside tag", () => {

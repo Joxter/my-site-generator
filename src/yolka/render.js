@@ -1,4 +1,4 @@
-import { deepFind, insertDataToSting } from "../utils.js";
+import { deepFind } from "../utils.js";
 import { ElementType, NODE_SPEC_ATTRS } from "./constants.js";
 
 /*
@@ -241,10 +241,14 @@ function renderText(elem) {
 }
 
 function renderTextWithData(elem, options) {
-  return elem.data
+  return fillInArrayString(elem.data, options.data);
+}
+
+function fillInArrayString(arr, data) {
+  return arr
     .map((it) => {
       if (Array.isArray(it)) {
-        return deepFind(options.data, it);
+        return deepFind(data, it);
       } else {
         return it;
       }
@@ -271,6 +275,9 @@ function formatAttributes(attributes, opts) {
       let value = (_a = attributes[key]) !== null && _a !== undefined ? _a : "";
       if (!opts.emptyAttrs && value === "") {
         return key;
+      }
+      if (Array.isArray(value)) {
+        value = fillInArrayString(value, opts.data);
       }
       return key + '="' + value.replace(/"/g, "&quot;") + '"';
     })
