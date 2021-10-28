@@ -1,11 +1,12 @@
 export function deepFind(obj, props) {
-  if (!obj) {
-    return null;
-  }
+  if (!obj) return null;
 
-  return props.reduce((result, prop) => {
-    return result == null ? null : result[prop];
-  }, obj);
+  let currentValue = obj;
+  for (let key of props) {
+    currentValue = currentValue[key];
+    if (currentValue == null) return null;
+  }
+  return currentValue;
 }
 
 /**

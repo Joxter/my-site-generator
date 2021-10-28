@@ -67,7 +67,7 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
       }
 
       if (el.name.includes("-")) {
-        el.type = ElementType.Component; // hack первый хак парсера, нужен чтоб подружить AST с моей логикой
+        el.type = ElementType.Component; // hack хак парсера, нужен чтоб подружить AST с моей логикой
 
         for (let name in el.attribs) {
           let attrVal = el.attribs[name];

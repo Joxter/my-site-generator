@@ -268,11 +268,9 @@ function formatAttributes(attributes, opts) {
   if (!attributes) return;
   return Object.keys(attributes)
     .map(function (key) {
-      if (key === NODE_SPEC_ATTRS.IF || key === "slot") return "";
+      if (key === NODE_SPEC_ATTRS.IF || key === NODE_SPEC_ATTRS.SLOT) return "";
 
-      let _a;
-      // todo упростить условие ниже
-      let value = (_a = attributes[key]) !== null && _a !== undefined ? _a : "";
+      let value = attributes[key] || "";
       if (!opts.emptyAttrs && value === "") {
         return key;
       }
