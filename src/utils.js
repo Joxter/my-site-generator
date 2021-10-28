@@ -75,9 +75,17 @@ export function insertDataToSting(str, data) {
 function _niceEl(el) {
   let lines = [];
   let attrs = el.attribs ? JSON.stringify(el.attribs) : `-`;
-  let data = niceData(el) || "EMPTY";
+  let data = niceData(el) || "-";
 
-  lines.push(`[${el.type}: ${el.name || "NO_NAME"}] attribs: ${attrs} >>> data: ${data}`);
+  if (el.type === "tag") {
+    lines.push(`<${el.name}> attribs: ${attrs}`);
+  } else if (el.type === "text") {
+    lines.push(`[${el.type}] >>${data}<<`);
+  } else if (el.type === "root") {
+    lines.push(`[${el.type}] attribs: ${attrs} >>> data: ${data}`);
+  } else {
+    lines.push(`REST!!! [${el.type}] attribs: ${attrs} >>> data: ${data}`);
+  }
 
   if (el.children && el.children.length > 0) {
     let ch = el.children.map((c) => _niceEl(c).map((str) => "  " + str));

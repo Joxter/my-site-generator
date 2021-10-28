@@ -1,6 +1,6 @@
 import { parseDocument } from "htmlparser2";
 import { removeElement } from "domutils";
-import { forEachNodes, getKeysFromStr, removeFirstLastChar } from "../utils.js";
+import { forEachNodes, getKeysFromStr, niceEl, removeFirstLastChar } from "../utils.js";
 import { COMPONENT_ATTRS, ElementType, NODE_SPEC_ATTRS } from "./constants.js";
 
 function initComponents(componentsAST) {
@@ -16,7 +16,9 @@ function initComponents(componentsAST) {
 }
 
 export function parse(componentStrs, pageStrs) {
-  const pages = pageStrs.map((page) => getServiceNodes(parseDocument(page), true));
+  const pages = pageStrs.map((page) => {
+    return getServiceNodes(parseDocument(page), true);
+  });
 
   const Components = initComponents(
     componentStrs.map((template) => {
