@@ -1,6 +1,6 @@
 import { parseDocument } from "htmlparser2";
 import { removeElement } from "domutils";
-import { forEachNodes, getKeysFromStr, niceEl, removeFirstLastChar } from "../utils.js";
+import { forEachNodes, getKeysFromStr, has, niceEl, removeFirstLastChar } from "../utils.js";
 import { COMPONENT_ATTRS, ElementType, NODE_SPEC_ATTRS } from "./constants.js";
 
 function initComponents(componentsAST) {
@@ -51,12 +51,18 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
       return;
     }
     if (el.type === "tag") {
-      if (NODE_SPEC_ATTRS.IF in el.attribs) {
+      if (has(el.attribs, NODE_SPEC_ATTRS.IF)) {
         let cond = el.attribs[NODE_SPEC_ATTRS.IF];
         el.attribs[NODE_SPEC_ATTRS.IF] = getKeysFromStr(removeFirstLastChar(cond));
       }
+      if (has(el.attribs, NODE_SPEC_ATTRS.ELSE) && el.prev !== null) {
+        if (el.prev) {
+          let cond = el.prev.attribs[NODE_SPEC_ATTRS.IF];
+          el.attribs[NODE_SPEC_ATTRS.ELSE] = cond; // was parsed on prev element
+        }
+      }
 
-      if (NODE_SPEC_ATTRS.FOR in el.attribs) {
+      if (has(el.attribs, NODE_SPEC_ATTRS.FOR)) {
         let forStr = el.attribs[NODE_SPEC_ATTRS.FOR];
         let [itemName, arrayName] = removeFirstLastChar(forStr).split(" in ");
         el.attribs[NODE_SPEC_ATTRS.FOR] = { itemName, arrayPath: getKeysFromStr(arrayName) };

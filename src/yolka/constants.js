@@ -6,6 +6,7 @@ export const COMPONENT_ATTRS = {
 
 export const NODE_SPEC_ATTRS = {
   IF: "y-if",
+  ELSE: "y-else",
   FOR: "y-for",
   SLOT: "slot", // todo что-то выглядит неуместно
 };

@@ -44,6 +44,10 @@ export function commonInArr(arr1, arr2) {
   return Object.keys(common);
 }
 
+export function has(obj, field) {
+  return {}.hasOwnProperty.call(obj, field);
+}
+
 export function forEachNodes(root, cb) {
   const store = [root];
 

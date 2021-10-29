@@ -1,4 +1,4 @@
-import { deepFind } from "../utils.js";
+import { deepFind, has } from "../utils.js";
 import { ElementType, NODE_SPEC_ATTRS } from "./constants.js";
 
 /*
@@ -103,17 +103,23 @@ function renderNode(node, options) {
 }
 
 function solveIf(node, options) {
-  if (node.attribs && NODE_SPEC_ATTRS.IF in node.attribs) {
-    // todo обработать всякие y-if='', y-if='0', y-if='1', y-if='true', y-if='false'
-    const res = deepFind(options.data, node.attribs[NODE_SPEC_ATTRS.IF]);
-    return res;
+  if (node.attribs) {
+    if (has(node.attribs, NODE_SPEC_ATTRS.IF)) {
+      // todo обработать всякие y-if='', y-if='0', y-if='1', y-if='true', y-if='false'
+      const res = deepFind(options.data, node.attribs[NODE_SPEC_ATTRS.IF]);
+      return res;
+    }
+    if (has(node.attribs, NODE_SPEC_ATTRS.ELSE)) {
+      const res = deepFind(options.data, node.attribs[NODE_SPEC_ATTRS.ELSE]);
+      return !res;
+    }
   }
 
   return true;
 }
 
 function solveFor(node, options, cb) {
-  if (node.attribs && NODE_SPEC_ATTRS.FOR in node.attribs) {
+  if (node.attribs && has(node.attribs, NODE_SPEC_ATTRS.FOR)) {
     const { itemName, arrayPath } = node.attribs[NODE_SPEC_ATTRS.FOR];
     delete node.attribs[NODE_SPEC_ATTRS.FOR];
 
@@ -264,11 +270,12 @@ function renderComment(elem) {
   return "<!--" + elem.data + "-->";
 }
 
+const SPEC_ATTRS_SET = new Set(Object.values(NODE_SPEC_ATTRS));
 function formatAttributes(attributes, opts) {
   if (!attributes) return;
   return Object.keys(attributes)
     .map(function (key) {
-      if (key === NODE_SPEC_ATTRS.IF || key === NODE_SPEC_ATTRS.SLOT) return "";
+      if (SPEC_ATTRS_SET.has(key)) return "";
 
       let value = attributes[key] || "";
       if (!opts.emptyAttrs && value === "") {

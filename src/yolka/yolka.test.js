@@ -131,8 +131,8 @@ describe("yolka basics", () => {
     expect(pages.render({ show: true }).pages[0]).toEqual(`<div><p>hello if</p><p>hello</p></div>`);
   });
 
-  it.skip("test y-if attribute, should works 'else' branch", () => {
-    const pages = defaultYolka([], [`<p y-if="{cond}">then</p><p j-else>else</p><p>foo</p>`]);
+  it("test y-if attribute, should works 'else' branch", () => {
+    const pages = defaultYolka([], [`<p y-if="{cond}">then</p><p y-else>else</p><p>foo</p>`]);
 
     expect(pages.render({ cond: true }).pages[0]).toEqual(`<p>then</p><p>foo</p>`);
     expect(pages.render({ cond: false }).pages[0]).toEqual(`<p>else</p><p>foo</p>`);
