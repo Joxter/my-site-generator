@@ -75,7 +75,7 @@ function renderNode(node, options) {
 
   // todo выглядит неочень, надо попробовать сделать это как новый тип ноды ElementType.For
   let forRes = solveFor(node, options, (_node, _opt) => renderNotMy(_node, _opt));
-  if (forRes) return forRes;
+  if (forRes !== false) return forRes; // '!== false' because empty string is a valid value
 
   switch (node.type) {
     case ElementType.Root:
@@ -138,6 +138,8 @@ function solveFor(node, options, cb) {
       })
       .join("");
   }
+
+  return false;
 }
 
 function renderPage(node, options) {
