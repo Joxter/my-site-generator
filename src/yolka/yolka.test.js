@@ -333,18 +333,9 @@ span.-c-0 {
 
       expect(result.pages[0]).toEqual('<div><p class="-c-0">one</p></div>');
       expect(result.pages[1]).toEqual(`<div><p class="-c-0">one</p><p class="-c-1">two</p></div>`);
-      expect(result.common.pages[0]).toEqual(`.one.-c-0 {
-  color: red;
-}`);
-      expect(result.common.pages[1]).toEqual(`.one.-c-0 {
-  color: red;
-}
-.two.-c-1 {
-  color: red;
-}`);
     });
 
-    it.skip("test common styles (WILL BREAK 'basic work' TEST)", () => {
+    it("test common styles", () => {
       const components = [
         `<template name="comp-one"><p>one</p><style>.one {color: red}</style></template>`,
         `<template name="comp-two"><p>two</p><style>.two {color: red}</style></template>`,

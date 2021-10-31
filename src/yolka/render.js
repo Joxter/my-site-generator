@@ -22,10 +22,9 @@ export function render(Components, pageComp, data) {
     },
   };
 
-  if (pageComp.type === ElementType.Page) {
-    return renderPage(pageComp, opts).trim();
-  }
-  return renderNotMy(pageComp, opts).trim();
+  let resultPage = pageComp.type === ElementType.Page ? renderPage(pageComp, opts) : renderNotMy(pageComp, opts);
+
+  return [resultPage.trim(), opts];
 }
 
 let selfEnclosingTag = new Set([

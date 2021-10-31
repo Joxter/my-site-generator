@@ -28,10 +28,15 @@ export function last(inp) {
   return inp[inp.length - 1];
 }
 
-export function commonInArr(arr1, arr2) {
+export function commonInArrs(sets) {
   const common = {};
 
-  [...arr1, ...arr2].forEach((item) => {
+  let collected = [];
+  sets.forEach((set) => {
+    collected = [...collected, ...set];
+  });
+
+  collected.forEach((item) => {
     common[item] = common[item] + 1 || 1;
   });
 

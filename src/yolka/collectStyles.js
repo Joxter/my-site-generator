@@ -1,20 +1,18 @@
-/*
- *
- *
- *
- *
- *
- * */
-export function collectStyles(Components, pageComponent) {
-  let result = [];
-  // todo улучшить, вообще сначала нужно собрать имена всех компонентов которые используются
-  //  на странице прямолинейным подсчетом, тут много работы
+import { commonInArrs } from "../utils.js";
 
-  pageComponent.dependsOn.forEach((compName) => {
-    if (Components[compName].style) {
-      result.push(Components[compName].style);
-    }
+export function collectStyles(Components, resPages) {
+  let usedComponents = resPages.map(([, opts]) => [...opts.pageMeta.usedComponents]);
+
+  let common = commonInArrs(usedComponents);
+
+  let byPages = usedComponents.map((pageComponents) => {
+    return pageComponents.filter((it) => !common.includes(it));
   });
 
-  return result.join("\n");
+  return [
+    common.map((compName) => Components[compName].style).join("\n"),
+    byPages.map((page) => {
+      return page.map((compName) => Components[compName].style).join("\n");
+    }),
+  ];
 }

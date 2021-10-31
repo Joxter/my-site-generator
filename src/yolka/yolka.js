@@ -13,18 +13,17 @@ export function yolka(options = {}) {
 
     return {
       render(data = {}) {
-        let pageStyles = [];
         let resPages = [];
 
         pageComponents.forEach((pageComponent) => {
-          pageStyles.push(collectStyles(Components, pageComponent));
           resPages.push(render(Components, pageComponent, data));
         });
+        let [common, pageStyles] = collectStyles(Components, resPages);
 
         return {
-          pages: resPages,
+          pages: resPages.map(([html]) => html),
           common: {
-            css: "", // todo просто сделать
+            css: common,
             pages: pageStyles,
           },
         };
