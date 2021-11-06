@@ -16,7 +16,11 @@ export function yolka(options = {}) {
         let resPages = [];
 
         pageComponents.forEach((pageComponent) => {
-          resPages.push(render(Components, pageComponent, data));
+          try {
+            resPages.push(render(Components, pageComponent, data));
+          } catch (err) {
+            resPages.push([`Error! ${err.message}`, { error: err }]);
+          }
         });
         let [common, pageStyles] = collectStyles(Components, resPages);
 

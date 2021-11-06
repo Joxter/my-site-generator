@@ -1,7 +1,13 @@
 import { commonInArrs } from "../utils.js";
 
 export function collectStyles(Components, resPages) {
-  let usedComponents = resPages.map(([, opts]) => [...opts.pageMeta.usedComponents]);
+  let usedComponents = resPages.map(([, opts]) => {
+    if (opts.error) {
+      return [];
+    } else {
+      return [...opts.pageMeta.usedComponents];
+    }
+  });
 
   let common = commonInArrs(usedComponents);
 

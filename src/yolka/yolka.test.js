@@ -114,6 +114,18 @@ describe("yolka basics", () => {
   <button>read more</button></div>`);
   });
 
+  it("test infinity loop of nested components", () => {
+    const result = defaultYolka(
+      [
+        `<template name="my-post"><my-par></my-par></template>`,
+        `<template name="my-par"><my-post></my-post></template>`,
+      ],
+      [`<my-post></my-post>`]
+    ).render();
+
+    expect(result.pages[0]).toEqual(`Error! Infinity loop of nested components`);
+  });
+
   it("test several renders with different data", () => {
     const pages = defaultYolka(
       [`<template name="my-greeting" props="user"><p>hello, {user.name}!</p></template>`],

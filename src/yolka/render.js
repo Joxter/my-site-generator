@@ -18,13 +18,14 @@ export function render(Components, pageComp, data) {
     },
     inlineStyles: true,
     pageMeta: {
+      deepness: 0,
       usedComponents: new Set(),
     },
   };
 
   let resultPage = pageComp.type === ElementType.Page ? renderPage(pageComp, opts) : renderNotMy(pageComp, opts);
 
-  return [resultPage.trim(), opts];
+  return [resultPage.trim(), opts]; // [html, metadata]
 }
 
 let selfEnclosingTag = new Set([
@@ -173,7 +174,18 @@ function renderSlot(node, options) {
   }
 }
 
+function incDeepness(options) {
+  return {
+    ...options,
+    pageMeta: {
+      ...options.pageMeta,
+      deepness: options.pageMeta.deepness + 1,
+    },
+  };
+}
+
 function renderComponent(node, options) {
+  if (options.pageMeta.deepness > 50) throw new Error("Infinity loop of nested components");
   if (!node.name) {
     // todo компонент без тега template, типа страница, адски тупо выглядит, но пока сойдет
     return renderNotMy(node.children, options);
@@ -216,7 +228,7 @@ function renderComponent(node, options) {
     return renderPage(componentData, { ...options, data });
   }
 
-  return renderNotMy(componentData.children, { ...options, data });
+  return renderNotMy(componentData.children, incDeepness({ ...options, data }));
 }
 
 function renderTag(elem, options) {
