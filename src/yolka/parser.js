@@ -96,7 +96,7 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
       }
     } else if (el.type === "text") {
       if (el.data.includes("{") && el.parent.type !== "style") {
-        toTextWithDataNode(el); // hack хак парсера, нужен чтоб подружить AST с моей логикой
+        toTextWithDataNode(el);
       }
     } else if (el.type === "style") {
       style = el;
@@ -122,37 +122,53 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
   };
 }
 
-function strToArrWithPaths(str) {
-  //  как-то так "Hello, {user.name}!" => ["hello,", ['user', 'name'], '!'];
-  // todo исправить на нормальное, а то сейчас все сломается если "Hello}, {} my name is {name!"
+function replacePartOfString(str, transform) {
+  // берет строку, ищет там фигурные скобки. Содержимое этих скобок передает в коблек (transform),
+  // а результат вставляет вместо исходного содержимого строк.
+  //
+  // Например нужно для такого преобразования:
+  //    исходная строка:  "Hello, {user.name}!"
+  //    результат массив: ["hello, ", ['user', 'name'], '!'];
+  //
+  // Возвращает исходную строку, при любой невалидной строке
 
   let result = [];
-  let lastBorder = 0;
+  let lastBorder = [0, null]; // [index: number, bracket: '{' | '}' | null]
 
   for (let i = 0; i < str.length; i++) {
-    if (str[i] === "{" || str[i] === "}") {
-      if (str[i] === "{") {
-        if (lastBorder !== i) {
-          result.push(str.slice(lastBorder, i));
-        }
-      } else {
-        result.push(getKeysFromStr(str.slice(lastBorder + 1, i)));
-      }
+    if (str[i] === "{") {
+      if (lastBorder[1] === "{") return str;
 
-      lastBorder = i;
+      result.push(str.slice(lastBorder[0], i));
+      lastBorder = [i, "{"];
+    } else if (str[i] === "}") {
+      if (lastBorder[1] === "}") return str;
+
+      result.push(transform(str.slice(lastBorder[0] + 1, i)));
+      lastBorder = [i, "}"];
     }
   }
 
-  if (lastBorder < str.length - 1) {
-    result.push(str.slice(lastBorder + 1, str.length));
+  if (lastBorder[1] === "}") {
+    result.push(str.slice(lastBorder[0] + 1, str.length));
+  } else if (lastBorder[1] === "{") {
+    return str;
   }
 
   return result;
 }
 
+export function strToArrWithPaths(str) {
+  return replacePartOfString(str, (substring) => getKeysFromStr(substring));
+}
+
 function toTextWithDataNode(node) {
-  node.data = strToArrWithPaths(node.data);
-  node.type = ElementType.TextWithData;
+  let res = strToArrWithPaths(node.data);
+  if (Array.isArray(res)) {
+    // hack хак парсера, нужен чтоб подружить AST с моей логикой
+    node.data = res;
+    node.type = ElementType.TextWithData;
+  }
 }
 
 function parseProps(str) {

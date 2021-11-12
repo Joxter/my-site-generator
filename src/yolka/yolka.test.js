@@ -382,7 +382,7 @@ span.-c-0 {
       // not sure about the syntax
       const pages = defaultYolka(
         [],
-        [`<p class="foo {show}?show:hidden">hello</p>`, `<p class="foo {show}?show">hello</p>`]
+        [`<p class="foo {show?show:hidden}">hello</p>`, `<p class="foo {show?show}">hello</p>`]
       );
 
       expect(pages.render({ show: true }).pages[0]).toEqual(`<p class="foo show">hello</p>`);
