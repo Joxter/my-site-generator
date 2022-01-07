@@ -1,5 +1,4 @@
 import { parseDocument } from "htmlparser2";
-import { removeElement } from "domutils";
 import { forEachNodes, getKeysFromStr, has, niceEl, removeFirstLastChar } from "../utils.js";
 import { COMPONENT_ATTRS, ElementType, NODE_SPEC_ATTRS } from "./constants.js";
 
@@ -120,6 +119,15 @@ function getServiceNodes(componentAST, noTemplateTag = false) {
     children: templateEl.children, // осонвная верстка
     dependsOn, // имена компонентов которые используются в текущем
   };
+}
+
+function removeElement(elem) {
+  if (elem.prev) elem.prev.next = elem.next;
+  if (elem.next) elem.next.prev = elem.prev;
+  if (elem.parent) {
+    var childs = elem.parent.children;
+    childs.splice(childs.lastIndexOf(elem), 1);
+  }
 }
 
 function replacePartOfString(str, transform) {
