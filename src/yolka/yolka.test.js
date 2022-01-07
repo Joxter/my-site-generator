@@ -415,14 +415,16 @@ span.-c-0 {
 </div>
 `,
         ]
-      ).render({ name: "Kolya" });
+      ).render();
 
-      expect(result.pages[0]).toEqual(`<div>
+      expect(result.pages[0]).toEqual(
+        `<div>
   <p>line</p>
   <div>
     <p>line 2</p>
   </div>
-</div>`);
+</div>`
+      );
     });
   });
 });

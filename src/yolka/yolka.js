@@ -10,6 +10,7 @@ export function yolka(options = {}) {
 
     const [Components, pageComponents] = parse(componentStrs, pageStrs);
     scopedStyles(Components);
+    // todo когда-нибудь тут будет prerender
 
     return {
       render(data = {}) {
